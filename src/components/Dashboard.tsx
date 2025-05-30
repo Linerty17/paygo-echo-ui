@@ -38,14 +38,27 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-red-500 text-white text-center py-2 text-sm">
-        Dear User, We're currently experiencing issues with Opay bank transfers. Please use other banks for your payments.
+      {/* Animated Header with moving text */}
+      <div className="bg-red-500 text-white py-2 text-sm overflow-hidden relative">
+        <div className="animate-marquee whitespace-nowrap">
+          Dear User, We're currently experiencing issues with Opay bank transfers. Please use other banks for your payments.
+        </div>
       </div>
 
       <div className="p-4 space-y-6">
-        {/* Balance Card */}
-        <div className="bg-paygo-main rounded-3xl p-6 text-white shadow-xl">
+        {/* Animated PayGo Logo */}
+        <div className="flex justify-center mb-4 overflow-hidden">
+          <div className="animate-slide-logo">
+            <img 
+              src="/lovable-uploads/feb7634a-e85d-4a16-b73d-02c2568ca4dd.png" 
+              alt="PayGo Logo"
+              className="h-16 object-contain"
+            />
+          </div>
+        </div>
+
+        {/* Balance Card - Updated to match exact colors from screenshot */}
+        <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 rounded-3xl p-6 text-white shadow-xl">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
