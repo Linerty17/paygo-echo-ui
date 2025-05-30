@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Promotion {
@@ -8,34 +8,47 @@ interface Promotion {
   subtitle: string;
   description: string;
   background: string;
+  image: string;
 }
 
 const promotions: Promotion[] = [
   {
     id: 1,
-    title: "AUGUST 27-28",
-    subtitle: "Mobile Money",
-    description: "AUGUST 27-28\n14:00, 2:00 & 14:00,16:00\n48:00DHRS",
-    background: "bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500"
+    title: "Mobile Money",
+    subtitle: "AUGUST 27-28",
+    description: "14:00, 2:00 & 14:00,16:00\n48:00HRS",
+    background: "bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500",
+    image: "/lovable-uploads/62ce7959-bd54-4bc5-bc0a-dea92ac2c48b.png"
   },
   {
     id: 2,
     title: "Winners",
     subtitle: "of K20 airtime",
     description: "Patience Ng'andwe\nPhiri John",
-    background: "bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500"
+    background: "bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500",
+    image: "/lovable-uploads/3215a8f1-8330-4c5c-8a1f-ecb153443061.png"
   },
   {
     id: 3,
     title: "Transact & Win",
     subtitle: "",
     description: "Locations: Cheers Gold Crest Mall | Chrismar Hotel | Hot Spot Pub & Grill\n\nAll customers who pay with PayGo in store will stand a chance to win great prizes.",
-    background: "bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600"
+    background: "bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600",
+    image: "/lovable-uploads/40c2e0a5-1956-4bf8-b7b6-0e6f0888f1f6.png"
   }
 ];
 
 const PromotionsCarousel: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Auto-slide functionality
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % promotions.length);
+    }, 4000); // Change slide every 4 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % promotions.length);
@@ -49,23 +62,17 @@ const PromotionsCarousel: React.FC = () => {
     <div className="relative">
       <div className="overflow-hidden rounded-2xl">
         <div 
-          className="flex transition-transform duration-300 ease-in-out"
+          className="flex transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
           {promotions.map((promo) => (
             <div key={promo.id} className="w-full flex-shrink-0">
-              <div className={`${promo.background} p-6 text-white min-h-[200px] flex flex-col justify-between relative overflow-hidden`}>
-                <div className="relative z-10">
-                  <h3 className="text-2xl font-bold mb-2">{promo.title}</h3>
-                  {promo.subtitle && (
-                    <p className="text-lg opacity-90 mb-2">{promo.subtitle}</p>
-                  )}
-                  <p className="text-sm opacity-80 whitespace-pre-line">{promo.description}</p>
-                </div>
-                
-                {/* Decorative elements */}
-                <div className="absolute -right-4 -top-4 w-20 h-20 bg-white bg-opacity-10 rounded-full"></div>
-                <div className="absolute -left-8 -bottom-8 w-24 h-24 bg-white bg-opacity-5 rounded-full"></div>
+              <div className="relative min-h-[250px] rounded-2xl overflow-hidden">
+                <img 
+                  src={promo.image} 
+                  alt={promo.title}
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           ))}
@@ -75,16 +82,16 @@ const PromotionsCarousel: React.FC = () => {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-black bg-opacity-20 text-white rounded-full flex items-center justify-center hover:bg-opacity-40 transition-all"
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black bg-opacity-30 text-white rounded-full flex items-center justify-center hover:bg-opacity-50 transition-all z-10"
       >
-        <ChevronLeft className="w-5 h-5" />
+        <ChevronLeft className="w-6 h-6" />
       </button>
       
       <button
         onClick={nextSlide}
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-black bg-opacity-20 text-white rounded-full flex items-center justify-center hover:bg-opacity-40 transition-all"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-black bg-opacity-30 text-white rounded-full flex items-center justify-center hover:bg-opacity-50 transition-all z-10"
       >
-        <ChevronRight className="w-5 h-5" />
+        <ChevronRight className="w-6 h-6" />
       </button>
 
       {/* Dots Indicator */}
@@ -93,7 +100,7 @@ const PromotionsCarousel: React.FC = () => {
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`w-2 h-2 rounded-full transition-all ${
+            className={`w-3 h-3 rounded-full transition-all ${
               index === currentIndex ? 'bg-purple-600' : 'bg-gray-300'
             }`}
           />
