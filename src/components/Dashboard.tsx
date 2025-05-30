@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Bell, Eye, EyeOff, ArrowUp, Check, CreditCard, Tv, BarChart3, Database, Headphones, Globe, DollarSign, User } from 'lucide-react';
+import { Bell, Eye, EyeOff, ArrowUp, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ServiceIcon from './ServiceIcon';
 import PromotionsCarousel from './PromotionsCarousel';
@@ -26,14 +26,14 @@ const Dashboard: React.FC<DashboardProps> = ({
   const weeklyRewards = "₦180,000.00";
 
   const services = [
-    { icon: <CreditCard className="w-full h-full" />, label: "Buy PAY ID" },
-    { icon: <Tv className="w-full h-full" />, label: "Watch" },
-    { icon: <BarChart3 className="w-full h-full" />, label: "Airtime" },
-    { icon: <Database className="w-full h-full" />, label: "Data" },
-    { icon: <Headphones className="w-full h-full" />, label: "Support" },
-    { icon: <Globe className="w-full h-full" />, label: "Group" },
-    { icon: <DollarSign className="w-full h-full" />, label: "Earn More" },
-    { icon: <User className="w-full h-full" />, label: "Profile" }
+    { icon: "💳", label: "Buy PAY ID" },
+    { icon: "📺", label: "Watch" },
+    { icon: "📊", label: "Airtime" },
+    { icon: "🗄️", label: "Data" },
+    { icon: "🎧", label: "Support" },
+    { icon: "🌐", label: "Group" },
+    { icon: "💰", label: "Earn More" },
+    { icon: "👤", label: "Profile" }
   ];
 
   return (
@@ -45,7 +45,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
       <div className="p-4 space-y-6">
         {/* Balance Card */}
-        <div className="bg-paygo-card rounded-3xl p-6 text-white shadow-xl">
+        <div className="bg-paygo-lavender rounded-3xl p-6 text-white shadow-xl">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">

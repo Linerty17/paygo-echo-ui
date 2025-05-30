@@ -2,7 +2,7 @@
 import React from 'react';
 
 interface ServiceIconProps {
-  icon: React.ReactNode;
+  icon: string;
   label: string;
   onClick?: () => void;
 }
@@ -14,7 +14,7 @@ const ServiceIcon: React.FC<ServiceIconProps> = ({ icon, label, onClick }) => {
       onClick={onClick}
     >
       <div className="w-16 h-16 bg-white rounded-xl shadow-sm flex items-center justify-center group-hover:shadow-md transition-shadow duration-200">
-        <div className="w-8 h-8 text-gray-600">
+        <div className="text-3xl">
           {icon}
         </div>
       </div>
