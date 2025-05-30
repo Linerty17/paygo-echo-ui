@@ -63,7 +63,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fade-in">
       <div className="bg-white rounded-2xl w-full max-w-md animate-slide-up">
         {/* Header */}
-        <div className="bg-paygo-gradient text-white p-6 rounded-t-2xl relative">
+        <div className="bg-paygo-main text-white p-6 rounded-t-2xl relative">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-white hover:text-gray-200"
@@ -115,7 +115,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({
 
           <Button
             onClick={onNext}
-            className="w-full h-12 bg-paygo-gradient hover:opacity-90 text-white font-medium rounded-xl transition-all duration-300"
+            className="w-full h-12 bg-paygo-main hover:opacity-90 text-white font-medium rounded-xl transition-all duration-300"
           >
             {isLastStep ? 'Get Started' : 'Next'} →
           </Button>

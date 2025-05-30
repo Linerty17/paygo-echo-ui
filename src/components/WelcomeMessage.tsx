@@ -12,7 +12,7 @@ const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ onContinue }) => {
       <div className="w-full max-w-sm space-y-8 text-center">
         {/* PayGo Logo Card */}
         <div className="flex justify-center mb-12">
-          <div className="bg-paygo-lavender rounded-3xl p-8 shadow-xl">
+          <div className="bg-paygo-main rounded-3xl p-8 shadow-xl">
             <div className="text-white text-3xl font-bold text-center">
               <span className="text-xs block mb-1 opacity-90">DIGITAL</span>
               PAYGO
@@ -33,7 +33,7 @@ const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ onContinue }) => {
 
           <Button
             onClick={onContinue}
-            className="w-full h-14 bg-paygo-lavender hover:opacity-90 text-white text-lg font-medium rounded-xl transition-all duration-300 shadow-lg"
+            className="w-full h-14 bg-paygo-main hover:opacity-90 text-white text-lg font-medium rounded-xl transition-all duration-300 shadow-lg"
           >
             Continue to Dashboard
           </Button>

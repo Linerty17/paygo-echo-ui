@@ -71,9 +71,9 @@ export default {
 				}
 			},
 			backgroundImage: {
-				'paygo-gradient': 'linear-gradient(135deg, #B794F6 0%, #EC4899 50%, #F97316 100%)',
-				'paygo-card': 'linear-gradient(135deg, #B794F6 0%, #8B5CF6 100%)',
-				'paygo-lavender': 'linear-gradient(135deg, #B794F6 0%, #9F7AEA 100%)'
+				'paygo-gradient': 'linear-gradient(135deg, #9333EA 0%, #EC4899 50%, #F97316 100%)',
+				'paygo-card': 'linear-gradient(135deg, #9333EA 0%, #EC4899 100%)',
+				'paygo-main': 'linear-gradient(135deg, #9333EA 0%, #EC4899 50%, #F97316 100%)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

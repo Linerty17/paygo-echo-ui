@@ -45,7 +45,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
       <div className="p-4 space-y-6">
         {/* Balance Card */}
-        <div className="bg-paygo-lavender rounded-3xl p-6 text-white shadow-xl">
+        <div className="bg-paygo-main rounded-3xl p-6 text-white shadow-xl">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
