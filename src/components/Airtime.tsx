@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,9 +5,10 @@ import { Input } from '@/components/ui/input';
 
 interface AirtimeProps {
   onBack: () => void;
+  onPurchaseSuccess: (amount: string, phone: string) => void;
 }
 
-const Airtime: React.FC<AirtimeProps> = ({ onBack }) => {
+const Airtime: React.FC<AirtimeProps> = ({ onBack, onPurchaseSuccess }) => {
   const [selectedNetwork, setSelectedNetwork] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedAmount, setSelectedAmount] = useState('');
@@ -39,8 +39,8 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack }) => {
       return;
     }
 
-    // Process airtime purchase
-    alert('Airtime purchase successful!');
+    // Call the success callback with purchase details
+    onPurchaseSuccess(selectedAmount, phoneNumber);
   };
 
   return (
