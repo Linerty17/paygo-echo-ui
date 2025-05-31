@@ -50,7 +50,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         <div className="flex justify-center mb-4 overflow-hidden">
           <div className="animate-slide-logo">
             <img 
-              src="/lovable-uploads/feb7634a-e85d-4a16-b73d-02c2568ca4dd.png" 
+              src="/lovable-uploads/19396cc7-ffeb-4564-ba8f-a6d4eff13269.png" 
               alt="PayGo Logo"
               className="h-16 object-contain"
             />

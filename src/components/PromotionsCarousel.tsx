@@ -14,27 +14,27 @@ interface Promotion {
 const promotions: Promotion[] = [
   {
     id: 1,
-    title: "Mobile Money",
-    subtitle: "AUGUST 27-28",
-    description: "14:00, 2:00 & 14:00,16:00\n48:00HRS",
+    title: "Game Day",
+    subtitle: "NASDEC COMPLEX LUSAKA",
+    description: "AUGUST 27-28\n14:00, 12:00 & 14:00,16:00\n& 18:00HRS",
     background: "bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500",
-    image: "/lovable-uploads/62ce7959-bd54-4bc5-bc0a-dea92ac2c48b.png"
+    image: "/lovable-uploads/bf3fea44-868d-4f2b-a215-da56de06e9df.png"
   },
   {
     id: 2,
-    title: "Winners",
-    subtitle: "of K20 airtime",
-    description: "Patience Ng'andwe\nPhiri John",
+    title: "Transact & Win",
+    subtitle: "Easter weekend special",
+    description: "Locations: Cheers Gold Crest Mall | Chrismar Hotel | Hot Spot Pub & Grill",
     background: "bg-gradient-to-r from-purple-700 via-purple-600 to-pink-500",
-    image: "/lovable-uploads/3215a8f1-8330-4c5c-8a1f-ecb153443061.png"
+    image: "/lovable-uploads/21dc93b2-99ea-47fa-8366-fd5d8c8870d6.png"
   },
   {
     id: 3,
-    title: "Transact & Win",
-    subtitle: "",
-    description: "Locations: Cheers Gold Crest Mall | Chrismar Hotel | Hot Spot Pub & Grill\n\nAll customers who pay with PayGo in store will stand a chance to win great prizes.",
+    title: "Winners",
+    subtitle: "of K20 airtime",
+    description: "Patience Ng'andwe\nPhiri John",
     background: "bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600",
-    image: "/lovable-uploads/40c2e0a5-1956-4bf8-b7b6-0e6f0888f1f6.png"
+    image: "/lovable-uploads/b101096f-d8a9-44c9-8b8d-daec259763e3.png"
   }
 ];
 
