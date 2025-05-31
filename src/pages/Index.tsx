@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import RegistrationForm from '@/components/RegistrationForm';
 import Login from '@/components/Login';
 import WelcomeMessage from '@/components/WelcomeMessage';
@@ -30,27 +29,64 @@ const Index = () => {
   const [purchaseType, setPurchaseType] = useState<'airtime' | 'data'>('airtime');
   const [purchaseAmount, setPurchaseAmount] = useState('');
   const [purchasePhone, setPurchasePhone] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [navigationHistory, setNavigationHistory] = useState<AppState[]>([]);
+
+  // Handle browser back button
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      event.preventDefault();
+      
+      if (isLoggedIn && navigationHistory.length > 0) {
+        // Go back to previous page in navigation history
+        const previousPage = navigationHistory[navigationHistory.length - 1];
+        setNavigationHistory(prev => prev.slice(0, -1));
+        setAppState(previousPage);
+      } else if (isLoggedIn) {
+        // If no history but logged in, go to dashboard
+        setAppState('dashboard');
+      }
+      // If not logged in, do nothing (stay on current auth page)
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [isLoggedIn, navigationHistory]);
+
+  // Update navigation history when changing pages
+  const navigateToPage = (newState: AppState) => {
+    if (isLoggedIn && appState !== newState) {
+      setNavigationHistory(prev => [...prev, appState]);
+    }
+    setAppState(newState);
+  };
 
   const handleRegister = (name: string, email: string, password: string) => {
     console.log('Registration:', { name, email, password });
     setUserName(name);
     setUserEmail(email);
+    setIsLoggedIn(true);
     setAppState('welcome');
+    setNavigationHistory([]);
   };
 
   const handleLogin = (email: string) => {
     console.log('Login:', { email });
     setUserName('Support');
     setUserEmail(email);
+    setIsLoggedIn(true);
     setAppState('welcome');
+    setNavigationHistory([]);
   };
 
   const handleLogout = () => {
+    setIsLoggedIn(false);
+    setNavigationHistory([]);
     setAppState('login');
   };
 
   const handleContinueToDashboard = () => {
-    setAppState('dashboard');
+    navigateToPage('dashboard');
     setShowOnboarding(true);
   };
 
@@ -75,39 +111,45 @@ const Index = () => {
   };
 
   const handleNavigate = (page: string) => {
-    setAppState(page as AppState);
+    navigateToPage(page as AppState);
   };
 
   const handleBackToDashboard = () => {
-    setAppState('dashboard');
+    if (navigationHistory.length > 0) {
+      const previousPage = navigationHistory[navigationHistory.length - 1];
+      setNavigationHistory(prev => prev.slice(0, -1));
+      setAppState(previousPage);
+    } else {
+      setAppState('dashboard');
+    }
   };
 
   const handlePayClicked = () => {
-    setAppState('preparingPayment');
+    navigateToPage('preparingPayment');
   };
 
   const handlePreparingComplete = () => {
-    setAppState('bankTransfer');
+    navigateToPage('bankTransfer');
   };
 
   const handleTransferConfirmed = () => {
-    setAppState('paymentConfirmation');
+    navigateToPage('paymentConfirmation');
   };
 
   const handlePaymentComplete = () => {
-    setAppState('payIdSuccess');
+    navigateToPage('payIdSuccess');
   };
 
   const handleDataPurchaseSuccess = () => {
     setPurchaseType('data');
-    setAppState('purchaseSuccess');
+    navigateToPage('purchaseSuccess');
   };
 
   const handleAirtimePurchaseSuccess = (amount: string, phone: string) => {
     setPurchaseType('airtime');
     setPurchaseAmount(amount);
     setPurchasePhone(phone);
-    setAppState('purchaseSuccess');
+    navigateToPage('purchaseSuccess');
   };
 
   const handleProfileImageChange = (image: string) => {
