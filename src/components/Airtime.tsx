@@ -12,7 +12,7 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack }) => {
   const [selectedNetwork, setSelectedNetwork] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedAmount, setSelectedAmount] = useState('');
-  const [payIdCode, setPayIdCode] = useState('');
+  const [payIdCode, setPayIdCode] = useState('PAY200717'); // Pre-filled with generated PAY ID
 
   const networks = ['Airtel', 'MTN', 'Glo', '9mobile'];
   
@@ -27,6 +27,21 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack }) => {
     { amount: '₦5000', cashback: '₦125 Cashback' },
     { amount: '₦10000', cashback: '₦250 Cashback' }
   ];
+
+  const handleBuyAirtime = () => {
+    if (!selectedNetwork || !phoneNumber || !selectedAmount || !payIdCode) {
+      alert('Please fill all fields');
+      return;
+    }
+    
+    if (payIdCode !== 'PAY200717') {
+      alert('Invalid PAY ID Code');
+      return;
+    }
+
+    // Process airtime purchase
+    alert('Airtime purchase successful!');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -99,6 +114,7 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack }) => {
 
         {/* PAY ID Code Input */}
         <div>
+          <label className="block text-gray-700 mb-2">PAY ID Code</label>
           <Input
             type="text"
             placeholder="Enter PAY ID Code"
@@ -106,9 +122,13 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack }) => {
             onChange={(e) => setPayIdCode(e.target.value)}
             className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm placeholder:text-gray-400"
           />
+          <p className="text-gray-500 text-sm mt-2">Use your generated PAY ID to purchase airtime</p>
         </div>
 
-        <Button className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8">
+        <Button 
+          onClick={handleBuyAirtime}
+          className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8"
+        >
           Buy Airtime
         </Button>
       </div>

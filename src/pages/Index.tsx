@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import RegistrationForm from '@/components/RegistrationForm';
 import WelcomeMessage from '@/components/WelcomeMessage';
@@ -10,8 +9,12 @@ import Support from '@/components/Support';
 import Profile from '@/components/Profile';
 import BuyPayId from '@/components/BuyPayId';
 import Airtime from '@/components/Airtime';
+import PaymentConfirmation from '@/components/PaymentConfirmation';
+import BankTransferPage from '@/components/BankTransferPage';
+import PreparingPayment from '@/components/PreparingPayment';
+import PayIdSuccess from '@/components/PayIdSuccess';
 
-type AppState = 'registration' | 'welcome' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime';
+type AppState = 'registration' | 'welcome' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'payIdSuccess';
 
 const Index = () => {
   const [appState, setAppState] = useState<AppState>('registration');
@@ -57,6 +60,22 @@ const Index = () => {
     setAppState('dashboard');
   };
 
+  const handlePayClicked = () => {
+    setAppState('preparingPayment');
+  };
+
+  const handlePreparingComplete = () => {
+    setAppState('bankTransfer');
+  };
+
+  const handleTransferConfirmed = () => {
+    setAppState('paymentConfirmation');
+  };
+
+  const handlePaymentComplete = () => {
+    setAppState('payIdSuccess');
+  };
+
   if (appState === 'registration') {
     return (
       <RegistrationForm 
@@ -93,11 +112,27 @@ const Index = () => {
   }
 
   if (appState === 'buyPayId') {
-    return <BuyPayId onBack={handleBackToDashboard} />;
+    return <BuyPayId onBack={handleBackToDashboard} onPayClicked={handlePayClicked} />;
   }
 
   if (appState === 'airtime') {
     return <Airtime onBack={handleBackToDashboard} />;
+  }
+
+  if (appState === 'preparingPayment') {
+    return <PreparingPayment onBack={handleBackToDashboard} onComplete={handlePreparingComplete} />;
+  }
+
+  if (appState === 'bankTransfer') {
+    return <BankTransferPage onBack={handleBackToDashboard} onTransferConfirmed={handleTransferConfirmed} />;
+  }
+
+  if (appState === 'paymentConfirmation') {
+    return <PaymentConfirmation onBack={handleBackToDashboard} onComplete={handlePaymentComplete} />;
+  }
+
+  if (appState === 'payIdSuccess') {
+    return <PayIdSuccess onBack={handleBackToDashboard} />;
   }
 
   return (

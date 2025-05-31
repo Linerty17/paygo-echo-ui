@@ -6,12 +6,21 @@ import { Input } from '@/components/ui/input';
 
 interface BuyPayIdProps {
   onBack: () => void;
+  onPayClicked: () => void;
 }
 
-const BuyPayId: React.FC<BuyPayIdProps> = ({ onBack }) => {
+const BuyPayId: React.FC<BuyPayIdProps> = ({ onBack, onPayClicked }) => {
   const [amount, setAmount] = useState('₦7,250');
   const [fullName, setFullName] = useState('Your full name');
   const [email, setEmail] = useState('support1@gmail.com');
+
+  const handlePay = () => {
+    if (!fullName || !email) {
+      alert('Please fill all fields');
+      return;
+    }
+    onPayClicked();
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -53,7 +62,10 @@ const BuyPayId: React.FC<BuyPayIdProps> = ({ onBack }) => {
           />
         </div>
 
-        <Button className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8">
+        <Button 
+          onClick={handlePay}
+          className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8"
+        >
           Pay
         </Button>
 
