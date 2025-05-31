@@ -27,13 +27,14 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
       </div>
       
       <div className="w-full max-w-sm space-y-8">
-        {/* PayGo Logo Card */}
-        <div className="flex justify-center mb-12">
-          <div className="bg-paygo-main rounded-3xl p-8 shadow-xl">
-            <div className="text-white text-3xl font-bold text-center">
-              <span className="text-xs block mb-1 opacity-90">DIGITAL</span>
-              PAYGO
-            </div>
+        {/* Animated PayGo Logo */}
+        <div className="flex justify-center mb-4 overflow-hidden">
+          <div className="animate-slide-logo">
+            <img 
+              src="/lovable-uploads/a3ef4c06-bb4a-4f2b-86aa-ca0eb1b2d464.png" 
+              alt="PayGo Logo"
+              className="h-16 object-contain"
+            />
           </div>
         </div>
 

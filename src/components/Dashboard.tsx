@@ -12,6 +12,7 @@ interface DashboardProps {
   onboardingStep: number;
   onNextOnboarding: () => void;
   onCloseOnboarding: () => void;
+  onNavigate: (page: string) => void;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({
@@ -19,21 +20,22 @@ const Dashboard: React.FC<DashboardProps> = ({
   showOnboarding,
   onboardingStep,
   onNextOnboarding,
-  onCloseOnboarding
+  onCloseOnboarding,
+  onNavigate
 }) => {
   const [balanceVisible, setBalanceVisible] = useState(true);
   const balance = "₦180,000.00";
   const weeklyRewards = "₦180,000.00";
 
   const services = [
-    { icon: "💳", label: "Buy PAY ID" },
-    { icon: "📺", label: "Watch" },
-    { icon: "📊", label: "Airtime" },
-    { icon: "🗄️", label: "Data" },
-    { icon: "🎧", label: "Support" },
-    { icon: "🌐", label: "Group" },
-    { icon: "💰", label: "Earn More" },
-    { icon: "👤", label: "Profile" }
+    { icon: "💳", label: "Buy PAY ID", page: "buyPayId" },
+    { icon: "📺", label: "Watch", page: "watch" },
+    { icon: "📊", label: "Airtime", page: "airtime" },
+    { icon: "🗄️", label: "Data", page: "data" },
+    { icon: "🎧", label: "Support", page: "support" },
+    { icon: "🌐", label: "Group", page: "joinCommunities" },
+    { icon: "💰", label: "Earn More", page: "earnMore" },
+    { icon: "👤", label: "Profile", page: "profile" }
   ];
 
   return (
@@ -94,13 +96,19 @@ const Dashboard: React.FC<DashboardProps> = ({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <Button className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 rounded-full h-12 flex items-center justify-center space-x-2">
+            <Button 
+              onClick={() => onNavigate('upgradeAccount')}
+              className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 rounded-full h-12 flex items-center justify-center space-x-2"
+            >
               <div className="w-6 h-6 bg-white bg-opacity-30 rounded-full flex items-center justify-center">
                 <Check className="w-3 h-3" />
               </div>
               <span>Upgrade</span>
             </Button>
-            <Button className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 rounded-full h-12 flex items-center justify-center space-x-2">
+            <Button 
+              onClick={() => onNavigate('transferToBank')}
+              className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 rounded-full h-12 flex items-center justify-center space-x-2"
+            >
               <div className="w-6 h-6 bg-white bg-opacity-30 rounded-full flex items-center justify-center">
                 <ArrowUp className="w-3 h-3" />
               </div>
@@ -116,7 +124,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               key={index}
               icon={service.icon}
               label={service.label}
-              onClick={() => console.log(`Clicked ${service.label}`)}
+              onClick={() => onNavigate(service.page)}
             />
           ))}
         </div>

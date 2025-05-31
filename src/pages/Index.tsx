@@ -3,8 +3,15 @@ import React, { useState } from 'react';
 import RegistrationForm from '@/components/RegistrationForm';
 import WelcomeMessage from '@/components/WelcomeMessage';
 import Dashboard from '@/components/Dashboard';
+import TransferToBank from '@/components/TransferToBank';
+import UpgradeAccount from '@/components/UpgradeAccount';
+import JoinCommunities from '@/components/JoinCommunities';
+import Support from '@/components/Support';
+import Profile from '@/components/Profile';
+import BuyPayId from '@/components/BuyPayId';
+import Airtime from '@/components/Airtime';
 
-type AppState = 'registration' | 'welcome' | 'dashboard';
+type AppState = 'registration' | 'welcome' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime';
 
 const Index = () => {
   const [appState, setAppState] = useState<AppState>('registration');
@@ -42,6 +49,14 @@ const Index = () => {
     setAppState('welcome');
   };
 
+  const handleNavigate = (page: string) => {
+    setAppState(page as AppState);
+  };
+
+  const handleBackToDashboard = () => {
+    setAppState('dashboard');
+  };
+
   if (appState === 'registration') {
     return (
       <RegistrationForm 
@@ -57,6 +72,34 @@ const Index = () => {
     );
   }
 
+  if (appState === 'transferToBank') {
+    return <TransferToBank onBack={handleBackToDashboard} />;
+  }
+
+  if (appState === 'upgradeAccount') {
+    return <UpgradeAccount onBack={handleBackToDashboard} />;
+  }
+
+  if (appState === 'joinCommunities') {
+    return <JoinCommunities onBack={handleBackToDashboard} />;
+  }
+
+  if (appState === 'support') {
+    return <Support onBack={handleBackToDashboard} />;
+  }
+
+  if (appState === 'profile') {
+    return <Profile onBack={handleBackToDashboard} />;
+  }
+
+  if (appState === 'buyPayId') {
+    return <BuyPayId onBack={handleBackToDashboard} />;
+  }
+
+  if (appState === 'airtime') {
+    return <Airtime onBack={handleBackToDashboard} />;
+  }
+
   return (
     <Dashboard
       userName={userName}
@@ -64,6 +107,7 @@ const Index = () => {
       onboardingStep={onboardingStep}
       onNextOnboarding={handleNextOnboarding}
       onCloseOnboarding={handleCloseOnboarding}
+      onNavigate={handleNavigate}
     />
   );
 };
