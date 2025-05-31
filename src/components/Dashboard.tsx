@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Bell, Eye, EyeOff, ArrowUp, Check } from 'lucide-react';
+import { Bell, Eye, EyeOff, ArrowUp, Check, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ServiceIcon from './ServiceIcon';
 import PromotionsCarousel from './PromotionsCarousel';
@@ -8,20 +7,26 @@ import OnboardingModal from './OnboardingModal';
 
 interface DashboardProps {
   userName: string;
+  userEmail: string;
+  userProfileImage: string | null;
   showOnboarding: boolean;
   onboardingStep: number;
   onNextOnboarding: () => void;
   onCloseOnboarding: () => void;
   onNavigate: (page: string) => void;
+  onLogout: () => void;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({
   userName,
+  userEmail,
+  userProfileImage,
   showOnboarding,
   onboardingStep,
   onNextOnboarding,
   onCloseOnboarding,
-  onNavigate
+  onNavigate,
+  onLogout
 }) => {
   const [balanceVisible, setBalanceVisible] = useState(true);
   const balance = "₦180,000.00";
@@ -63,9 +68,17 @@ const Dashboard: React.FC<DashboardProps> = ({
         <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 rounded-3xl p-6 text-white shadow-xl">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                <span className="text-lg font-bold">S</span>
-              </div>
+              {userProfileImage ? (
+                <img 
+                  src={userProfileImage} 
+                  alt="Profile" 
+                  className="w-12 h-12 rounded-full object-cover border-2 border-white border-opacity-30"
+                />
+              ) : (
+                <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                  <User className="w-6 h-6" />
+                </div>
+              )}
               <div>
                 <div className="flex items-center space-x-2">
                   <span className="text-lg font-medium">Hi, {userName}</span>
@@ -74,7 +87,12 @@ const Dashboard: React.FC<DashboardProps> = ({
                 <p className="text-sm opacity-90">Welcome back!</p>
               </div>
             </div>
-            <Bell className="w-6 h-6 text-orange-400" />
+            <div className="flex items-center space-x-3">
+              <Bell className="w-6 h-6 text-orange-400" />
+              <button onClick={onLogout} className="text-sm bg-white bg-opacity-20 px-3 py-1 rounded-full">
+                Logout
+              </button>
+            </div>
           </div>
 
           <div className="mb-6">

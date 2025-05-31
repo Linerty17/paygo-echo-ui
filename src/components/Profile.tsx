@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ArrowLeft, ChevronRight, Camera, User, Info, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -5,14 +6,16 @@ import { Input } from '@/components/ui/input';
 
 interface ProfileProps {
   onBack: () => void;
+  userEmail: string;
+  profileImage: string | null;
+  onProfileImageChange: (image: string) => void;
 }
 
-const Profile: React.FC<ProfileProps> = ({ onBack }) => {
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+const Profile: React.FC<ProfileProps> = ({ onBack, userEmail, profileImage, onProfileImageChange }) => {
   const [editingProfile, setEditingProfile] = useState(false);
   const [profileData, setProfileData] = useState({
     fullName: 'John Doe',
-    email: 'support1@gmail.com',
+    email: userEmail,
     phone: '+234 801 234 5678',
     about: 'PayGo user since 2023'
   });
@@ -22,7 +25,8 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setProfileImage(e.target?.result as string);
+        const imageUrl = e.target?.result as string;
+        onProfileImageChange(imageUrl);
       };
       reader.readAsDataURL(file);
     }
@@ -97,6 +101,7 @@ const Profile: React.FC<ProfileProps> = ({ onBack }) => {
                 value={profileData.email}
                 onChange={(e) => setProfileData({...profileData, email: e.target.value})}
                 className="w-full"
+                disabled
               />
             </div>
 
