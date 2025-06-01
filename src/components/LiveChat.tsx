@@ -39,7 +39,7 @@ const LiveChat: React.FC = () => {
       return "To buy data, tap 'Data' on your dashboard, choose your network and data plan.";
     }
     if (message.includes('pay id') || message.includes('payid')) {
-      return "PAY ID costs ₦7,250. It's required for transfers and gives you a unique payment identifier.";
+      return "PAY ID costs ₦6,500. It's required for transfers and gives you a unique payment identifier.";
     }
     if (message.includes('upgrade') || message.includes('level')) {
       return "You can upgrade your account to Silver, Gold, Platinum, Emerald, Ruby, Diamond, or Black levels for better benefits.";
