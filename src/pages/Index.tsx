@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import RegistrationForm from '@/components/RegistrationForm';
 import Login from '@/components/Login';
@@ -22,7 +21,7 @@ import TransferSuccess from '@/components/TransferSuccess';
 import AirtimeSuccess from '@/components/AirtimeSuccess';
 import LiveChat from '@/components/LiveChat';
 
-type AppState = 'registration' | 'login' | 'welcome' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
+type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
 
 interface User {
   name: string;
@@ -154,6 +153,10 @@ const Index = () => {
   const handleContinueToDashboard = () => {
     navigateToPage('dashboard');
     setShowOnboarding(true);
+  };
+
+  const handleEarnMore = () => {
+    navigateToPage('earnMore');
   };
 
   const handleNextOnboarding = () => {
@@ -292,7 +295,19 @@ const Index = () => {
   if (appState === 'welcome') {
     return (
       <>
-        <WelcomeMessage onContinue={handleContinueToDashboard} />
+        <WelcomeMessage 
+          onContinue={handleContinueToDashboard} 
+          onEarnMore={handleEarnMore}
+        />
+        <LiveChat />
+      </>
+    );
+  }
+
+  if (appState === 'earnMore') {
+    return (
+      <>
+        <EarnMore onBack={handleBackToDashboard} />
         <LiveChat />
       </>
     );
