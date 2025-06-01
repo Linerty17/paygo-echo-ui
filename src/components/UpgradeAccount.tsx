@@ -12,7 +12,6 @@ interface UpgradeAccountProps {
 const UpgradeAccount: React.FC<UpgradeAccountProps> = ({ onBack, onProceedToPayment }) => {
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
   const [showBenefits, setShowBenefits] = useState(false);
-  const [paymentAmount, setPaymentAmount] = useState('₦5,500');
 
   const levels = [
     { 
@@ -108,14 +107,13 @@ const UpgradeAccount: React.FC<UpgradeAccountProps> = ({ onBack, onProceedToPaym
 
   const handleLevelSelect = (level: typeof levels[0]) => {
     setSelectedLevel(level.name);
-    setPaymentAmount(level.price);
     setShowBenefits(true);
   };
 
   const handleProceedToPayment = () => {
     const level = levels.find(l => l.name === selectedLevel);
     if (level) {
-      onProceedToPayment(level.name, paymentAmount);
+      onProceedToPayment(level.name, level.price);
     }
   };
 
@@ -126,7 +124,7 @@ const UpgradeAccount: React.FC<UpgradeAccountProps> = ({ onBack, onProceedToPaym
         <LevelBenefits
           onBack={() => setShowBenefits(false)}
           levelName={level.name}
-          price={paymentAmount}
+          price={level.price}
           icon={level.icon}
           benefits={level.benefits}
           onProceedToPayment={handleProceedToPayment}
@@ -162,17 +160,6 @@ const UpgradeAccount: React.FC<UpgradeAccountProps> = ({ onBack, onProceedToPaym
               <p className="text-sm text-gray-600">Current Level</p>
               <p className="text-lg font-semibold text-gray-900">Basic</p>
             </div>
-          </div>
-        </div>
-
-        {/* Payment Amount Display */}
-        <div className="bg-white rounded-xl p-4 shadow-sm border-2 border-purple-200">
-          <div className="text-center">
-            <p className="text-sm text-gray-600 mb-1">Amount to Pay</p>
-            <p className="text-2xl font-bold text-purple-600">{paymentAmount}</p>
-            <p className="text-sm text-gray-500 mt-1">
-              {selectedLevel ? `For ${selectedLevel} Level` : 'Select a level below'}
-            </p>
           </div>
         </div>
 
