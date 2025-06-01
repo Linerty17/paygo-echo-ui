@@ -19,6 +19,12 @@ import PurchaseSuccess from '@/components/PurchaseSuccess';
 
 type AppState = 'registration' | 'login' | 'welcome' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'payIdSuccess' | 'purchaseSuccess';
 
+interface User {
+  name: string;
+  email: string;
+  password: string;
+}
+
 const Index = () => {
   const [appState, setAppState] = useState<AppState>('registration');
   const [userName, setUserName] = useState('');
@@ -31,8 +37,17 @@ const Index = () => {
   const [purchasePhone, setPurchasePhone] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [navigationHistory, setNavigationHistory] = useState<AppState[]>([]);
+  const [registeredUsers, setRegisteredUsers] = useState<User[]>([]);
 
-  // Handle browser back button
+  // Load registered users from localStorage on component mount
+  useEffect(() => {
+    const savedUsers = localStorage.getItem('paygo_registered_users');
+    if (savedUsers) {
+      setRegisteredUsers(JSON.parse(savedUsers));
+    }
+  }, []);
+
+  // Handle browser back button and prevent app exit
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
       event.preventDefault();
@@ -42,16 +57,30 @@ const Index = () => {
         const previousPage = navigationHistory[navigationHistory.length - 1];
         setNavigationHistory(prev => prev.slice(0, -1));
         setAppState(previousPage);
+        
+        // Push the current state to prevent browser exit
+        window.history.pushState({ page: previousPage }, '', window.location.href);
       } else if (isLoggedIn) {
         // If no history but logged in, go to dashboard
         setAppState('dashboard');
+        window.history.pushState({ page: 'dashboard' }, '', window.location.href);
+      } else {
+        // If not logged in, stay on auth pages and prevent exit
+        if (appState === 'login') {
+          setAppState('registration');
+        } else {
+          setAppState('login');
+        }
+        window.history.pushState({ page: appState }, '', window.location.href);
       }
-      // If not logged in, do nothing (stay on current auth page)
     };
 
+    // Push initial state to prevent immediate exit
+    window.history.pushState({ page: appState }, '', window.location.href);
+    
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [isLoggedIn, navigationHistory]);
+  }, [isLoggedIn, navigationHistory, appState]);
 
   // Update navigation history when changing pages
   const navigateToPage = (newState: AppState) => {
@@ -59,10 +88,29 @@ const Index = () => {
       setNavigationHistory(prev => [...prev, appState]);
     }
     setAppState(newState);
+    // Push new state to browser history
+    window.history.pushState({ page: newState }, '', window.location.href);
   };
 
   const handleRegister = (name: string, email: string, password: string) => {
     console.log('Registration:', { name, email, password });
+    
+    // Check if user already exists
+    const existingUser = registeredUsers.find(user => user.email === email);
+    if (existingUser) {
+      alert('User already exists with this email. Please login instead.');
+      setAppState('login');
+      return;
+    }
+
+    // Add new user to registered users
+    const newUser: User = { name, email, password };
+    const updatedUsers = [...registeredUsers, newUser];
+    setRegisteredUsers(updatedUsers);
+    
+    // Save to localStorage
+    localStorage.setItem('paygo_registered_users', JSON.stringify(updatedUsers));
+
     setUserName(name);
     setUserEmail(email);
     setIsLoggedIn(true);
@@ -70,9 +118,17 @@ const Index = () => {
     setNavigationHistory([]);
   };
 
-  const handleLogin = (email: string) => {
-    console.log('Login:', { email });
-    setUserName('Support');
+  const handleLogin = (email: string, password: string) => {
+    console.log('Login:', { email, password });
+    
+    // Find user in registered users
+    const user = registeredUsers.find(u => u.email === email && u.password === password);
+    if (!user) {
+      alert('Invalid email or password. Please register first if you don\'t have an account.');
+      return;
+    }
+
+    setUserName(user.name);
     setUserEmail(email);
     setIsLoggedIn(true);
     setAppState('welcome');
@@ -82,6 +138,9 @@ const Index = () => {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setNavigationHistory([]);
+    setUserName('');
+    setUserEmail('');
+    setUserProfileImage(null);
     setAppState('login');
   };
 
@@ -156,6 +215,7 @@ const Index = () => {
     setUserProfileImage(image);
   };
 
+  // Only show registration if no users are registered or not logged in
   if (appState === 'registration') {
     return (
       <RegistrationForm 
@@ -166,6 +226,16 @@ const Index = () => {
   }
 
   if (appState === 'login') {
+    return (
+      <Login 
+        onLogin={handleLogin}
+        onSwitchToRegister={handleSwitchToRegister}
+      />
+    );
+  }
+
+  // All other pages require authentication
+  if (!isLoggedIn) {
     return (
       <Login 
         onLogin={handleLogin}

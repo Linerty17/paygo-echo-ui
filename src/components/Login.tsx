@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 interface LoginProps {
-  onLogin: (email: string) => void;
+  onLogin: (email: string, password: string) => void;
   onSwitchToRegister: () => void;
 }
 
@@ -15,7 +15,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email && password) {
-      onLogin(email);
+      onLogin(email, password);
     }
   };
 
