@@ -16,8 +16,11 @@ import BankTransferPage from '@/components/BankTransferPage';
 import PreparingPayment from '@/components/PreparingPayment';
 import PayIdSuccess from '@/components/PayIdSuccess';
 import PurchaseSuccess from '@/components/PurchaseSuccess';
+import TransferSuccess from '@/components/TransferSuccess';
+import AirtimeSuccess from '@/components/AirtimeSuccess';
+import LiveChat from '@/components/LiveChat';
 
-type AppState = 'registration' | 'login' | 'welcome' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'payIdSuccess' | 'purchaseSuccess';
+type AppState = 'registration' | 'login' | 'welcome' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
 
 interface User {
   name: string;
@@ -35,9 +38,11 @@ const Index = () => {
   const [purchaseType, setPurchaseType] = useState<'airtime' | 'data'>('airtime');
   const [purchaseAmount, setPurchaseAmount] = useState('');
   const [purchasePhone, setPurchasePhone] = useState('');
+  const [transferAmount, setTransferAmount] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [navigationHistory, setNavigationHistory] = useState<AppState[]>([]);
   const [registeredUsers, setRegisteredUsers] = useState<User[]>([]);
+  const [currentBalance, setCurrentBalance] = useState(180000);
 
   // Load registered users from localStorage on component mount
   useEffect(() => {
@@ -183,6 +188,19 @@ const Index = () => {
     }
   };
 
+  const handleUpgradePayment = (levelName: string, price: string) => {
+    // Store upgrade info and proceed to payment
+    setPurchaseAmount(price);
+    navigateToPage('preparingPayment');
+  };
+
+  const handleTransferComplete = (amount: string) => {
+    const transferValue = parseFloat(amount.replace(/[₦,]/g, ''));
+    setCurrentBalance(prev => prev - transferValue);
+    setTransferAmount(amount);
+    navigateToPage('transferSuccess');
+  };
+
   const handlePayClicked = () => {
     navigateToPage('preparingPayment');
   };
@@ -204,130 +222,266 @@ const Index = () => {
     navigateToPage('purchaseSuccess');
   };
 
-  const handleAirtimePurchaseSuccess = (amount: string, phone: string) => {
+  const handleAirtimePurchaseSuccess = (amount: string, phone: string, network: string) => {
+    const purchaseValue = parseFloat(amount.replace(/[₦,]/g, ''));
+    setCurrentBalance(prev => prev - purchaseValue);
     setPurchaseType('airtime');
     setPurchaseAmount(amount);
     setPurchasePhone(phone);
-    navigateToPage('purchaseSuccess');
+    navigateToPage('airtimeSuccess');
   };
 
   const handleProfileImageChange = (image: string) => {
     setUserProfileImage(image);
   };
 
+  const handleProfileUpdate = (newName: string) => {
+    setUserName(newName);
+    // Update in registered users as well
+    const updatedUsers = registeredUsers.map(user => 
+      user.email === userEmail ? { ...user, name: newName } : user
+    );
+    setRegisteredUsers(updatedUsers);
+    localStorage.setItem('paygo_registered_users', JSON.stringify(updatedUsers));
+  };
+
+  const formatBalance = (balance: number) => {
+    return `₦${balance.toLocaleString()}.00`;
+  };
+
   // Only show registration if no users are registered or not logged in
   if (appState === 'registration') {
     return (
-      <RegistrationForm 
-        onRegister={handleRegister}
-        onSwitchToLogin={handleSwitchToLogin}
-      />
+      <>
+        <RegistrationForm 
+          onRegister={handleRegister}
+          onSwitchToLogin={handleSwitchToLogin}
+        />
+        <LiveChat />
+      </>
     );
   }
 
   if (appState === 'login') {
     return (
-      <Login 
-        onLogin={handleLogin}
-        onSwitchToRegister={handleSwitchToRegister}
-      />
+      <>
+        <Login 
+          onLogin={handleLogin}
+          onSwitchToRegister={handleSwitchToRegister}
+        />
+        <LiveChat />
+      </>
     );
   }
 
   // All other pages require authentication
   if (!isLoggedIn) {
     return (
-      <Login 
-        onLogin={handleLogin}
-        onSwitchToRegister={handleSwitchToRegister}
-      />
+      <>
+        <Login 
+          onLogin={handleLogin}
+          onSwitchToRegister={handleSwitchToRegister}
+        />
+        <LiveChat />
+      </>
     );
   }
 
   if (appState === 'welcome') {
     return (
-      <WelcomeMessage onContinue={handleContinueToDashboard} />
+      <>
+        <WelcomeMessage onContinue={handleContinueToDashboard} />
+        <LiveChat />
+      </>
     );
   }
 
   if (appState === 'transferToBank') {
-    return <TransferToBank onBack={handleBackToDashboard} />;
+    return (
+      <>
+        <TransferToBank 
+          onBack={handleBackToDashboard} 
+          onTransferComplete={handleTransferComplete}
+          currentBalance={formatBalance(currentBalance)}
+        />
+        <LiveChat />
+      </>
+    );
   }
 
   if (appState === 'upgradeAccount') {
-    return <UpgradeAccount onBack={handleBackToDashboard} />;
+    return (
+      <>
+        <UpgradeAccount 
+          onBack={handleBackToDashboard} 
+          onProceedToPayment={handleUpgradePayment}
+        />
+        <LiveChat />
+      </>
+    );
   }
 
   if (appState === 'joinCommunities') {
-    return <JoinCommunities onBack={handleBackToDashboard} />;
+    return (
+      <>
+        <JoinCommunities onBack={handleBackToDashboard} />
+        <LiveChat />
+      </>
+    );
   }
 
   if (appState === 'support') {
-    return <Support onBack={handleBackToDashboard} />;
+    return (
+      <>
+        <Support onBack={handleBackToDashboard} />
+        <LiveChat />
+      </>
+    );
   }
 
   if (appState === 'profile') {
     return (
-      <Profile 
-        onBack={handleBackToDashboard} 
-        userEmail={userEmail}
-        profileImage={userProfileImage}
-        onProfileImageChange={handleProfileImageChange}
-      />
+      <>
+        <Profile 
+          onBack={handleBackToDashboard} 
+          userEmail={userEmail}
+          userName={userName}
+          profileImage={userProfileImage}
+          onProfileImageChange={handleProfileImageChange}
+          onProfileUpdate={handleProfileUpdate}
+        />
+        <LiveChat />
+      </>
     );
   }
 
   if (appState === 'buyPayId') {
-    return <BuyPayId onBack={handleBackToDashboard} onPayClicked={handlePayClicked} />;
+    return (
+      <>
+        <BuyPayId 
+          onBack={handleBackToDashboard} 
+          onPayClicked={handlePayClicked}
+          userName={userName}
+          userEmail={userEmail}
+        />
+        <LiveChat />
+      </>
+    );
   }
 
   if (appState === 'airtime') {
-    return <Airtime onBack={handleBackToDashboard} onPurchaseSuccess={handleAirtimePurchaseSuccess} />;
+    return (
+      <>
+        <Airtime 
+          onBack={handleBackToDashboard} 
+          onPurchaseSuccess={handleAirtimePurchaseSuccess} 
+        />
+        <LiveChat />
+      </>
+    );
   }
 
   if (appState === 'data') {
-    return <Data onBack={handleBackToDashboard} onDataPurchaseSuccess={handleDataPurchaseSuccess} />;
+    return (
+      <>
+        <Data 
+          onBack={handleBackToDashboard} 
+          onDataPurchaseSuccess={handleDataPurchaseSuccess} 
+        />
+        <LiveChat />
+      </>
+    );
   }
 
   if (appState === 'preparingPayment') {
-    return <PreparingPayment onBack={handleBackToDashboard} onComplete={handlePreparingComplete} />;
+    return (
+      <>
+        <PreparingPayment onBack={handleBackToDashboard} onComplete={handlePreparingComplete} />
+        <LiveChat />
+      </>
+    );
   }
 
   if (appState === 'bankTransfer') {
-    return <BankTransferPage onBack={handleBackToDashboard} onTransferConfirmed={handleTransferConfirmed} userEmail={userEmail} />;
+    return (
+      <>
+        <BankTransferPage onBack={handleBackToDashboard} onTransferConfirmed={handleTransferConfirmed} userEmail={userEmail} />
+        <LiveChat />
+      </>
+    );
   }
 
   if (appState === 'paymentConfirmation') {
-    return <PaymentConfirmation onBack={handleBackToDashboard} onComplete={handlePaymentComplete} />;
+    return (
+      <>
+        <PaymentConfirmation onBack={handleBackToDashboard} onComplete={handlePaymentComplete} />
+        <LiveChat />
+      </>
+    );
   }
 
   if (appState === 'payIdSuccess') {
-    return <PayIdSuccess onBack={handleBackToDashboard} />;
+    return (
+      <>
+        <PayIdSuccess onBack={handleBackToDashboard} />
+        <LiveChat />
+      </>
+    );
+  }
+
+  if (appState === 'transferSuccess') {
+    return (
+      <>
+        <TransferSuccess onBack={handleBackToDashboard} amount={transferAmount} />
+        <LiveChat />
+      </>
+    );
+  }
+
+  if (appState === 'airtimeSuccess') {
+    return (
+      <>
+        <AirtimeSuccess 
+          onBack={handleBackToDashboard} 
+          phoneNumber={purchasePhone}
+          amount={purchaseAmount}
+          network="MTN"
+        />
+        <LiveChat />
+      </>
+    );
   }
 
   if (appState === 'purchaseSuccess') {
     return (
-      <PurchaseSuccess 
-        onBack={handleBackToDashboard} 
-        type={purchaseType}
-        amount={purchaseAmount}
-        phoneNumber={purchasePhone}
-      />
+      <>
+        <PurchaseSuccess 
+          onBack={handleBackToDashboard} 
+          type={purchaseType}
+          amount={purchaseAmount}
+          phoneNumber={purchasePhone}
+        />
+        <LiveChat />
+      </>
     );
   }
 
   return (
-    <Dashboard
-      userName={userName}
-      userEmail={userEmail}
-      userProfileImage={userProfileImage}
-      showOnboarding={showOnboarding}
-      onboardingStep={onboardingStep}
-      onNextOnboarding={handleNextOnboarding}
-      onCloseOnboarding={handleCloseOnboarding}
-      onNavigate={handleNavigate}
-      onLogout={handleLogout}
-    />
+    <>
+      <Dashboard
+        userName={userName}
+        userEmail={userEmail}
+        userProfileImage={userProfileImage}
+        showOnboarding={showOnboarding}
+        onboardingStep={onboardingStep}
+        onNextOnboarding={handleNextOnboarding}
+        onCloseOnboarding={handleCloseOnboarding}
+        onNavigate={handleNavigate}
+        onLogout={handleLogout}
+        currentBalance={formatBalance(currentBalance)}
+      />
+      <LiveChat />
+    </>
   );
 };
 

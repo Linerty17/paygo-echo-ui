@@ -7,14 +7,23 @@ import { Input } from '@/components/ui/input';
 interface ProfileProps {
   onBack: () => void;
   userEmail: string;
+  userName: string;
   profileImage: string | null;
   onProfileImageChange: (image: string) => void;
+  onProfileUpdate: (newName: string) => void;
 }
 
-const Profile: React.FC<ProfileProps> = ({ onBack, userEmail, profileImage, onProfileImageChange }) => {
+const Profile: React.FC<ProfileProps> = ({ 
+  onBack, 
+  userEmail, 
+  userName, 
+  profileImage, 
+  onProfileImageChange,
+  onProfileUpdate 
+}) => {
   const [editingProfile, setEditingProfile] = useState(false);
   const [profileData, setProfileData] = useState({
-    fullName: 'John Doe',
+    fullName: userName,
     email: userEmail,
     phone: '+234 801 234 5678',
     about: 'PayGo user since 2023'
@@ -32,9 +41,9 @@ const Profile: React.FC<ProfileProps> = ({ onBack, userEmail, profileImage, onPr
     }
   };
 
-  const handleProfileUpdate = () => {
+  const handleProfileUpdateSubmit = () => {
+    onProfileUpdate(profileData.fullName);
     setEditingProfile(false);
-    // Here you would typically save to a backend
   };
 
   return (
@@ -125,7 +134,7 @@ const Profile: React.FC<ProfileProps> = ({ onBack, userEmail, profileImage, onPr
 
             <div className="flex space-x-4 pt-4">
               <Button 
-                onClick={handleProfileUpdate}
+                onClick={handleProfileUpdateSubmit}
                 className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
               >
                 Save Changes

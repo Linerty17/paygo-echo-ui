@@ -6,14 +6,62 @@ import { Input } from '@/components/ui/input';
 
 interface TransferToBankProps {
   onBack: () => void;
+  onTransferComplete: (amount: string) => void;
+  currentBalance: string;
 }
 
-const TransferToBank: React.FC<TransferToBankProps> = ({ onBack }) => {
+const TransferToBank: React.FC<TransferToBankProps> = ({ onBack, onTransferComplete, currentBalance }) => {
   const [accountName, setAccountName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
-  const [selectedBank, setSelectedBank] = useState('Access Bank');
+  const [selectedBank, setSelectedBank] = useState('');
   const [amount, setAmount] = useState('');
-  const [payIdCode, setPayIdCode] = useState('');
+  const [showBankList, setShowBankList] = useState(false);
+
+  const nigerianBanks = [
+    'Access Bank',
+    'Guaranty Trust Bank (GTBank)',
+    'Zenith Bank',
+    'First Bank of Nigeria',
+    'United Bank for Africa (UBA)',
+    'Fidelity Bank',
+    'Union Bank',
+    'Sterling Bank',
+    'Stanbic IBTC Bank',
+    'Ecobank',
+    'Polaris Bank',
+    'Wema Bank',
+    'Heritage Bank',
+    'Keystone Bank',
+    'Unity Bank',
+    'Jaiz Bank',
+    'Providus Bank',
+    'SunTrust Bank',
+    'Titan Trust Bank',
+    'Parallex Bank',
+    'Kuda Bank',
+    'Opay',
+    'PalmPay',
+    'Moniepoint',
+    'VFD Microfinance Bank',
+    'Mobley Banking App'
+  ];
+
+  const handleSubmit = () => {
+    if (!accountName || !accountNumber || !selectedBank || !amount) {
+      alert('Please fill all fields');
+      return;
+    }
+
+    const transferAmount = parseFloat(amount.replace(/[₦,]/g, ''));
+    const balance = parseFloat(currentBalance.replace(/[₦,]/g, ''));
+
+    if (transferAmount > balance) {
+      alert('Insufficient balance');
+      return;
+    }
+
+    onTransferComplete(amount);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -53,10 +101,32 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack }) => {
           </div>
 
           <div className="relative">
-            <div className="w-full h-14 bg-white rounded-xl shadow-sm flex items-center justify-between px-4 border-0">
-              <span className="text-lg text-gray-900">{selectedBank}</span>
+            <button
+              onClick={() => setShowBankList(!showBankList)}
+              className="w-full h-14 bg-white rounded-xl shadow-sm flex items-center justify-between px-4 border-0"
+            >
+              <span className={`text-lg ${selectedBank ? 'text-gray-900' : 'text-gray-400'}`}>
+                {selectedBank || 'Select Bank'}
+              </span>
               <ChevronDown className="w-5 h-5 text-purple-600" />
-            </div>
+            </button>
+            
+            {showBankList && (
+              <div className="absolute top-full left-0 right-0 bg-white rounded-xl shadow-lg border border-gray-200 max-h-60 overflow-y-auto z-10 mt-1">
+                {nigerianBanks.map((bank) => (
+                  <button
+                    key={bank}
+                    onClick={() => {
+                      setSelectedBank(bank);
+                      setShowBankList(false);
+                    }}
+                    className="w-full px-4 py-3 text-left hover:bg-gray-50 first:rounded-t-xl last:rounded-b-xl"
+                  >
+                    {bank}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div>
@@ -69,25 +139,14 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack }) => {
             />
           </div>
 
-          <div>
-            <Input
-              type="text"
-              placeholder="PAY ID CODE (Buy PAY ID)"
-              value={payIdCode}
-              onChange={(e) => setPayIdCode(e.target.value)}
-              className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm placeholder:text-gray-400"
-            />
-          </div>
-
-          <div className="mt-4">
-            <span className="text-purple-600 font-medium">Buy PAY ID code</span>
-          </div>
-
           <div className="mt-6">
-            <p className="text-xl font-bold text-gray-900">Available Balance: ₦180,000.00</p>
+            <p className="text-xl font-bold text-gray-900">Available Balance: {currentBalance}</p>
           </div>
 
-          <Button className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8">
+          <Button 
+            onClick={handleSubmit}
+            className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8"
+          >
             Submit
           </Button>
         </div>

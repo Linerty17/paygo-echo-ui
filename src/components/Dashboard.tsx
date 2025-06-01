@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Bell, Eye, EyeOff, ArrowUp, Check, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ interface DashboardProps {
   onCloseOnboarding: () => void;
   onNavigate: (page: string) => void;
   onLogout: () => void;
+  currentBalance: string;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({
@@ -26,10 +28,10 @@ const Dashboard: React.FC<DashboardProps> = ({
   onNextOnboarding,
   onCloseOnboarding,
   onNavigate,
-  onLogout
+  onLogout,
+  currentBalance
 }) => {
   const [balanceVisible, setBalanceVisible] = useState(true);
-  const balance = "₦180,000.00";
   const weeklyRewards = "₦180,000.00";
 
   const services = [
@@ -100,7 +102,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <span className="text-3xl font-bold">
-                  {balanceVisible ? balance : "****"}
+                  {balanceVisible ? currentBalance : "****"}
                 </span>
                 <button 
                   onClick={() => setBalanceVisible(!balanceVisible)}

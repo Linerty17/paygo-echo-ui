@@ -1,24 +1,25 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import TypewriterText from './TypewriterText';
 
 interface BuyPayIdProps {
   onBack: () => void;
   onPayClicked: () => void;
+  userName: string;
+  userEmail: string;
 }
 
-const BuyPayId: React.FC<BuyPayIdProps> = ({ onBack, onPayClicked }) => {
-  const [amount, setAmount] = useState('₦7,250');
-  const [fullName, setFullName] = useState('Your full name');
-  const [email, setEmail] = useState('support1@gmail.com');
+const BuyPayId: React.FC<BuyPayIdProps> = ({ onBack, onPayClicked, userName, userEmail }) => {
+  const [amount] = useState('₦7,250');
+  const [showPayButton, setShowPayButton] = useState(false);
+
+  const handleTypewriterComplete = () => {
+    setShowPayButton(true);
+  };
 
   const handlePay = () => {
-    if (!fullName || !email) {
-      alert('Please fill all fields');
-      return;
-    }
     onPayClicked();
   };
 
@@ -44,30 +45,37 @@ const BuyPayId: React.FC<BuyPayIdProps> = ({ onBack, onPayClicked }) => {
 
         <div>
           <label className="block text-gray-900 text-lg font-medium mb-3">Full Name</label>
-          <Input
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm"
-          />
+          <div className="w-full h-14 bg-white rounded-xl shadow-sm flex items-center px-4 border-0">
+            <span className="text-lg text-gray-900">
+              <TypewriterText 
+                text={userName} 
+                speed={100}
+                onComplete={handleTypewriterComplete}
+              />
+            </span>
+          </div>
         </div>
 
         <div>
           <label className="block text-gray-900 text-lg font-medium mb-3">Your Email Address</label>
-          <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm"
-          />
+          <div className="w-full h-14 bg-white rounded-xl shadow-sm flex items-center px-4 border-0">
+            <span className="text-lg text-gray-900">
+              <TypewriterText 
+                text={userEmail} 
+                speed={80}
+              />
+            </span>
+          </div>
         </div>
 
-        <Button 
-          onClick={handlePay}
-          className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8"
-        >
-          Pay
-        </Button>
+        {showPayButton && (
+          <Button 
+            onClick={handlePay}
+            className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8 animate-fade-in"
+          >
+            Pay
+          </Button>
+        )}
 
         <p className="text-center text-gray-600 text-sm mt-6">
           Your PAY ID will be displayed on the app once your payment is confirmed.

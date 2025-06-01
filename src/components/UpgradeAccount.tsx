@@ -2,23 +2,136 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import LevelBenefits from './LevelBenefits';
 
 interface UpgradeAccountProps {
   onBack: () => void;
+  onProceedToPayment: (levelName: string, price: string) => void;
 }
 
-const UpgradeAccount: React.FC<UpgradeAccountProps> = ({ onBack }) => {
+const UpgradeAccount: React.FC<UpgradeAccountProps> = ({ onBack, onProceedToPayment }) => {
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
+  const [showBenefits, setShowBenefits] = useState(false);
 
   const levels = [
-    { name: 'Silver', price: '₦5,500', icon: '🔶' },
-    { name: 'Gold', price: '₦7,500', icon: '🏆' },
-    { name: 'Platinum', price: '₦10,000', icon: '⚡' },
-    { name: 'Emerald', price: '₦15,000', icon: '💎' },
-    { name: 'Ruby', price: '₦20,000', icon: '⭐' },
-    { name: 'Diamond', price: '₦25,000', icon: '👑' },
-    { name: 'Black', price: '₦50,000', icon: '🔷' }
+    { 
+      name: 'Silver', 
+      price: '₦5,500', 
+      icon: '🔶',
+      benefits: [
+        'Earn ₦500 per referral',
+        'Weekly rewards of ₦5,000',
+        'Basic customer support',
+        'Access to standard features'
+      ]
+    },
+    { 
+      name: 'Gold', 
+      price: '₦7,500', 
+      icon: '🏆',
+      benefits: [
+        'Earn ₦1,000 per referral',
+        'Weekly rewards of ₦10,000',
+        'Priority customer support',
+        'Reduced fees on transactions',
+        'Twice weekly withdrawal option'
+      ]
+    },
+    { 
+      name: 'Platinum', 
+      price: '₦10,000', 
+      icon: '⚡',
+      benefits: [
+        'Earn ₦2,000 per referral',
+        'Weekly rewards of ₦20,000',
+        'VIP customer support',
+        'No fees on transactions',
+        'Exclusive promotions',
+        'Daily withdrawal option'
+      ]
+    },
+    { 
+      name: 'Emerald', 
+      price: '₦15,000', 
+      icon: '💎',
+      benefits: [
+        'Earn ₦3,000 per referral',
+        'Weekly rewards of ₦30,000',
+        'Premium customer support',
+        'No fees on transactions',
+        'Exclusive promotions',
+        '10% bonus on all earnings'
+      ]
+    },
+    { 
+      name: 'Ruby', 
+      price: '₦20,000', 
+      icon: '⭐',
+      benefits: [
+        'Earn ₦4,000 per referral',
+        'Weekly rewards of ₦40,000',
+        'Premium customer support',
+        'No fees on transactions',
+        '15% bonus on all earnings',
+        'Exclusive investment opportunities'
+      ]
+    },
+    { 
+      name: 'Diamond', 
+      price: '₦25,000', 
+      icon: '👑',
+      benefits: [
+        'Earn ₦5,000 per referral',
+        'Weekly rewards of ₦50,000',
+        '24/7 dedicated support',
+        'No fees on transactions',
+        'Higher withdrawal limits',
+        'Early access to new features'
+      ]
+    },
+    { 
+      name: 'Black', 
+      price: '₦50,000', 
+      icon: '🔷',
+      benefits: [
+        'Earn ₦10,000 per referral',
+        'Weekly rewards of ₦100,000',
+        'Personal account manager',
+        'No fees on transactions',
+        'Unlimited withdrawal limits',
+        '25% bonus on all earnings',
+        'Exclusive offline events access'
+      ]
+    }
   ];
+
+  const handleLevelSelect = (level: typeof levels[0]) => {
+    setSelectedLevel(level.name);
+    setShowBenefits(true);
+  };
+
+  const handleProceedToPayment = () => {
+    const level = levels.find(l => l.name === selectedLevel);
+    if (level) {
+      onProceedToPayment(level.name, level.price);
+    }
+  };
+
+  if (showBenefits && selectedLevel) {
+    const level = levels.find(l => l.name === selectedLevel);
+    if (level) {
+      return (
+        <LevelBenefits
+          onBack={() => setShowBenefits(false)}
+          levelName={level.name}
+          price={level.price}
+          icon={level.icon}
+          benefits={level.benefits}
+          onProceedToPayment={handleProceedToPayment}
+        />
+      );
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -56,7 +169,7 @@ const UpgradeAccount: React.FC<UpgradeAccountProps> = ({ onBack }) => {
             {levels.map((level) => (
               <button
                 key={level.name}
-                onClick={() => setSelectedLevel(level.name)}
+                onClick={() => handleLevelSelect(level)}
                 className={`bg-white rounded-xl p-4 shadow-sm text-center border-2 transition-colors ${
                   selectedLevel === level.name ? 'border-purple-600' : 'border-transparent'
                 }`}
@@ -68,10 +181,6 @@ const UpgradeAccount: React.FC<UpgradeAccountProps> = ({ onBack }) => {
             ))}
           </div>
         </div>
-
-        <Button className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8">
-          View Benefits
-        </Button>
 
         <p className="text-center text-gray-600 text-sm">
           Select a level to view detailed benefits before payment
