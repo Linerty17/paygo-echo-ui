@@ -27,7 +27,7 @@ const onboardingSteps: OnboardingStep[] = [
   {
     id: 2,
     title: "Get Your PAY ID",
-    description: "To withdraw funds, you'll need to purchase a PAY ID for ₦6,500. This is a one-time purchase that unlocks all features of the app.",
+    description: "To withdraw funds, you'll need to purchase a PAY ID for ₦7,250. This is a one-time purchase that unlocks all features of the app.",
     icon: <CreditCard className="w-8 h-8 text-blue-600" />
   },
   {

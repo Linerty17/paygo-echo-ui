@@ -11,14 +11,14 @@ interface BankTransferPageProps {
 }
 
 const BankTransferPage: React.FC<BankTransferPageProps> = ({ onBack, onTransferConfirmed, userEmail }) => {
-  const [amount, setAmount] = useState('₦6,500');
+  const [amount, setAmount] = useState('₦7,250');
   const [email, setEmail] = useState(userEmail);
   const [receiptUploaded, setReceiptUploaded] = useState(false);
 
   const accountDetails = {
     accountNumber: '5569742889',
-    bankName: 'MONIEPOINT MFB,
-    accountName: 'SUNDAY CHINEMEREM'
+    bankName: 'Moniepoint Bank',
+    accountName: 'Sunday Liberty'
   };
 
   const handleCopyAccount = () => {
