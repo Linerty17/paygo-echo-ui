@@ -224,6 +224,7 @@ const Index = () => {
 
   const handleDataPurchaseSuccess = () => {
     setPurchaseType('data');
+    setCurrentBalance(prev => prev - parseFloat(purchaseAmount.replace(/[₦,]/g, '')));
     navigateToPage('purchaseSuccess');
   };
 
@@ -297,7 +298,6 @@ const Index = () => {
       <>
         <WelcomeMessage 
           onContinue={handleContinueToDashboard} 
-          onEarnMore={handleEarnMore}
         />
         <LiveChat />
       </>

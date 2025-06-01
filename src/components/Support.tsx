@@ -20,10 +20,6 @@ const Support: React.FC<SupportProps> = ({ onBack }) => {
     window.open('https://wa.me/2348189668037', '_blank');
   };
 
-  const handleWatchTelegram = () => {
-    window.open('https://t.me/officialbluepay2025', '_blank');
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -79,26 +75,6 @@ const Support: React.FC<SupportProps> = ({ onBack }) => {
             </Button>
             <p className="text-gray-600 text-sm">
               Contact: +234 818 966 8037
-            </p>
-          </div>
-
-          {/* Watch on Telegram */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="text-blue-600 text-2xl">📺</div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900">Watch on Telegram</h3>
-                <p className="text-gray-600">Join our Telegram channel for updates and tutorials</p>
-              </div>
-            </div>
-            <Button 
-              onClick={handleWatchTelegram}
-              className="w-full h-14 bg-blue-500 hover:bg-blue-600 text-white text-lg font-medium rounded-xl mb-4"
-            >
-              📺 Watch
-            </Button>
-            <p className="text-gray-600 text-sm">
-              Stay updated with our latest content and announcements.
             </p>
           </div>
         </div>

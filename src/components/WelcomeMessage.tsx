@@ -4,10 +4,9 @@ import { Button } from '@/components/ui/button';
 
 interface WelcomeMessageProps {
   onContinue: () => void;
-  onEarnMore: () => void;
 }
 
-const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ onContinue, onEarnMore }) => {
+const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ onContinue }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-sm space-y-8 text-center">
@@ -32,13 +31,6 @@ const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ onContinue, onEarnMore 
           </div>
 
           <div className="space-y-4">
-            <Button
-              onClick={onEarnMore}
-              className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white text-lg font-medium rounded-xl transition-all duration-300 shadow-lg"
-            >
-              Earn More
-            </Button>
-            
             <Button
               onClick={onContinue}
               className="w-full h-14 bg-paygo-main hover:opacity-90 text-white text-lg font-medium rounded-xl transition-all duration-300 shadow-lg"

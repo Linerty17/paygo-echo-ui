@@ -34,9 +34,13 @@ const Dashboard: React.FC<DashboardProps> = ({
   const [balanceVisible, setBalanceVisible] = useState(true);
   const weeklyRewards = "₦180,000.00";
 
+  const handleWatchTelegram = () => {
+    window.open('https://t.me/officialbluepay2025', '_blank');
+  };
+
   const services = [
     { icon: "💳", label: "Buy PAY ID", page: "buyPayId" },
-    { icon: "📺", label: "Watch", page: "watch" },
+    { icon: "📺", label: "Watch", action: handleWatchTelegram },
     { icon: "📊", label: "Airtime", page: "airtime" },
     { icon: "🗄️", label: "Data", page: "data" },
     { icon: "🎧", label: "Support", page: "support" },
@@ -44,6 +48,14 @@ const Dashboard: React.FC<DashboardProps> = ({
     { icon: "💰", label: "Earn More", page: "earnMore" },
     { icon: "👤", label: "Profile", page: "profile" }
   ];
+
+  const handleServiceClick = (service: any) => {
+    if (service.action) {
+      service.action();
+    } else {
+      onNavigate(service.page);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -144,7 +156,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               key={index}
               icon={service.icon}
               label={service.label}
-              onClick={() => onNavigate(service.page)}
+              onClick={() => handleServiceClick(service)}
             />
           ))}
         </div>

@@ -14,6 +14,10 @@ const PayIdSuccess: React.FC<PayIdSuccessProps> = ({ onBack }) => {
     navigator.clipboard.writeText(payId);
   };
 
+  const handleContinueToDashboard = () => {
+    onBack(); // This will navigate to dashboard
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -58,7 +62,7 @@ const PayIdSuccess: React.FC<PayIdSuccessProps> = ({ onBack }) => {
         </div>
 
         <Button 
-          onClick={onBack}
+          onClick={handleContinueToDashboard}
           className="w-full max-w-sm h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl"
         >
           Continue to Dashboard
