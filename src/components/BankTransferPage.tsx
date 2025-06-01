@@ -17,8 +17,8 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({ onBack, onTransferC
 
   const accountDetails = {
     accountNumber: '5569742889',
-    bankName: 'MONIEPOINT MFB,
-    accountName: 'SUNDAY LIBERTY,
+    bankName: 'Moniepoint Bank',
+    accountName: 'Sunday Liberty'
   };
 
   const handleCopyAccount = () => {
