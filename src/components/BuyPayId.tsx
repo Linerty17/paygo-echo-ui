@@ -12,7 +12,7 @@ interface BuyPayIdProps {
 }
 
 const BuyPayId: React.FC<BuyPayIdProps> = ({ onBack, onPayClicked, userName, userEmail }) => {
-  const [amount] = useState('₦6,500');
+  const [amount] = useState('₦7,250');
   const [showPayButton, setShowPayButton] = useState(false);
 
   const handleTypewriterComplete = () => {
