@@ -13,7 +13,7 @@ const Data: React.FC<DataProps> = ({ onBack, onDataPurchaseSuccess }) => {
   const [selectedNetwork, setSelectedNetwork] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedPlan, setSelectedPlan] = useState('');
-  const [payIdCode, setPayIdCode] = useState('PAY200717');
+  const [payIdCode, setPayIdCode] = useState('');
 
   const networks = ['Airtel', 'MTN', 'Glo', '9mobile'];
   
@@ -27,7 +27,7 @@ const Data: React.FC<DataProps> = ({ onBack, onDataPurchaseSuccess }) => {
 
   const handleBuyData = () => {
     if (!selectedNetwork || !phoneNumber || !selectedPlan || !payIdCode) {
-      alert('Please fill all fields');
+      alert('Please fill all fields including PAY ID Code');
       return;
     }
     
@@ -118,7 +118,7 @@ const Data: React.FC<DataProps> = ({ onBack, onDataPurchaseSuccess }) => {
             onChange={(e) => setPayIdCode(e.target.value)}
             className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm placeholder:text-gray-400"
           />
-          <p className="text-gray-500 text-sm mt-2">Use your generated PAY ID to purchase data</p>
+          <p className="text-gray-500 text-sm mt-2">Enter your PAY ID code to purchase data</p>
         </div>
 
         <Button 

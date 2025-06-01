@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,7 +13,7 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack, onPurchaseSuccess }) => {
   const [selectedNetwork, setSelectedNetwork] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedAmount, setSelectedAmount] = useState('');
-  const [payIdCode, setPayIdCode] = useState('PAY200717'); // Pre-filled with generated PAY ID
+  const [payIdCode, setPayIdCode] = useState('');
 
   const networks = ['Airtel', 'MTN', 'Glo', '9mobile'];
   
@@ -30,7 +31,7 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack, onPurchaseSuccess }) => {
 
   const handleBuyAirtime = () => {
     if (!selectedNetwork || !phoneNumber || !selectedAmount || !payIdCode) {
-      alert('Please fill all fields');
+      alert('Please fill all fields including PAY ID Code');
       return;
     }
     
@@ -114,7 +115,6 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack, onPurchaseSuccess }) => {
 
         {/* PAY ID Code Input */}
         <div>
-          <label className="block text-gray-700 mb-2">PAY ID Code</label>
           <Input
             type="text"
             placeholder="Enter PAY ID Code"
@@ -122,7 +122,7 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack, onPurchaseSuccess }) => {
             onChange={(e) => setPayIdCode(e.target.value)}
             className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm placeholder:text-gray-400"
           />
-          <p className="text-gray-500 text-sm mt-2">Use your generated PAY ID to purchase airtime</p>
+          <p className="text-gray-500 text-sm mt-2">Enter your PAY ID code to purchase airtime</p>
         </div>
 
         <Button 

@@ -8,6 +8,14 @@ interface JoinCommunitiesProps {
 }
 
 const JoinCommunities: React.FC<JoinCommunitiesProps> = ({ onBack }) => {
+  const handleJoinWhatsApp = () => {
+    window.open('https://chat.whatsapp.com/DrJYdBP5siSA0L96wQsuLX', '_blank');
+  };
+
+  const handleJoinTelegram = () => {
+    window.open('https://t.me/officialbluepay2025', '_blank');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -37,7 +45,10 @@ const JoinCommunities: React.FC<JoinCommunitiesProps> = ({ onBack }) => {
                 <h3 className="text-xl font-semibold text-gray-900">WhatsApp Channel</h3>
               </div>
             </div>
-            <Button className="w-full h-14 bg-green-500 hover:bg-green-600 text-white text-lg font-medium rounded-full">
+            <Button 
+              onClick={handleJoinWhatsApp}
+              className="w-full h-14 bg-green-500 hover:bg-green-600 text-white text-lg font-medium rounded-full"
+            >
               💬 Join WhatsApp
             </Button>
           </div>
@@ -52,7 +63,10 @@ const JoinCommunities: React.FC<JoinCommunitiesProps> = ({ onBack }) => {
                 <h3 className="text-xl font-semibold text-gray-900">Telegram Channel</h3>
               </div>
             </div>
-            <Button className="w-full h-14 bg-blue-500 hover:bg-blue-600 text-white text-lg font-medium rounded-full">
+            <Button 
+              onClick={handleJoinTelegram}
+              className="w-full h-14 bg-blue-500 hover:bg-blue-600 text-white text-lg font-medium rounded-full"
+            >
               ✈️ Join Telegram
             </Button>
           </div>

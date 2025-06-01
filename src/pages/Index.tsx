@@ -1,7 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import RegistrationForm from '@/components/RegistrationForm';
 import Login from '@/components/Login';
 import WelcomeMessage from '@/components/WelcomeMessage';
+import EarnMore from '@/components/EarnMore';
 import Dashboard from '@/components/Dashboard';
 import TransferToBank from '@/components/TransferToBank';
 import UpgradeAccount from '@/components/UpgradeAccount';

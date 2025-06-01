@@ -4,20 +4,20 @@ import { Button } from '@/components/ui/button';
 
 interface WelcomeMessageProps {
   onContinue: () => void;
+  onEarnMore: () => void;
 }
 
-const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ onContinue }) => {
+const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ onContinue, onEarnMore }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-sm space-y-8 text-center">
-        {/* PayGo Logo Card */}
+        {/* PayGo Logo */}
         <div className="flex justify-center mb-12">
-          <div className="bg-paygo-main rounded-3xl p-8 shadow-xl">
-            <div className="text-white text-3xl font-bold text-center">
-              <span className="text-xs block mb-1 opacity-90">DIGITAL</span>
-              PAYGO
-            </div>
-          </div>
+          <img 
+            src="/lovable-uploads/b28d1274-d692-42c9-81b7-61ae377c5939.png" 
+            alt="PayGo Digital Logo" 
+            className="w-48 h-24 object-contain"
+          />
         </div>
 
         <div className="space-y-6">
@@ -31,12 +31,21 @@ const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ onContinue }) => {
             </p>
           </div>
 
-          <Button
-            onClick={onContinue}
-            className="w-full h-14 bg-paygo-main hover:opacity-90 text-white text-lg font-medium rounded-xl transition-all duration-300 shadow-lg"
-          >
-            Continue to Dashboard
-          </Button>
+          <div className="space-y-4">
+            <Button
+              onClick={onEarnMore}
+              className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white text-lg font-medium rounded-xl transition-all duration-300 shadow-lg"
+            >
+              Earn More
+            </Button>
+            
+            <Button
+              onClick={onContinue}
+              className="w-full h-14 bg-paygo-main hover:opacity-90 text-white text-lg font-medium rounded-xl transition-all duration-300 shadow-lg"
+            >
+              Continue to Dashboard
+            </Button>
+          </div>
         </div>
       </div>
     </div>
