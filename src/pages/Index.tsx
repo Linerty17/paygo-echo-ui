@@ -222,7 +222,7 @@ const Index = () => {
     navigateToPage('purchaseSuccess');
   };
 
-  const handleAirtimePurchaseSuccess = (amount: string, phone: string, network: string) => {
+  const handleAirtimePurchaseSuccess = (amount: string, phone: string) => {
     const purchaseValue = parseFloat(amount.replace(/[₦,]/g, ''));
     setCurrentBalance(prev => prev - purchaseValue);
     setPurchaseType('airtime');
