@@ -15,9 +15,9 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({ onBack, onTransferC
   const [receiptUploaded, setReceiptUploaded] = useState(false);
 
   const accountDetails = {
-    accountNumber: '5569742889',
+    accountNumber: '6028806937',
     bankName: 'MONIEPOINT MFB',
-    accountName: 'SUNDAY LIBERTY',
+    accountName: 'GIFT GOODLUCK',
   };
 
   const handleCopyAccount = () => {
