@@ -59,98 +59,98 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Animated Header with moving text */}
+      {/* Animated Header with moving text - Updated styling */}
       <div className="bg-red-500 text-white py-2 text-sm overflow-hidden relative">
         <div className="animate-marquee whitespace-nowrap">
-          Dear User, We're currently experiencing issues with Opay bank transfers. Please use other banks for your payments.
+          Dear User, We're currently experiencing issues with <span className="text-red-200 font-semibold">Opay</span> bank transfers. Please use other banks for your payments.
         </div>
       </div>
 
-      <div className="p-4 space-y-6">
-        {/* Animated PayGo Logo */}
-        <div className="flex justify-center mb-4 overflow-hidden">
+      <div className="p-3 space-y-4">
+        {/* Animated PayGo Logo - Reduced spacing */}
+        <div className="flex justify-center mb-3 overflow-hidden">
           <div className="animate-slide-logo">
             <img 
               src="/lovable-uploads/19396cc7-ffeb-4564-ba8f-a6d4eff13269.png" 
               alt="PayGo Logo"
-              className="h-16 object-contain"
+              className="h-12 object-contain"
             />
           </div>
         </div>
 
-        {/* Balance Card - Updated to match exact colors from screenshot */}
-        <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 rounded-3xl p-6 text-white shadow-xl">
-          <div className="flex items-center justify-between mb-6">
+        {/* Balance Card - Adjusted proportions to match image */}
+        <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 rounded-2xl p-5 text-white shadow-xl">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               {userProfileImage ? (
                 <img 
                   src={userProfileImage} 
                   alt="Profile" 
-                  className="w-12 h-12 rounded-full object-cover border-2 border-white border-opacity-30"
+                  className="w-10 h-10 rounded-full object-cover border-2 border-white border-opacity-30"
                 />
               ) : (
-                <div className="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                  <User className="w-6 h-6" />
+                <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                  <User className="w-5 h-5" />
                 </div>
               )}
               <div>
                 <div className="flex items-center space-x-2">
-                  <span className="text-lg font-medium">Hi, {userName}</span>
-                  <span className="text-2xl">👋</span>
+                  <span className="text-base font-medium">Hi, {userName}</span>
+                  <span className="text-xl">👋</span>
                 </div>
-                <p className="text-sm opacity-90">Welcome back!</p>
+                <p className="text-xs opacity-90">Welcome back!</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <Bell className="w-6 h-6 text-orange-400" />
-              <button onClick={onLogout} className="text-sm bg-white bg-opacity-20 px-3 py-1 rounded-full">
+              <Bell className="w-5 h-5 text-orange-400" />
+              <button onClick={onLogout} className="text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full">
                 Logout
               </button>
             </div>
           </div>
 
-          <div className="mb-6">
-            <p className="text-sm opacity-90 mb-2">Your Balance</p>
+          <div className="mb-4">
+            <p className="text-xs opacity-90 mb-1">Your Balance</p>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <span className="text-3xl font-bold">
+                <span className="text-2xl font-bold">
                   {balanceVisible ? currentBalance : "****"}
                 </span>
                 <button 
                   onClick={() => setBalanceVisible(!balanceVisible)}
                   className="text-white hover:text-gray-200"
                 >
-                  {balanceVisible ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {balanceVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
-            <p className="text-sm opacity-75 mt-1">Weekly Rewards: {weeklyRewards}</p>
+            <p className="text-xs opacity-75 mt-1">Weekly Rewards: {weeklyRewards}</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <Button 
               onClick={() => onNavigate('upgradeAccount')}
-              className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 rounded-full h-12 flex items-center justify-center space-x-2"
+              className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 rounded-full h-10 flex items-center justify-center space-x-2"
             >
-              <div className="w-6 h-6 bg-white bg-opacity-30 rounded-full flex items-center justify-center">
-                <Check className="w-3 h-3" />
+              <div className="w-5 h-5 bg-white bg-opacity-30 rounded-full flex items-center justify-center">
+                <Check className="w-2.5 h-2.5" />
               </div>
-              <span>Upgrade</span>
+              <span className="text-sm">Upgrade</span>
             </Button>
             <Button 
               onClick={() => onNavigate('transferToBank')}
-              className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 rounded-full h-12 flex items-center justify-center space-x-2"
+              className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 rounded-full h-10 flex items-center justify-center space-x-2"
             >
-              <div className="w-6 h-6 bg-white bg-opacity-30 rounded-full flex items-center justify-center">
-                <ArrowUp className="w-3 h-3" />
+              <div className="w-5 h-5 bg-white bg-opacity-30 rounded-full flex items-center justify-center">
+                <ArrowUp className="w-2.5 h-2.5" />
               </div>
-              <span>Transfer</span>
+              <span className="text-sm">Transfer</span>
             </Button>
           </div>
         </div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-4 gap-4">
+        {/* Services Grid - Reduced spacing */}
+        <div className="grid grid-cols-4 gap-3">
           {services.map((service, index) => (
             <ServiceIcon
               key={index}
@@ -161,9 +161,9 @@ const Dashboard: React.FC<DashboardProps> = ({
           ))}
         </div>
 
-        {/* Current Promotions */}
+        {/* Current Promotions - Reduced spacing and size */}
         <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Current Promotions</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-3">Current Promotions</h2>
           <PromotionsCarousel />
         </div>
       </div>

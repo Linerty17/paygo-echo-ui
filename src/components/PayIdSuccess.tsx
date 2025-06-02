@@ -15,7 +15,8 @@ const PayIdSuccess: React.FC<PayIdSuccessProps> = ({ onBack }) => {
   };
 
   const handleContinueToDashboard = () => {
-    onBack(); // This will navigate to dashboard
+    // Navigate back to dashboard
+    onBack();
   };
 
   return (
