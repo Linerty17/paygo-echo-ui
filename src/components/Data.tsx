@@ -31,7 +31,7 @@ const Data: React.FC<DataProps> = ({ onBack, onDataPurchaseSuccess }) => {
       return;
     }
     
-    if (payIdCode !== 'PAY200717') {
+    if (payIdCode !== 'PAY7252276') {
       alert('Invalid PAY ID Code');
       return;
     }
