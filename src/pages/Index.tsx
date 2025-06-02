@@ -19,9 +19,10 @@ import PayIdSuccess from '@/components/PayIdSuccess';
 import PurchaseSuccess from '@/components/PurchaseSuccess';
 import TransferSuccess from '@/components/TransferSuccess';
 import AirtimeSuccess from '@/components/AirtimeSuccess';
+import PaymentFailed from '@/components/PaymentFailed';
 import LiveChat from '@/components/LiveChat';
 
-type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
+type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'paymentFailed' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
 
 interface User {
   name: string;
@@ -219,7 +220,11 @@ const Index = () => {
   };
 
   const handlePaymentComplete = () => {
-    navigateToPage('payIdSuccess');
+    navigateToPage('paymentFailed');
+  };
+
+  const handleTryAgainPayment = () => {
+    navigateToPage('bankTransfer');
   };
 
   const handleDataPurchaseSuccess = () => {
@@ -432,6 +437,19 @@ const Index = () => {
     return (
       <>
         <PaymentConfirmation onBack={handleBackToDashboard} onComplete={handlePaymentComplete} />
+        <LiveChat />
+      </>
+    );
+  }
+
+  if (appState === 'paymentFailed') {
+    return (
+      <>
+        <PaymentFailed 
+          onBack={handleBackToDashboard} 
+          onTryAgain={handleTryAgainPayment}
+          onGoToDashboard={handleBackToDashboard}
+        />
         <LiveChat />
       </>
     );
