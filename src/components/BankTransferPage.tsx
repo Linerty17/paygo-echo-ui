@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,8 +16,8 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({ onBack, onTransferC
 
   const accountDetails = {
     accountNumber: '5569742889',
-    bankName: 'MONIEPOINT MFB,
-    accountName: 'SUNDAY LIBERTY, 
+    bankName: 'MONIEPOINT MFB',
+    accountName: 'SUNDAY LIBERTY',
   };
 
   const handleCopyAccount = () => {
