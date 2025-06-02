@@ -165,7 +165,7 @@ const UpgradeAccount: React.FC<UpgradeAccountProps> = ({ onBack, onProceedToPaym
 
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Level to Upgrade</h3>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             {levels.map((level) => (
               <button
                 key={level.name}
@@ -175,15 +175,16 @@ const UpgradeAccount: React.FC<UpgradeAccountProps> = ({ onBack, onProceedToPaym
                 }`}
               >
                 <div className="text-2xl mb-2">{level.icon}</div>
-                <p className="font-semibold text-gray-900">{level.name}</p>
-                <p className="text-sm text-gray-600">{level.price}</p>
+                <p className="font-semibold text-gray-900 text-sm">{level.name}</p>
+                <p className="text-lg font-bold text-purple-600">{level.price}</p>
+                <p className="text-xs text-gray-500 mt-1">Pay this amount</p>
               </button>
             ))}
           </div>
         </div>
 
         <p className="text-center text-gray-600 text-sm">
-          Select a level to view detailed benefits before payment
+          Each level has its own payment amount. Select to view benefits and proceed to payment.
         </p>
       </div>
     </div>

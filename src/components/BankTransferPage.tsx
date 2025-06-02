@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ArrowLeft, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,18 +8,85 @@ interface BankTransferPageProps {
   onBack: () => void;
   onTransferConfirmed: () => void;
   userEmail: string;
+  amount?: string;
+  levelName?: string;
 }
 
-const BankTransferPage: React.FC<BankTransferPageProps> = ({ onBack, onTransferConfirmed, userEmail }) => {
-  const [amount, setAmount] = useState('₦7,250');
+const BankTransferPage: React.FC<BankTransferPageProps> = ({ 
+  onBack, 
+  onTransferConfirmed, 
+  userEmail, 
+  amount = '₦6,500',
+  levelName 
+}) => {
   const [email, setEmail] = useState(userEmail);
   const [receiptUploaded, setReceiptUploaded] = useState(false);
 
-  const accountDetails = {
-    accountNumber: '6028806937',
-    bankName: 'MONIEPOINT MFB',
-    accountName: 'GIFT GOODLUCK',
+  // Generate account details based on level or use default
+  const getAccountDetails = (level?: string) => {
+    if (level) {
+      // Different account details for different levels
+      switch (level.toLowerCase()) {
+        case 'silver':
+          return {
+            accountNumber: '5569742889',
+            bankName: 'MONIEPOINT MFB',
+            accountName: 'SUNDAY LIBERTY'
+          };
+        case 'gold':
+          return {
+            accountNumber: '6028806937',
+            bankName: 'MONIEPOINT MFB',
+            accountName: 'GIFT GOODLUCK'
+          };
+        case 'platinum':
+          return {
+            accountNumber: '7039845621',
+            bankName: 'MONIEPOINT MFB',
+            accountName: 'JOHN MICHAEL'
+          };
+        case 'emerald':
+          return {
+            accountNumber: '8041956732',
+            bankName: 'MONIEPOINT MFB',
+            accountName: 'MARY JOHNSON'
+          };
+        case 'ruby':
+          return {
+            accountNumber: '9052067843',
+            bankName: 'MONIEPOINT MFB',
+            accountName: 'DAVID WILLIAMS'
+          };
+        case 'diamond':
+          return {
+            accountNumber: '1063178954',
+            bankName: 'MONIEPOINT MFB',
+            accountName: 'SARAH BROWN'
+          };
+        case 'black':
+          return {
+            accountNumber: '2074289065',
+            bankName: 'MONIEPOINT MFB',
+            accountName: 'MICHAEL DAVIS'
+          };
+        default:
+          return {
+            accountNumber: '5569742889',
+            bankName: 'MONIEPOINT MFB',
+            accountName: 'SUNDAY LIBERTY'
+          };
+      }
+    } else {
+      // Default account for PAY ID purchase
+      return {
+        accountNumber: '6028806937',
+        bankName: 'MONIEPOINT MFB',
+        accountName: 'GIFT GOODLUCK'
+      };
+    }
   };
+
+  const accountDetails = getAccountDetails(levelName);
 
   const handleCopyAccount = () => {
     navigator.clipboard.writeText(accountDetails.accountNumber);
@@ -48,7 +116,9 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({ onBack, onTransferC
           <button onClick={onBack}>
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-semibold">Bank Transfer</h1>
+          <h1 className="text-xl font-semibold">
+            {levelName ? `${levelName} Level Payment` : 'Bank Transfer'}
+          </h1>
         </div>
       </div>
 
@@ -58,6 +128,14 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({ onBack, onTransferC
             Please transfer the exact amount to the account below and upload your receipt
           </p>
         </div>
+
+        {levelName && (
+          <div className="bg-purple-100 border border-purple-300 rounded-xl p-4">
+            <p className="text-purple-800 text-sm font-medium">
+              You are upgrading to <strong>{levelName} Level</strong> - Amount: <strong>{amount}</strong>
+            </p>
+          </div>
+        )}
 
         {/* Bank Account Details */}
         <div className="bg-white rounded-2xl p-6 shadow-sm">
@@ -97,7 +175,7 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({ onBack, onTransferC
         <div>
           <label className="block text-gray-900 text-lg font-medium mb-3">Amount to Transfer</label>
           <div className="w-full h-14 bg-white rounded-xl shadow-sm flex items-center px-4 border-0">
-            <span className="text-lg text-gray-900 font-bold">{amount}</span>
+            <span className="text-xl text-gray-900 font-bold">{amount}</span>
           </div>
         </div>
 
