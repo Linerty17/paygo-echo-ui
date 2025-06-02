@@ -8,7 +8,7 @@ interface PayIdSuccessProps {
 }
 
 const PayIdSuccess: React.FC<PayIdSuccessProps> = ({ onBack }) => {
-  const payId = 'PAY200717';
+  const payId = 'PAY7252276';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(payId);
