@@ -35,7 +35,7 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack, onPurchaseSuccess }) => {
       return;
     }
     
-    if (payIdCode !== 'PAY7252276') {
+    if (payIdCode !== 'PAY261162') {
       alert('Invalid PAY ID Code');
       return;
     }
