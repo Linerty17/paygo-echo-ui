@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -98,4 +99,17 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes slide-logo {
+  0%, 100% {
+    transform: translateX(-10px);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+.animate-slide-logo {
+  animation: slide-logo 3s ease-in-out infinite;
 }

@@ -99,8 +99,8 @@ const Index = () => {
     window.history.pushState({ page: newState }, '', window.location.href);
   };
 
-  const handleRegister = (name: string, email: string, password: string) => {
-    console.log('Registration:', { name, email, password });
+  const handleRegister = (name: string, email: string, password: string, country: string) => {
+    console.log('Registration:', { name, email, password, country });
     
     // Check if user already exists
     const existingUser = registeredUsers.find(user => user.email === email);
