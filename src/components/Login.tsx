@@ -26,14 +26,16 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister }) => {
       </div>
       
       <div className="w-full max-w-sm space-y-8">
-        {/* Animated PayGo Logo */}
-        <div className="flex justify-center mb-4 overflow-hidden">
-          <div className="animate-slide-logo">
-            <img 
-              src="/lovable-uploads/a3ef4c06-bb4a-4f2b-86aa-ca0eb1b2d464.png" 
-              alt="PayGo Logo"
-              className="h-16 object-contain"
-            />
+        {/* Animated PayGo Logo moving from left to right continuously */}
+        <div className="flex justify-center mb-4 w-full overflow-hidden relative h-24">
+          <div className="absolute inset-0 w-full">
+            <div className="animate-slide-logo-lr">
+              <img 
+                src="/lovable-uploads/a3ef4c06-bb4a-4f2b-86aa-ca0eb1b2d464.png" 
+                alt="PayGo Logo"
+                className="h-16 object-contain"
+              />
+            </div>
           </div>
         </div>
 

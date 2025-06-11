@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -222,18 +221,15 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
       </div>
       
       <div className="w-full max-w-sm space-y-8">
-        {/* Animated PayGo Logo with your uploaded image and left-to-right animation */}
-        <div className="flex justify-center mb-4 overflow-hidden">
-          <div className="relative w-full max-w-md h-24 rounded-2xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-purple-500 to-orange-400"></div>
-            <div className="relative h-full flex items-center justify-center">
-              <div className="animate-slide-logo-lr">
-                <img 
-                  src="/lovable-uploads/1b5d08cd-7896-45fe-a778-2c43ba59d944.png" 
-                  alt="PayGo Logo"
-                  className="h-16 w-auto object-contain"
-                />
-              </div>
+        {/* Animated PayGo Logo moving from left to right continuously */}
+        <div className="flex justify-center mb-4 w-full overflow-hidden relative h-24">
+          <div className="absolute inset-0 w-full">
+            <div className="animate-slide-logo-lr">
+              <img 
+                src="/lovable-uploads/1b5d08cd-7896-45fe-a778-2c43ba59d944.png" 
+                alt="PayGo Logo"
+                className="h-16 w-auto object-contain"
+              />
             </div>
           </div>
         </div>

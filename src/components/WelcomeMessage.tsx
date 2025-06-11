@@ -10,13 +10,17 @@ const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ onContinue }) => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-sm space-y-8 text-center">
-        {/* PayGo Logo */}
-        <div className="flex justify-center mb-12">
-          <img 
-            src="/lovable-uploads/b28d1274-d692-42c9-81b7-61ae377c5939.png" 
-            alt="PayGo Digital Logo" 
-            className="w-48 h-24 object-contain"
-          />
+        {/* PayGo Logo moving from left to right continuously */}
+        <div className="flex justify-center mb-12 w-full overflow-hidden relative h-24">
+          <div className="absolute inset-0 w-full">
+            <div className="animate-slide-logo-lr">
+              <img 
+                src="/lovable-uploads/b28d1274-d692-42c9-81b7-61ae377c5939.png" 
+                alt="PayGo Digital Logo" 
+                className="w-48 h-24 object-contain"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="space-y-6">
