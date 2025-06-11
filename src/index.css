@@ -110,6 +110,24 @@
   }
 }
 
+@keyframes slide-logo-lr {
+  0% {
+    transform: translateX(-100px);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 .animate-slide-logo {
   animation: slide-logo 3s ease-in-out infinite;
+}
+
+.animate-slide-logo-lr {
+  animation: slide-logo-lr 2s ease-out infinite;
 }
