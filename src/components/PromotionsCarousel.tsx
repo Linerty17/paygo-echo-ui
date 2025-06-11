@@ -60,14 +60,14 @@ const PromotionsCarousel: React.FC = () => {
 
   return (
     <div className="relative">
-      <div className="overflow-hidden rounded-xl">
+      <div className="overflow-hidden rounded-lg">
         <div 
           className="flex transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
           {promotions.map((promo) => (
             <div key={promo.id} className="w-full flex-shrink-0">
-              <div className="relative h-40 rounded-xl overflow-hidden">
+              <div className="relative h-32 rounded-lg overflow-hidden">
                 <img 
                   src={promo.image} 
                   alt={promo.title}
@@ -82,25 +82,25 @@ const PromotionsCarousel: React.FC = () => {
       {/* Navigation Arrows - Smaller size */}
       <button
         onClick={prevSlide}
-        className="absolute left-2 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-black bg-opacity-30 text-white rounded-full flex items-center justify-center hover:bg-opacity-50 transition-all z-10"
+        className="absolute left-1 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-black bg-opacity-30 text-white rounded-full flex items-center justify-center hover:bg-opacity-50 transition-all z-10"
       >
-        <ChevronLeft className="w-4 h-4" />
+        <ChevronLeft className="w-3 h-3" />
       </button>
       
       <button
         onClick={nextSlide}
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-black bg-opacity-30 text-white rounded-full flex items-center justify-center hover:bg-opacity-50 transition-all z-10"
+        className="absolute right-1 top-1/2 transform -translate-y-1/2 w-5 h-5 bg-black bg-opacity-30 text-white rounded-full flex items-center justify-center hover:bg-opacity-50 transition-all z-10"
       >
-        <ChevronRight className="w-4 h-4" />
+        <ChevronRight className="w-3 h-3" />
       </button>
 
       {/* Dots Indicator - Smaller size */}
-      <div className="flex justify-center space-x-1.5 mt-2">
+      <div className="flex justify-center space-x-1 mt-1.5">
         {promotions.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`w-2 h-2 rounded-full transition-all ${
+            className={`w-1.5 h-1.5 rounded-full transition-all ${
               index === currentIndex ? 'bg-purple-600' : 'bg-gray-300'
             }`}
           />
