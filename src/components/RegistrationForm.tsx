@@ -222,12 +222,12 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
       </div>
       
       <div className="w-full max-w-sm space-y-8">
-        {/* Animated PayGo Logo with gradient background */}
+        {/* Animated PayGo Logo with gradient background and sliding motion */}
         <div className="flex justify-center mb-4 overflow-hidden">
           <div className="relative w-full max-w-xs h-24 rounded-2xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-purple-500 to-orange-400 animate-pulse"></div>
             <div className="relative h-full flex items-center justify-center">
-              <div className="animate-bounce">
+              <div className="animate-slide-logo">
                 <img 
                   src="/lovable-uploads/a3ef4c06-bb4a-4f2b-86aa-ca0eb1b2d464.png" 
                   alt="PayGo Logo"
