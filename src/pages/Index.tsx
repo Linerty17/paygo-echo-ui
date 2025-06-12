@@ -45,6 +45,7 @@ const Index = () => {
   const [navigationHistory, setNavigationHistory] = useState<AppState[]>([]);
   const [registeredUsers, setRegisteredUsers] = useState<User[]>([]);
   const [currentBalance, setCurrentBalance] = useState(180000);
+  const [upgradeLevel, setUpgradeLevel] = useState<string>('');
 
   // Load registered users from localStorage on component mount
   useEffect(() => {
@@ -197,6 +198,7 @@ const Index = () => {
   const handleUpgradePayment = (levelName: string, price: string) => {
     // Store upgrade info and proceed to payment
     setPurchaseAmount(price);
+    setUpgradeLevel(levelName);
     navigateToPage('preparingPayment');
   };
 
@@ -427,7 +429,13 @@ const Index = () => {
   if (appState === 'bankTransfer') {
     return (
       <>
-        <BankTransferPage onBack={handleBackToDashboard} onTransferConfirmed={handleTransferConfirmed} userEmail={userEmail} />
+        <BankTransferPage 
+          onBack={handleBackToDashboard} 
+          onTransferConfirmed={handleTransferConfirmed} 
+          userEmail={userEmail}
+          amount={purchaseAmount}
+          levelName={upgradeLevel}
+        />
         <LiveChat />
       </>
     );
