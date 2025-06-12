@@ -49,6 +49,12 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({
     onTransferConfirmed();
   };
 
+  const isUpgrade = !!levelName;
+  const pageTitle = isUpgrade ? `${levelName} Level Upgrade` : 'PAY ID Purchase';
+  const alertMessage = isUpgrade 
+    ? 'Complete your account upgrade by transferring the exact amount below'
+    : 'Complete your PAY ID purchase by transferring the exact amount below';
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -57,23 +63,29 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({
           <button onClick={onBack}>
             <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-semibold">
-            {levelName ? `${levelName} Level Payment` : 'Bank Transfer'}
-          </h1>
+          <h1 className="text-xl font-semibold">{pageTitle}</h1>
         </div>
       </div>
 
       <div className="p-6 space-y-6">
         <div className="bg-orange-100 border border-orange-300 rounded-xl p-4">
           <p className="text-orange-800 text-sm font-medium">
-            Please transfer the exact amount to the account below and upload your receipt
+            {alertMessage}
           </p>
         </div>
 
         {levelName && (
           <div className="bg-purple-100 border border-purple-300 rounded-xl p-4">
             <p className="text-purple-800 text-sm font-medium">
-              You are upgrading to <strong>{levelName} Level</strong> - Amount: <strong>{amount}</strong>
+              Upgrading to <strong>{levelName} Level</strong> - Payment Amount: <strong>{amount}</strong>
+            </p>
+          </div>
+        )}
+
+        {!levelName && (
+          <div className="bg-blue-100 border border-blue-300 rounded-xl p-4">
+            <p className="text-blue-800 text-sm font-medium">
+              PAY ID Purchase - One-time payment of <strong>{amount}</strong>
             </p>
           </div>
         )}
@@ -116,7 +128,7 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({
         <div>
           <label className="block text-gray-900 text-lg font-medium mb-3">Amount to Transfer</label>
           <div className="w-full h-14 bg-white rounded-xl shadow-sm flex items-center px-4 border-0">
-            <span className="text-xl text-gray-900 font-bold">{amount}</span>
+            <span className="text-xl text-purple-600 font-bold">{amount}</span>
           </div>
         </div>
 
@@ -163,7 +175,7 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({
           onClick={handleConfirmTransfer}
           className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8"
         >
-          Confirm Transfer
+          Confirm Payment
         </Button>
 
         <div className="text-center mt-8">
