@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import ServiceIcon from './ServiceIcon';
 import PromotionsCarousel from './PromotionsCarousel';
 import OnboardingModal from './OnboardingModal';
+import VideoPlayer from './VideoPlayer';
 
 interface DashboardProps {
   userName: string;
@@ -32,15 +33,20 @@ const Dashboard: React.FC<DashboardProps> = ({
   currentBalance
 }) => {
   const [balanceVisible, setBalanceVisible] = useState(true);
+  const [showVideo, setShowVideo] = useState(false);
   const weeklyRewards = "₦180,000.00";
 
-  const handleWatchTelegram = () => {
-    window.open('https://t.me/officialbluepay2025', '_blank');
+  const handleWatchVideo = () => {
+    setShowVideo(true);
+  };
+
+  const handleCloseVideo = () => {
+    setShowVideo(false);
   };
 
   const services = [
     { icon: "💳", label: "Buy PAY ID", page: "buyPayId" },
-    { icon: "📺", label: "Watch", action: handleWatchTelegram },
+    { icon: "📺", label: "Watch", action: handleWatchVideo },
     { icon: "📊", label: "Airtime", page: "airtime" },
     { icon: "🗄️", label: "Data", page: "data" },
     { icon: "🎧", label: "Support", page: "support" },
@@ -67,7 +73,6 @@ const Dashboard: React.FC<DashboardProps> = ({
       </div>
 
       <div className="p-2 space-y-3">
-        {/* Animated PayGo Logo - Reduced size and spacing */}
         <div className="flex justify-center mb-2 overflow-hidden">
           <div className="animate-slide-logo">
             <img 
@@ -78,7 +83,6 @@ const Dashboard: React.FC<DashboardProps> = ({
           </div>
         </div>
 
-        {/* Balance Card - Reduced padding and sizes */}
         <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 rounded-xl p-4 text-white shadow-xl">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-2">
@@ -149,7 +153,6 @@ const Dashboard: React.FC<DashboardProps> = ({
           </div>
         </div>
 
-        {/* Services Grid - Reduced spacing */}
         <div className="grid grid-cols-4 gap-2">
           {services.map((service, index) => (
             <ServiceIcon
@@ -161,20 +164,25 @@ const Dashboard: React.FC<DashboardProps> = ({
           ))}
         </div>
 
-        {/* Current Promotions - Reduced spacing and size */}
         <div>
           <h2 className="text-base font-bold text-gray-900 mb-2">Current Promotions</h2>
           <PromotionsCarousel />
         </div>
       </div>
 
-      {/* Onboarding Modal */}
       {showOnboarding && (
         <OnboardingModal
           currentStep={onboardingStep}
           onNext={onNextOnboarding}
           onClose={onCloseOnboarding}
           userName={userName}
+        />
+      )}
+
+      {showVideo && (
+        <VideoPlayer
+          videoUrl="https://vimeo.com/1092901770/f3d945beb9?share=copy"
+          onClose={handleCloseVideo}
         />
       )}
     </div>
