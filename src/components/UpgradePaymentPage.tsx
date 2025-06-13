@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -49,9 +48,9 @@ const UpgradePaymentPage: React.FC<UpgradePaymentPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen min-h-[100dvh] bg-gray-50 w-full overflow-x-hidden">
       {/* Header */}
-      <div className="bg-purple-600 text-white p-4">
+      <div className="bg-purple-600 text-white p-4 w-full">
         <div className="flex items-center space-x-4">
           <button onClick={onBack}>
             <ArrowLeft className="w-6 h-6" />
@@ -60,7 +59,7 @@ const UpgradePaymentPage: React.FC<UpgradePaymentPageProps> = ({
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className="p-4 space-y-6 w-full max-w-md mx-auto">
         <div className="bg-orange-100 border border-orange-300 rounded-xl p-4">
           <p className="text-orange-800 text-sm font-medium">
             Please transfer the exact amount to the account below and upload your receipt

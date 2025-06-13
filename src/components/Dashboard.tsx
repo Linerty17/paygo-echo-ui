@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Bell, Eye, EyeOff, ArrowUp, Check, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -64,15 +63,15 @@ const Dashboard: React.FC<DashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen min-h-[100dvh] bg-gray-50 w-full overflow-x-hidden">
       {/* Animated Header with moving text - Reduced padding */}
-      <div className="bg-red-500 text-white py-1.5 text-xs overflow-hidden relative">
+      <div className="bg-red-500 text-white py-1.5 text-xs overflow-hidden relative w-full">
         <div className="animate-marquee whitespace-nowrap">
           Dear User, We're currently experiencing issues with <span className="text-red-200 font-semibold">Opay</span> bank transfers. Please use other banks for your payments.
         </div>
       </div>
 
-      <div className="p-2 space-y-3">
+      <div className="p-4 space-y-4 w-full max-w-md mx-auto">
         <div className="flex justify-center mb-2 overflow-hidden">
           <div className="animate-slide-logo">
             <img 
@@ -153,7 +152,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-3">
           {services.map((service, index) => (
             <ServiceIcon
               key={index}
@@ -165,7 +164,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         <div>
-          <h2 className="text-base font-bold text-gray-900 mb-2">Current Promotions</h2>
+          <h2 className="text-base font-bold text-gray-900 mb-3">Current Promotions</h2>
           <PromotionsCarousel />
         </div>
       </div>
