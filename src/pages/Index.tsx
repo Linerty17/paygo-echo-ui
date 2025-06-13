@@ -6,6 +6,7 @@ import EarnMore from '@/components/EarnMore';
 import Dashboard from '@/components/Dashboard';
 import TransferToBank from '@/components/TransferToBank';
 import UpgradeAccount from '@/components/UpgradeAccount';
+import UpgradeProcessing from '@/components/UpgradeProcessing';
 import JoinCommunities from '@/components/JoinCommunities';
 import Support from '@/components/Support';
 import Profile from '@/components/Profile';
@@ -22,7 +23,7 @@ import AirtimeSuccess from '@/components/AirtimeSuccess';
 import PaymentFailed from '@/components/PaymentFailed';
 import LiveChat from '@/components/LiveChat';
 
-type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'paymentFailed' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
+type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'upgradeProcessing' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'paymentFailed' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
 
 interface User {
   name: string;
@@ -45,6 +46,8 @@ const Index = () => {
   const [navigationHistory, setNavigationHistory] = useState<AppState[]>([]);
   const [registeredUsers, setRegisteredUsers] = useState<User[]>([]);
   const [currentBalance, setCurrentBalance] = useState(180000);
+  const [selectedUpgradeLevel, setSelectedUpgradeLevel] = useState('');
+  const [selectedUpgradePrice, setSelectedUpgradePrice] = useState('');
 
   // Load registered users from localStorage on component mount
   useEffect(() => {
@@ -195,9 +198,13 @@ const Index = () => {
   };
 
   const handleUpgradePayment = (levelName: string, price: string) => {
-    // Store upgrade info and proceed to payment
-    setPurchaseAmount(price);
-    navigateToPage('preparingPayment');
+    setSelectedUpgradeLevel(levelName);
+    setSelectedUpgradePrice(price);
+    navigateToPage('upgradeProcessing');
+  };
+
+  const handleUpgradeProcessingComplete = () => {
+    navigateToPage('bankTransfer');
   };
 
   const handleTransferComplete = (amount: string) => {
@@ -343,6 +350,20 @@ const Index = () => {
     );
   }
 
+  if (appState === 'upgradeProcessing') {
+    return (
+      <>
+        <UpgradeProcessing 
+          onBack={handleBackToDashboard} 
+          onComplete={handleUpgradeProcessingComplete}
+          levelName={selectedUpgradeLevel}
+          price={selectedUpgradePrice}
+        />
+        <LiveChat />
+      </>
+    );
+  }
+
   if (appState === 'joinCommunities') {
     return (
       <>
@@ -427,7 +448,13 @@ const Index = () => {
   if (appState === 'bankTransfer') {
     return (
       <>
-        <BankTransferPage onBack={handleBackToDashboard} onTransferConfirmed={handleTransferConfirmed} userEmail={userEmail} />
+        <BankTransferPage 
+          onBack={handleBackToDashboard} 
+          onTransferConfirmed={handleTransferConfirmed} 
+          userEmail={userEmail}
+          amount={selectedUpgradeLevel ? selectedUpgradePrice : '₦6,500'}
+          levelName={selectedUpgradeLevel || undefined}
+        />
         <LiveChat />
       </>
     );
