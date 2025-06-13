@@ -22,8 +22,10 @@ import TransferSuccess from '@/components/TransferSuccess';
 import AirtimeSuccess from '@/components/AirtimeSuccess';
 import PaymentFailed from '@/components/PaymentFailed';
 import LiveChat from '@/components/LiveChat';
+import PayIdPaymentPage from '@/components/PayIdPaymentPage';
+import UpgradePaymentPage from '@/components/UpgradePaymentPage';
 
-type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'upgradeProcessing' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'paymentFailed' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
+type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'upgradeProcessing' | 'upgradePayment' | 'payIdPayment' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'paymentFailed' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
 
 interface User {
   name: string;
@@ -204,7 +206,11 @@ const Index = () => {
   };
 
   const handleUpgradeProcessingComplete = () => {
-    navigateToPage('bankTransfer');
+    navigateToPage('upgradePayment');
+  };
+
+  const handlePayIdProcessingComplete = () => {
+    navigateToPage('payIdPayment');
   };
 
   const handleTransferComplete = (amount: string) => {
@@ -219,7 +225,7 @@ const Index = () => {
   };
 
   const handlePreparingComplete = () => {
-    navigateToPage('bankTransfer');
+    navigateToPage('payIdPayment');
   };
 
   const handleTransferConfirmed = () => {
@@ -358,6 +364,35 @@ const Index = () => {
           onComplete={handleUpgradeProcessingComplete}
           levelName={selectedUpgradeLevel}
           price={selectedUpgradePrice}
+        />
+        <LiveChat />
+      </>
+    );
+  }
+
+  if (appState === 'upgradePayment') {
+    return (
+      <>
+        <UpgradePaymentPage 
+          onBack={handleBackToDashboard} 
+          onTransferConfirmed={handleTransferConfirmed}
+          userEmail={userEmail}
+          amount={selectedUpgradePrice}
+          levelName={selectedUpgradeLevel}
+        />
+        <LiveChat />
+      </>
+    );
+  }
+
+  if (appState === 'payIdPayment') {
+    return (
+      <>
+        <PayIdPaymentPage 
+          onBack={handleBackToDashboard} 
+          onTransferConfirmed={handleTransferConfirmed}
+          userEmail={userEmail}
+          userName={userName}
         />
         <LiveChat />
       </>
