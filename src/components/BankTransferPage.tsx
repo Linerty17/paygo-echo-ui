@@ -79,9 +79,9 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({
     } else {
       // Default account for PAY ID purchase
       return {
-        accountNumber: '6066270617',
-        bankName: 'MONIEPOINT MFB',
-        accountName: 'SILVER AMARACHI THEOPHILUS'
+        accountNumber: '9136574323',
+        bankName: 'MOMO PSB',
+        accountName: 'ISAMAILA AYO'
       };
     }
   };
