@@ -24,66 +24,12 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({
 
   // Generate account details based on level or use default
   const getAccountDetails = (level?: string) => {
-    if (level) {
-      // Different account details for different levels
-      switch (level.toLowerCase()) {
-        case 'silver':
-          return {
-            accountNumber: '5569742889',
-            bankName: 'MONIEPOINT MFB',
-            accountName: 'SUNDAY LIBERTY'
-          };
-        case 'gold':
-          return {
-            accountNumber: '6028806937',
-            bankName: 'MONIEPOINT MFB',
-            accountName: 'GIFT GOODLUCK'
-          };
-        case 'platinum':
-          return {
-            accountNumber: '7039845621',
-            bankName: 'MONIEPOINT MFB',
-            accountName: 'JOHN MICHAEL'
-          };
-        case 'emerald':
-          return {
-            accountNumber: '8041956732',
-            bankName: 'MONIEPOINT MFB',
-            accountName: 'MARY JOHNSON'
-          };
-        case 'ruby':
-          return {
-            accountNumber: '9052067843',
-            bankName: 'MONIEPOINT MFB',
-            accountName: 'DAVID WILLIAMS'
-          };
-        case 'diamond':
-          return {
-            accountNumber: '1063178954',
-            bankName: 'MONIEPOINT MFB',
-            accountName: 'SARAH BROWN'
-          };
-        case 'black':
-          return {
-            accountNumber: '2074289065',
-            bankName: 'MONIEPOINT MFB',
-            accountName: 'MICHAEL DAVIS'
-          };
-        default:
-          return {
-            accountNumber: '5569742889',
-            bankName: 'MONIEPOINT MFB',
-            accountName: 'SUNDAY LIBERTY'
-          };
-      }
-    } else {
-      // Default account for PAY ID purchase
-      return {
-        accountNumber: '9136574323',
-        bankName: 'MOMO PSB',
-        accountName: 'ISAMAILA AYO'
-      };
-    }
+    // All levels use the same account
+    return {
+      accountNumber: '6412635787',
+      bankName: 'Moniepoint MFB',
+      accountName: 'IKECHUKWU CELESTINE OKUMEFUNA'
+    };
   };
 
   const accountDetails = getAccountDetails(levelName);

@@ -22,9 +22,9 @@ const UpgradePaymentPage: React.FC<UpgradePaymentPageProps> = ({
   const [receiptUploaded, setReceiptUploaded] = useState(false);
 
   const accountDetails = {
-    accountNumber: '6066270617',
-    bankName: 'MONIEPOINT MFB',
-    accountName: 'SILVER AMARACHI THEOPHILUS'
+    accountNumber: '6412635787',
+    bankName: 'Moniepoint MFB',
+    accountName: 'IKECHUKWU CELESTINE OKUMEFUNA'
   };
 
   const handleCopyAccount = () => {
