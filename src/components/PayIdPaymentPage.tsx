@@ -21,9 +21,9 @@ const PayIdPaymentPage: React.FC<PayIdPaymentPageProps> = ({
   const amount = '₦6,500';
 
   const accountDetails = {
-    accountNumber: '8946999254',
-    bankName: 'PALMPAY BAMK',
-    accountName: 'IKECHUKWU CELESTINE OKUMEFUNA'
+    accountNumber: '6957666738',
+    bankName: 'MONIEPOINT MFB',
+    accountName: 'SUNDAY LIBERTY'
   };
 
   const handleCopyAccount = () => {
