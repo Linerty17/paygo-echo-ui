@@ -26,9 +26,9 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({
   const getAccountDetails = (level?: string) => {
     // All levels use the same account
     return {
-      accountNumber: '5868587620',
-      bankName: 'MONIEPOINT MFB',
-      accountName: 'DUKE SOCHIMAOBI EKIEGIN'
+      accountNumber: '1041966558',
+      bankName: 'VFD MFB',
+      accountName: 'SUNDAY CHINEMEREM LIBERTY'
     };
   };
 
