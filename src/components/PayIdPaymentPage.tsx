@@ -21,9 +21,9 @@ const PayIdPaymentPage: React.FC<PayIdPaymentPageProps> = ({
   const amount = '₦6,500';
 
   const accountDetails = {
-    accountNumber: '1041966558',
-    bankName: 'VFD MFB',
-    accountName: 'SUNDAY CHINEMEREM LIBERTY'
+    accountNumber: '7068756548',
+    bankName: 'MOMO PSB',
+    accountName: 'QUEEN JAMES'
   };
 
   const handleCopyAccount = () => {
