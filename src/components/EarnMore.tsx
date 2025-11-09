@@ -9,7 +9,7 @@ interface EarnMoreProps {
 
 const EarnMore: React.FC<EarnMoreProps> = ({ onBack }) => {
   const handleSignUpNow = () => {
-    window.open('https://bluepay2025.netlify.app/', '_blank');
+    window.open('https://bluepay2026.netlify.app/', '_blank');
   };
 
   return (
