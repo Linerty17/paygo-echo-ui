@@ -21,9 +21,9 @@ const PayIdPaymentPage: React.FC<PayIdPaymentPageProps> = ({
   const amount = '₦6,500';
 
   const accountDetails = {
-    accountNumber: '6469921644',
+    accountNumber: '6477528228',
     bankName: 'MONIEPOINT MFB',
-    accountName: 'STANLEY ONYEDIKACHI IROANYA'
+    accountName: 'BLESSING WILLIAMS'
   };
 
   const handleCopyAccount = () => {
