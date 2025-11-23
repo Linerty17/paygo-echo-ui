@@ -17,7 +17,7 @@ const Support: React.FC<SupportProps> = ({ onBack }) => {
   };
 
   const handleWhatsAppSupport = () => {
-    window.open('https://wa.me/2349127560865', '_blank');
+    window.open('https://wa.me/2349029987533', '_blank');
   };
 
   return (
