@@ -4,17 +4,16 @@ import { User, Session } from '@supabase/supabase-js';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Lock, Mail, Eye, EyeOff, Shield, ArrowLeft, LogOut, Users, Image, Gift, BarChart3, Crown, FileText, Bell, Settings } from 'lucide-react';
+import { Loader2, Lock, Mail, Eye, EyeOff, Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import PaymentUploadsAdmin from '@/components/admin/PaymentUploadsAdmin';
 import UsersAdmin from '@/components/admin/UsersAdmin';
 import ReferralsAdmin from '@/components/admin/ReferralsAdmin';
 import StatsAdmin from '@/components/admin/StatsAdmin';
-import RolesAdmin from '@/components/admin/RolesAdmin';
 import AuditLogsAdmin from '@/components/admin/AuditLogsAdmin';
 import NotificationsAdmin from '@/components/admin/NotificationsAdmin';
 import SettingsAdmin from '@/components/admin/SettingsAdmin';
 
-type AdminView = 'dashboard' | 'payments' | 'users' | 'referrals' | 'stats' | 'roles' | 'audit' | 'notifications' | 'settings';
+type AdminView = 'stats' | 'payments' | 'users' | 'referrals' | 'audit' | 'notifications' | 'settings';
 
 const AdminPanel = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -25,7 +24,8 @@ const AdminPanel = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
-  const [currentView, setCurrentView] = useState<AdminView>('dashboard');
+  const [currentView, setCurrentView] = useState<AdminView>('stats');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -76,7 +76,6 @@ const AdminPanel = () => {
 
   const logAudit = async (action: string, entityType: string, entityId: string, details: object) => {
     try {
-      // Use type assertion since audit_logs table was just created and types haven't synced
       await (supabase.from('audit_logs') as any).insert({
         admin_user_id: user?.id || '',
         admin_email: user?.email || '',
@@ -105,7 +104,7 @@ const AdminPanel = () => {
     setUser(null);
     setSession(null);
     setIsAdmin(false);
-    setCurrentView('dashboard');
+    setCurrentView('stats');
   };
 
   if (loading) {
@@ -116,20 +115,7 @@ const AdminPanel = () => {
     );
   }
 
-  // Render views
-  if (isAdmin) {
-    switch (currentView) {
-      case 'payments': return <PaymentUploadsAdmin onBack={() => setCurrentView('dashboard')} onLogAudit={logAudit} />;
-      case 'users': return <UsersAdmin onBack={() => setCurrentView('dashboard')} onLogAudit={logAudit} />;
-      case 'referrals': return <ReferralsAdmin onBack={() => setCurrentView('dashboard')} />;
-      case 'stats': return <StatsAdmin onBack={() => setCurrentView('dashboard')} />;
-      case 'roles': return <RolesAdmin onBack={() => setCurrentView('dashboard')} currentUserEmail={user?.email || ''} onLogAudit={logAudit} />;
-      case 'audit': return <AuditLogsAdmin onBack={() => setCurrentView('dashboard')} />;
-      case 'notifications': return <NotificationsAdmin onBack={() => setCurrentView('dashboard')} />;
-      case 'settings': return <SettingsAdmin onBack={() => setCurrentView('dashboard')} />;
-    }
-  }
-
+  // Login Screen
   if (!session) {
     return (
       <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center p-4">
@@ -166,6 +152,7 @@ const AdminPanel = () => {
     );
   }
 
+  // Access Denied
   if (!isAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -179,43 +166,144 @@ const AdminPanel = () => {
     );
   }
 
+  // Menu Items
   const menuItems = [
-    { id: 'stats' as AdminView, icon: BarChart3, title: 'Dashboard Stats', description: 'Platform analytics', gradient: 'from-blue-500 to-cyan-600' },
-    { id: 'payments' as AdminView, icon: Image, title: 'Payment Uploads', description: 'Review payments', gradient: 'from-amber-500 to-orange-600' },
-    { id: 'users' as AdminView, icon: Users, title: 'User Management', description: 'Manage users & balances', gradient: 'from-green-500 to-emerald-600' },
-    { id: 'roles' as AdminView, icon: Crown, title: 'Role Management', description: 'Grant/revoke roles', gradient: 'from-red-500 to-rose-600' },
-    { id: 'referrals' as AdminView, icon: Gift, title: 'Referrals', description: 'Referral activities', gradient: 'from-purple-500 to-violet-600' },
-    { id: 'audit' as AdminView, icon: FileText, title: 'Audit Logs', description: 'Admin action history', gradient: 'from-slate-500 to-gray-600' },
-    { id: 'notifications' as AdminView, icon: Bell, title: 'Notifications', description: 'Notification center', gradient: 'from-pink-500 to-rose-600' },
-    { id: 'settings' as AdminView, icon: Settings, title: 'Settings', description: 'Admin preferences', gradient: 'from-indigo-500 to-blue-600' },
+    { id: 'stats' as AdminView, icon: BarChart3, title: 'Dashboard', num: 1 },
+    { id: 'payments' as AdminView, icon: Image, title: 'Payments', num: 2 },
+    { id: 'users' as AdminView, icon: Users, title: 'Users', num: 3 },
+    { id: 'referrals' as AdminView, icon: Gift, title: 'Referrals', num: 4 },
+    { id: 'audit' as AdminView, icon: FileText, title: 'Audit Logs', num: 5 },
+    { id: 'notifications' as AdminView, icon: Bell, title: 'Notifications', num: 6 },
+    { id: 'settings' as AdminView, icon: Settings, title: 'Settings', num: 7 },
   ];
 
+  // Render current view content
+  const renderContent = () => {
+    switch (currentView) {
+      case 'stats': return <StatsAdmin onBack={() => {}} />;
+      case 'payments': return <PaymentUploadsAdmin onBack={() => {}} onLogAudit={logAudit} />;
+      case 'users': return <UsersAdmin onBack={() => {}} onLogAudit={logAudit} />;
+      case 'referrals': return <ReferralsAdmin onBack={() => {}} />;
+      case 'audit': return <AuditLogsAdmin onBack={() => {}} />;
+      case 'notifications': return <NotificationsAdmin onBack={() => {}} />;
+      case 'settings': return <SettingsAdmin onBack={() => {}} />;
+      default: return <StatsAdmin onBack={() => {}} />;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="glass-header text-foreground p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
-              <Shield className="w-5 h-5 text-white" />
+    <div className="min-h-screen bg-background flex">
+      {/* Sidebar */}
+      <div 
+        className={`fixed lg:relative z-40 h-screen transition-all duration-300 ${
+          sidebarOpen ? 'w-64' : 'w-0 lg:w-16'
+        }`}
+      >
+        {/* Sidebar Overlay for mobile */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/50 lg:hidden z-30"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Sidebar Content */}
+        <div 
+          className={`fixed lg:relative h-full bg-card border-r border-border/50 transition-all duration-300 z-40 ${
+            sidebarOpen ? 'w-64 translate-x-0' : 'w-16 -translate-x-full lg:translate-x-0'
+          }`}
+        >
+          {/* Sidebar Header */}
+          <div className="h-16 flex items-center justify-between px-4 border-b border-border/50">
+            <div className={`flex items-center gap-3 ${!sidebarOpen && 'lg:hidden'}`}>
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center flex-shrink-0">
+                <Shield className="w-5 h-5 text-white" />
+              </div>
+              <span className="font-bold text-foreground">Admin</span>
             </div>
-            <div>
-              <h1 className="text-lg font-bold">Admin Panel</h1>
-              <p className="text-xs text-muted-foreground">{user?.email}</p>
-            </div>
+            <button 
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center lg:hidden"
+            >
+              <X className="w-5 h-5 text-muted-foreground" />
+            </button>
           </div>
-          <Button onClick={handleLogout} variant="ghost" size="icon" className="rounded-xl"><LogOut className="w-5 h-5" /></Button>
+
+          {/* Sidebar Menu */}
+          <nav className="p-3 space-y-1">
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setCurrentView(item.id);
+                  if (window.innerWidth < 1024) setSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${
+                  currentView === item.id
+                    ? 'bg-primary text-white'
+                    : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                  currentView === item.id ? 'bg-white/20' : 'bg-muted'
+                }`}>
+                  <span className={`text-sm font-bold ${currentView === item.id ? 'text-white' : 'text-primary'}`}>
+                    {item.num}
+                  </span>
+                </div>
+                <item.icon className={`w-5 h-5 flex-shrink-0 ${sidebarOpen ? '' : 'lg:mx-auto'}`} />
+                <span className={`font-medium ${!sidebarOpen && 'lg:hidden'}`}>{item.title}</span>
+              </button>
+            ))}
+          </nav>
+
+          {/* Sidebar Footer */}
+          <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-border/50">
+            <div className={`mb-3 px-3 py-2 ${!sidebarOpen && 'lg:hidden'}`}>
+              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-red-500 hover:bg-red-500/10 transition-all"
+            >
+              <LogOut className={`w-5 h-5 flex-shrink-0 ${sidebarOpen ? '' : 'lg:mx-auto'}`} />
+              <span className={`font-medium ${!sidebarOpen && 'lg:hidden'}`}>Logout</span>
+            </button>
+          </div>
         </div>
       </div>
-      <div className="p-4 grid grid-cols-2 gap-3">
-        {menuItems.map((item) => (
-          <button key={item.id} onClick={() => setCurrentView(item.id)} className="glass-card rounded-2xl p-4 border border-border/50 hover:border-primary/30 transition-all text-left">
-            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-3`}>
-              <item.icon className="w-6 h-6 text-white" />
+
+      {/* Main Content */}
+      <div className="flex-1 min-h-screen">
+        {/* Top Header */}
+        <header className="h-16 flex items-center justify-between px-4 border-b border-border/50 bg-card/50 backdrop-blur sticky top-0 z-30">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="w-10 h-10 rounded-xl hover:bg-muted flex items-center justify-center"
+            >
+              {sidebarOpen ? (
+                <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+              ) : (
+                <Menu className="w-5 h-5 text-muted-foreground" />
+              )}
+            </button>
+            <h1 className="text-lg font-semibold text-foreground">
+              {menuItems.find(m => m.id === currentView)?.title || 'Dashboard'}
+            </h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground hidden sm:block">{user?.email}</span>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
+              <span className="text-white text-sm font-bold">{user?.email?.charAt(0).toUpperCase()}</span>
             </div>
-            <h3 className="text-sm font-bold text-foreground">{item.title}</h3>
-            <p className="text-muted-foreground text-xs">{item.description}</p>
-          </button>
-        ))}
+          </div>
+        </header>
+
+        {/* Page Content - Embedded without back buttons */}
+        <div className="admin-content-area">
+          {renderContent()}
+        </div>
       </div>
     </div>
   );

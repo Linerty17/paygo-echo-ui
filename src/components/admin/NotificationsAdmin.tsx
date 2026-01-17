@@ -129,43 +129,47 @@ const NotificationsAdmin: React.FC<NotificationsAdminProps> = ({ onBack }) => {
     return new Date(date).toLocaleDateString();
   };
 
+  const showHeader = onBack && typeof onBack === 'function' && onBack.toString() !== '() => {}';
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="glass-header text-foreground p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={onBack}>
-              <ArrowLeft className="w-6 h-6 text-primary" />
-            </button>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-semibold">Notifications</h1>
+      {/* Header - only show if onBack is a real function */}
+      {showHeader && (
+        <div className="glass-header text-foreground p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <button onClick={onBack}>
+                <ArrowLeft className="w-6 h-6 text-primary" />
+              </button>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-semibold">Notifications</h1>
+                {unreadCount > 0 && (
+                  <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+                    {unreadCount}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="flex gap-2">
               {unreadCount > 0 && (
-                <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
-                  {unreadCount}
-                </span>
+                <button
+                  onClick={markAllAsRead}
+                  className="glass px-3 h-10 rounded-xl flex items-center justify-center gap-2"
+                >
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  <span className="text-xs text-primary">Read All</span>
+                </button>
               )}
+              <button
+                onClick={fetchNotifications}
+                className="glass w-10 h-10 rounded-xl flex items-center justify-center"
+              >
+                <RefreshCw className={`w-5 h-5 text-primary ${loading ? 'animate-spin' : ''}`} />
+              </button>
             </div>
           </div>
-          <div className="flex gap-2">
-            {unreadCount > 0 && (
-              <button
-                onClick={markAllAsRead}
-                className="glass px-3 h-10 rounded-xl flex items-center justify-center gap-2"
-              >
-                <CheckCircle className="w-4 h-4 text-primary" />
-                <span className="text-xs text-primary">Read All</span>
-              </button>
-            )}
-            <button
-              onClick={fetchNotifications}
-              className="glass w-10 h-10 rounded-xl flex items-center justify-center"
-            >
-              <RefreshCw className={`w-5 h-5 text-primary ${loading ? 'animate-spin' : ''}`} />
-            </button>
-          </div>
         </div>
-      </div>
+      )}
 
       <div className="p-4 space-y-4">
         {/* Filter Tabs */}

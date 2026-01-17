@@ -197,33 +197,37 @@ const UsersAdmin: React.FC<UsersAdminProps> = ({ onBack, onLogAudit }) => {
     });
   };
 
+  const showHeader = onBack && typeof onBack === 'function' && onBack.toString() !== '() => {}';
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="glass-header text-foreground p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={onBack}>
-              <ArrowLeft className="w-6 h-6 text-primary" />
-            </button>
-            <h1 className="text-xl font-semibold">User Management</h1>
-          </div>
-          <div className="flex gap-2">
-            <button 
-              onClick={exportToCSV}
-              className="glass w-10 h-10 rounded-xl flex items-center justify-center"
-            >
-              <Download className="w-5 h-5 text-primary" />
-            </button>
-            <button 
-              onClick={fetchUsers}
-              className="glass w-10 h-10 rounded-xl flex items-center justify-center"
-            >
-              <RefreshCw className={`w-5 h-5 text-primary ${loading ? 'animate-spin' : ''}`} />
-            </button>
+      {/* Header - only show if onBack is a real function */}
+      {showHeader && (
+        <div className="glass-header text-foreground p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <button onClick={onBack}>
+                <ArrowLeft className="w-6 h-6 text-primary" />
+              </button>
+              <h1 className="text-xl font-semibold">User Management</h1>
+            </div>
+            <div className="flex gap-2">
+              <button 
+                onClick={exportToCSV}
+                className="glass w-10 h-10 rounded-xl flex items-center justify-center"
+              >
+                <Download className="w-5 h-5 text-primary" />
+              </button>
+              <button 
+                onClick={fetchUsers}
+                className="glass w-10 h-10 rounded-xl flex items-center justify-center"
+              >
+                <RefreshCw className={`w-5 h-5 text-primary ${loading ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="p-4 space-y-4">
         {/* Stats */}
