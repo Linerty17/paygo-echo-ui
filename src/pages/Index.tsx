@@ -74,8 +74,11 @@ const Index = () => {
   // Get user data from profile
   const userName = profile?.name || '';
   const userEmail = profile?.email || user?.email || '';
-  const currentBalance = profile?.balance || 0;
+  const currentBalance = profile?.balance ?? 0;
   const userLevel = profile?.level || 1;
+  
+  // Profile is still loading if we have a user but no profile yet
+  const profileLoading = isAuthenticated && !profile;
 
   // Handle real-time notifications
   useEffect(() => {
@@ -413,9 +416,9 @@ const Index = () => {
     );
   }
 
-  // Show loading state while checking auth
+  // Show loading state while checking auth or loading profile
   // Important: don't block logged-out users with account-status loading.
-  if (loading || (isAuthenticated && accountStatus === 'loading')) {
+  if (loading || (isAuthenticated && accountStatus === 'loading') || profileLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
