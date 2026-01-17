@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Building2, ArrowUpRight, Wallet } from 'lucide-react';
+import { ArrowLeft, Building2, ArrowUpRight, Wallet, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useGlobalPayId } from '@/hooks/useGlobalPayId';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface TransferToBankProps {
   onBack: () => void;
@@ -16,6 +26,7 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack, onTransferCompl
   const [amount, setAmount] = useState('');
   const [accountName, setAccountName] = useState('');
   const [payIdCode, setPayIdCode] = useState('');
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const { globalPayId } = useGlobalPayId();
 
   const banks = [
@@ -26,7 +37,7 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack, onTransferCompl
     'Mobley', 'Kuda', 'VBank', 'Moniepoint', 'Palmpay', 'Opay'
   ];
 
-  const handleTransfer = () => {
+  const handleTransferClick = () => {
     if (!selectedBank || !accountNumber || !amount || !accountName || !payIdCode) {
       alert('Please fill all fields');
       return;
@@ -45,9 +56,17 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack, onTransferCompl
       return;
     }
 
+    // Show confirmation dialog
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmTransfer = () => {
+    const transferAmount = parseFloat(amount.replace(/[₦,]/g, ''));
+    setShowConfirmDialog(false);
     onTransferComplete(`₦${transferAmount.toLocaleString()}`);
   };
 
+  const formattedAmount = amount ? `₦${parseFloat(amount.replace(/[₦,]/g, '') || '0').toLocaleString()}` : '₦0';
 
   return (
     <div className="min-h-screen bg-background">
@@ -152,13 +171,62 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack, onTransferCompl
         </div>
 
         <Button 
-          onClick={handleTransfer}
+          onClick={handleTransferClick}
           className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-lavender hover:opacity-90 text-white text-lg font-semibold shadow-lg shadow-primary/30 border-0 mt-4"
         >
           <ArrowUpRight className="w-5 h-5 mr-2" />
           Transfer Money
         </Button>
       </div>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent className="glass border border-white/10 rounded-3xl max-w-sm mx-auto">
+          <AlertDialogHeader className="text-center">
+            <div className="mx-auto w-16 h-16 rounded-full bg-amber-500/20 flex items-center justify-center mb-4">
+              <AlertTriangle className="w-8 h-8 text-amber-500" />
+            </div>
+            <AlertDialogTitle className="text-xl font-bold text-foreground">
+              Confirm Transfer
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground space-y-3 mt-4">
+              <p>You are about to transfer:</p>
+              <div className="glass rounded-2xl p-4 border border-white/10 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Amount</span>
+                  <span className="font-bold text-foreground">{formattedAmount}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Bank</span>
+                  <span className="font-medium text-foreground">{selectedBank}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Account</span>
+                  <span className="font-medium text-foreground">{accountNumber}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Name</span>
+                  <span className="font-medium text-foreground">{accountName}</span>
+                </div>
+              </div>
+              <p className="text-sm text-amber-500 font-medium">
+                This action cannot be undone.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-col">
+            <AlertDialogAction 
+              onClick={handleConfirmTransfer}
+              className="w-full h-12 rounded-2xl bg-gradient-to-r from-primary to-lavender hover:opacity-90 text-white font-semibold"
+            >
+              Confirm Transfer
+            </AlertDialogAction>
+            <AlertDialogCancel className="w-full h-12 rounded-2xl glass border border-white/10 text-foreground hover:bg-white/5">
+              Cancel
+            </AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
