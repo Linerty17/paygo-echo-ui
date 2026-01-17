@@ -315,6 +315,11 @@ const Index = () => {
     console.log('Checking payment status...');
   };
 
+  const handleGoToDashboardDirect = () => {
+    setNavigationHistory([]);
+    setAppState('dashboard');
+  };
+
   const handleDataPurchaseSuccess = async () => {
     const purchaseValue = parseFloat(purchaseAmount.replace(/[₦,]/g, ''));
     await updateProfile({ balance: currentBalance - purchaseValue });
@@ -596,6 +601,7 @@ const Index = () => {
           onSelectOnline={() => navigateToPage('paymentPending')}
           onSelectOffline={() => navigateToPage('preparingPayment')}
           onTapToUpload={() => navigateToPage('onlinePaymentUpload')}
+          userId={user?.id}
         />
         <LiveChat />
       </>
@@ -690,9 +696,9 @@ const Index = () => {
     return (
       <>
         <PaymentPending 
-          onBack={handleBackToDashboard} 
+          onBack={handleGoToDashboardDirect} 
           onRefresh={handleRefreshPayment}
-          onGoToDashboard={handleBackToDashboard}
+          onGoToDashboard={handleGoToDashboardDirect}
         />
         <LiveChat />
       </>
