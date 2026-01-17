@@ -1,6 +1,5 @@
-
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, CreditCard, User, Mail, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import TypewriterText from './TypewriterText';
 
@@ -25,64 +24,94 @@ const BuyPayId: React.FC<BuyPayIdProps> = ({ onBack, onPayClicked, userName, use
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="glass-header text-foreground p-4">
-        <div className="flex items-center space-x-4">
-          <button onClick={onBack}>
-            <ArrowLeft className="w-6 h-6 text-primary" />
+      {/* Modern Header */}
+      <div className="px-4 pt-4 pb-3">
+        <div className="flex items-center justify-between">
+          <button 
+            onClick={onBack}
+            className="glass w-10 h-10 rounded-2xl flex items-center justify-center border border-white/10 hover:border-primary/30 transition-all"
+          >
+            <ArrowLeft className="w-5 h-5 text-foreground" />
           </button>
-          <h1 className="text-xl font-semibold">Buy PAY ID</h1>
+          <h1 className="text-lg font-semibold text-foreground">Buy PAY ID</h1>
+          <div className="w-10" />
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
-        <div>
-          <label className="block text-foreground text-lg font-medium mb-3">Amount</label>
-          <div className="w-full h-14 glass-card rounded-xl flex items-center px-4">
-            <span className="text-lg text-muted-foreground">{amount}</span>
+      <div className="px-4 pb-8 space-y-5">
+        {/* Hero Card */}
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-lavender/10 to-primary/5 rounded-3xl" />
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
+          
+          <div className="relative glass rounded-3xl p-6 border border-white/10 text-center">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-primary to-lavender flex items-center justify-center mb-4 shadow-lg shadow-primary/30">
+              <CreditCard className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-foreground mb-2">Get Your PAY ID</h2>
+            <p className="text-muted-foreground">Unlock full access to PayGo features</p>
+            
+            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 glass rounded-full border border-primary/20">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-primary font-bold">{amount}</span>
+            </div>
           </div>
         </div>
 
-        <div>
-          <label className="block text-foreground text-lg font-medium mb-3">Full Name</label>
-          <div className="w-full h-14 glass-card rounded-xl flex items-center px-4">
-            <span className="text-lg text-foreground">
-              <TypewriterText 
-                text={userName} 
-                speed={100}
-                onComplete={handleTypewriterComplete}
-              />
-            </span>
+        {/* Form Fields */}
+        <div className="space-y-4">
+          <div className="glass rounded-2xl p-4 border border-white/10">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                <User className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">Full Name</p>
+                <p className="text-foreground font-medium">
+                  <TypewriterText 
+                    text={userName} 
+                    speed={100}
+                    onComplete={handleTypewriterComplete}
+                  />
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div>
-          <label className="block text-foreground text-lg font-medium mb-3">Your Email Address</label>
-          <div className="w-full h-14 glass-card rounded-xl flex items-center px-4">
-            <span className="text-lg text-foreground">
-              <TypewriterText 
-                text={userEmail} 
-                speed={80}
-              />
-            </span>
+          <div className="glass rounded-2xl p-4 border border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
+                <Mail className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">Email Address</p>
+                <p className="text-foreground font-medium">
+                  <TypewriterText 
+                    text={userEmail} 
+                    speed={80}
+                  />
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
         {showPayButton && (
           <Button 
             onClick={handlePay}
-            className="w-full h-14 bg-primary hover:bg-primary/80 text-primary-foreground text-lg font-medium rounded-xl mt-8 animate-fade-in lavender-glow"
+            className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-lavender hover:opacity-90 text-white text-lg font-semibold shadow-lg shadow-primary/30 border-0 animate-fade-in"
           >
-            Pay
+            <CreditCard className="w-5 h-5 mr-2" />
+            Pay {amount}
           </Button>
         )}
 
-        <p className="text-center text-muted-foreground text-sm mt-6">
-          Your PAY ID will be displayed on the app once your payment is confirmed.
+        <p className="text-center text-muted-foreground text-sm">
+          Your PAY ID will be displayed once payment is confirmed
         </p>
 
-        <div className="text-center mt-12">
-          <p className="text-foreground font-semibold">PayGo Financial Services LTD</p>
+        <div className="text-center pt-4">
+          <p className="text-foreground font-semibold">PayGo Financial Services</p>
         </div>
       </div>
     </div>
