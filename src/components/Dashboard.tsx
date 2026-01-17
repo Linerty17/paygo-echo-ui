@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Eye, EyeOff, ArrowUpRight, Sparkles, User, CreditCard, Play, Phone, Database, Headphones, Globe, Gift, UserCircle, LogOut, TrendingUp, Zap, ChevronRight } from 'lucide-react';
+import { Bell, Eye, EyeOff, ArrowUpRight, Sparkles, User, CreditCard, Play, Phone, Database, Headphones, Globe, Gift, UserCircle, LogOut, TrendingUp, Zap, ChevronRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PromotionsCarousel from './PromotionsCarousel';
 import OnboardingModal from './OnboardingModal';
 import VideoPlayer from './VideoPlayer';
+import { toast } from 'sonner';
 
 interface DashboardProps {
   userName: string;
@@ -16,6 +17,10 @@ interface DashboardProps {
   onNavigate: (page: string) => void;
   onLogout: () => void;
   currentBalance: string;
+  referralCount?: number;
+  userLevel?: number;
+  onClaimRewards?: (amount: number) => Promise<void>;
+  hasClaimedWeeklyReward?: boolean;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({
@@ -28,16 +33,28 @@ const Dashboard: React.FC<DashboardProps> = ({
   onCloseOnboarding,
   onNavigate,
   onLogout,
-  currentBalance
+  currentBalance,
+  referralCount = 0,
+  userLevel = 1,
+  onClaimRewards,
+  hasClaimedWeeklyReward = false
 }) => {
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [showVideo, setShowVideo] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const weeklyRewards = "₦180,000.00";
+  const [claiming, setClaiming] = useState(false);
+  const [claimed, setClaimed] = useState(hasClaimedWeeklyReward);
+  
+  const weeklyRewardAmount = 180000;
+  const weeklyRewards = claimed ? "₦0.00" : `₦${weeklyRewardAmount.toLocaleString()}.00`;
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    setClaimed(hasClaimedWeeklyReward);
+  }, [hasClaimedWeeklyReward]);
 
   const handleWatchVideo = () => {
     setShowVideo(true);
@@ -45,6 +62,23 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   const handleCloseVideo = () => {
     setShowVideo(false);
+  };
+
+  const handleClaimRewards = async () => {
+    if (claimed || claiming) return;
+    
+    setClaiming(true);
+    try {
+      if (onClaimRewards) {
+        await onClaimRewards(weeklyRewardAmount);
+      }
+      setClaimed(true);
+      toast.success(`₦${weeklyRewardAmount.toLocaleString()} added to your balance!`);
+    } catch (error) {
+      toast.error('Failed to claim rewards');
+    } finally {
+      setClaiming(false);
+    }
   };
 
   const services = [
@@ -183,8 +217,24 @@ const Dashboard: React.FC<DashboardProps> = ({
                       <p className="text-sm font-bold text-foreground">{weeklyRewards}</p>
                     </div>
                   </div>
-                  <button className="glass px-2 py-1 rounded-lg border border-amber-500/20">
-                    <span className="text-[10px] font-semibold text-amber-400">Claim</span>
+                  <button 
+                    onClick={handleClaimRewards}
+                    disabled={claimed || claiming}
+                    className={`glass px-2 py-1 rounded-lg border transition-all ${
+                      claimed 
+                        ? 'border-emerald-500/20 bg-emerald-500/10' 
+                        : 'border-amber-500/20 hover:bg-amber-500/10'
+                    }`}
+                  >
+                    {claiming ? (
+                      <span className="text-[10px] font-semibold text-amber-400">...</span>
+                    ) : claimed ? (
+                      <span className="text-[10px] font-semibold text-emerald-400 flex items-center gap-1">
+                        <Check className="w-3 h-3" /> Claimed
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-semibold text-amber-400">Claim</span>
+                    )}
                   </button>
                 </div>
               </div>
@@ -250,19 +300,19 @@ const Dashboard: React.FC<DashboardProps> = ({
           <PromotionsCarousel />
         </div>
 
-        {/* Quick Stats Bar - Compact */}
+        {/* Quick Stats Bar - Compact with Real Data */}
         <div className={`transition-all duration-700 delay-600 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
           <div className="glass rounded-xl p-3 border border-white/10 grid grid-cols-3 gap-2">
             <div className="text-center">
-              <p className="text-lg font-bold text-foreground">23</p>
+              <p className="text-lg font-bold text-foreground">0</p>
               <p className="text-[8px] text-muted-foreground uppercase tracking-wider">Transactions</p>
             </div>
             <div className="text-center border-x border-white/10">
-              <p className="text-lg font-bold text-emerald-400">5</p>
+              <p className="text-lg font-bold text-emerald-400">{referralCount}</p>
               <p className="text-[8px] text-muted-foreground uppercase tracking-wider">Referrals</p>
             </div>
             <div className="text-center">
-              <p className="text-lg font-bold text-primary">Lv.1</p>
+              <p className="text-lg font-bold text-primary">Lv.{userLevel}</p>
               <p className="text-[8px] text-muted-foreground uppercase tracking-wider">Status</p>
             </div>
           </div>

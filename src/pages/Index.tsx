@@ -44,11 +44,28 @@ const Index = () => {
   const [selectedUpgradeLevel, setSelectedUpgradeLevel] = useState('');
   const [selectedUpgradePrice, setSelectedUpgradePrice] = useState('');
   const [isFirstLogin, setIsFirstLogin] = useState(false);
+  const [referralCount, setReferralCount] = useState(0);
+  const [hasClaimedWeeklyReward, setHasClaimedWeeklyReward] = useState(false);
 
   // Get user data from profile
   const userName = profile?.name || '';
   const userEmail = profile?.email || user?.email || '';
-  const currentBalance = profile?.balance || 180000;
+  const currentBalance = profile?.balance || 0;
+  const userLevel = profile?.level || 1;
+
+  // Fetch referral count on mount
+  useEffect(() => {
+    if (profile) {
+      fetchReferrals().then(referrals => {
+        setReferralCount(referrals.length);
+      });
+    }
+  }, [profile]);
+
+  const handleClaimRewards = async (amount: number) => {
+    await updateProfile({ balance: currentBalance + amount });
+    setHasClaimedWeeklyReward(true);
+  };
 
   // Handle browser back button and prevent app exit
   useEffect(() => {
@@ -557,6 +574,10 @@ const Index = () => {
         onNavigate={handleNavigate}
         onLogout={handleLogout}
         currentBalance={formatBalance(currentBalance)}
+        referralCount={referralCount}
+        userLevel={userLevel}
+        onClaimRewards={handleClaimRewards}
+        hasClaimedWeeklyReward={hasClaimedWeeklyReward}
       />
       <LiveChat />
     </>
