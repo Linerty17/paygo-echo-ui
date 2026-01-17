@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, CheckCircle, XCircle, Clock, Eye, RefreshCw, Image, Bell } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Clock, Eye, RefreshCw, Image, Bell, Download, Search, Filter, CheckSquare, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface PaymentUpload {
   id: string;
@@ -20,14 +28,19 @@ interface PaymentUpload {
 
 interface PaymentUploadsAdminProps {
   onBack: () => void;
+  onLogAudit: (action: string, entityType: string, entityId: string, details: object) => void;
 }
 
-const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack }) => {
+const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack, onLogAudit }) => {
   const [uploads, setUploads] = useState<PaymentUpload[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedUpload, setSelectedUpload] = useState<PaymentUpload | null>(null);
   const [processing, setProcessing] = useState(false);
   const [newPaymentCount, setNewPaymentCount] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterType, setFilterType] = useState<string>('all');
+  const [selectedPayments, setSelectedPayments] = useState<string[]>([]);
 
   const fetchUploads = async () => {
     setLoading(true);
@@ -68,17 +81,14 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack }) => 
           console.log('New payment received:', payload);
           const newPayment = payload.new as PaymentUpload;
           
-          // Add to uploads list
           setUploads(prev => [newPayment, ...prev]);
           setNewPaymentCount(prev => prev + 1);
           
-          // Show toast notification
           toast({
             title: "🔔 New Payment Submitted!",
             description: `${newPayment.user_name} submitted ₦${newPayment.amount.toLocaleString()}`,
           });
 
-          // Play notification sound (optional browser notification)
           if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('New Payment Submitted', {
               body: `${newPayment.user_name} - ₦${newPayment.amount.toLocaleString()}`,
@@ -95,14 +105,12 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack }) => 
           table: 'payment_uploads'
         },
         (payload) => {
-          console.log('Payment updated:', payload);
           const updatedPayment = payload.new as PaymentUpload;
           setUploads(prev => prev.map(u => u.id === updatedPayment.id ? updatedPayment : u));
         }
       )
       .subscribe();
 
-    // Request notification permission
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
@@ -111,6 +119,17 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack }) => 
       supabase.removeChannel(channel);
     };
   }, []);
+
+  const filteredUploads = uploads.filter(upload => {
+    const matchesSearch = 
+      upload.user_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      upload.user_email.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || upload.status === filterStatus;
+    const matchesType = filterType === 'all' || upload.payment_type === filterType;
+    return matchesSearch && matchesStatus && matchesType;
+  });
+
+  const uniqueTypes = [...new Set(uploads.map(u => u.payment_type))];
 
   const handleApprove = async (upload: PaymentUpload) => {
     setProcessing(true);
@@ -128,6 +147,13 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack }) => 
       toast({
         title: "Payment Approved!",
         description: `Payment from ${upload.user_name} has been approved`,
+      });
+
+      onLogAudit('approve_payment', 'payment_uploads', upload.id, {
+        user_name: upload.user_name,
+        user_email: upload.user_email,
+        amount: upload.amount,
+        payment_type: upload.payment_type
       });
 
       fetchUploads();
@@ -162,6 +188,13 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack }) => 
         description: `Payment from ${upload.user_name} has been declined`,
       });
 
+      onLogAudit('decline_payment', 'payment_uploads', upload.id, {
+        user_name: upload.user_name,
+        user_email: upload.user_email,
+        amount: upload.amount,
+        payment_type: upload.payment_type
+      });
+
       fetchUploads();
       setSelectedUpload(null);
     } catch (error) {
@@ -174,6 +207,92 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack }) => 
     } finally {
       setProcessing(false);
     }
+  };
+
+  const handleBulkApprove = async () => {
+    if (selectedPayments.length === 0) return;
+    setProcessing(true);
+    
+    try {
+      const pendingSelected = filteredUploads
+        .filter(u => selectedPayments.includes(u.id) && u.status === 'pending');
+      
+      for (const upload of pendingSelected) {
+        await supabase
+          .from('payment_uploads')
+          .update({ 
+            status: 'approved',
+            processed_at: new Date().toISOString()
+          })
+          .eq('id', upload.id);
+
+        onLogAudit('bulk_approve_payment', 'payment_uploads', upload.id, {
+          user_name: upload.user_name,
+          amount: upload.amount
+        });
+      }
+
+      toast({
+        title: "Bulk Approved!",
+        description: `${pendingSelected.length} payments approved`,
+      });
+
+      setSelectedPayments([]);
+      fetchUploads();
+    } catch (error) {
+      console.error('Error bulk approving:', error);
+      toast({
+        title: "Error",
+        description: "Could not complete bulk approval",
+        variant: "destructive"
+      });
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const toggleSelectPayment = (id: string) => {
+    setSelectedPayments(prev => 
+      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
+    );
+  };
+
+  const selectAllPending = () => {
+    const pendingIds = filteredUploads.filter(u => u.status === 'pending').map(u => u.id);
+    if (selectedPayments.length === pendingIds.length) {
+      setSelectedPayments([]);
+    } else {
+      setSelectedPayments(pendingIds);
+    }
+  };
+
+  const exportToCSV = () => {
+    const headers = ['User', 'Email', 'Amount', 'Type', 'Status', 'Submitted', 'Processed'];
+    const rows = filteredUploads.map(upload => [
+      upload.user_name,
+      upload.user_email,
+      upload.amount,
+      upload.payment_type,
+      upload.status,
+      new Date(upload.created_at).toLocaleString(),
+      upload.processed_at ? new Date(upload.processed_at).toLocaleString() : ''
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `payments_export_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+
+    toast({
+      title: "Exported!",
+      description: `${filteredUploads.length} payments exported`,
+    });
   };
 
   const getStatusColor = (status: string) => {
@@ -192,9 +311,8 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack }) => 
     }
   };
 
-  const clearNewPaymentBadge = () => {
-    setNewPaymentCount(0);
-  };
+  const pendingCount = uploads.filter(u => u.status === 'pending').length;
+  const selectedPendingCount = filteredUploads.filter(u => selectedPayments.includes(u.id) && u.status === 'pending').length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -209,7 +327,7 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack }) => 
               <h1 className="text-xl font-semibold">Payment Uploads</h1>
               {newPaymentCount > 0 && (
                 <button 
-                  onClick={clearNewPaymentBadge}
+                  onClick={() => setNewPaymentCount(0)}
                   className="flex items-center gap-1 px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse"
                 >
                   <Bell className="w-3 h-3" />
@@ -218,35 +336,139 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack }) => 
               )}
             </div>
           </div>
-          <button 
-            onClick={() => { fetchUploads(); clearNewPaymentBadge(); }}
-            className="glass w-10 h-10 rounded-xl flex items-center justify-center"
-          >
-            <RefreshCw className={`w-5 h-5 text-primary ${loading ? 'animate-spin' : ''}`} />
-          </button>
+          <div className="flex gap-2">
+            <button onClick={exportToCSV} className="glass w-10 h-10 rounded-xl flex items-center justify-center">
+              <Download className="w-5 h-5 text-primary" />
+            </button>
+            <button 
+              onClick={() => { fetchUploads(); setNewPaymentCount(0); }}
+              className="glass w-10 h-10 rounded-xl flex items-center justify-center"
+            >
+              <RefreshCw className={`w-5 h-5 text-primary ${loading ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="p-4 space-y-4">
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="glass-card rounded-xl p-3 text-center bg-amber-500/10">
+            <Clock className="w-5 h-5 text-amber-500 mx-auto mb-1" />
+            <p className="text-xl font-bold text-foreground">{pendingCount}</p>
+            <p className="text-xs text-muted-foreground">Pending</p>
+          </div>
+          <div className="glass-card rounded-xl p-3 text-center bg-green-500/10">
+            <CheckCircle className="w-5 h-5 text-green-500 mx-auto mb-1" />
+            <p className="text-xl font-bold text-foreground">{uploads.filter(u => u.status === 'approved').length}</p>
+            <p className="text-xs text-muted-foreground">Approved</p>
+          </div>
+          <div className="glass-card rounded-xl p-3 text-center bg-red-500/10">
+            <XCircle className="w-5 h-5 text-red-500 mx-auto mb-1" />
+            <p className="text-xl font-bold text-foreground">{uploads.filter(u => u.status === 'declined').length}</p>
+            <p className="text-xs text-muted-foreground">Declined</p>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search by name or email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-12 h-12 glass-input rounded-xl"
+          />
+        </div>
+
+        {/* Filters */}
+        <div className="grid grid-cols-2 gap-3">
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger className="h-10 glass-input rounded-xl">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="approved">Approved</SelectItem>
+              <SelectItem value="declined">Declined</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={filterType} onValueChange={setFilterType}>
+            <SelectTrigger className="h-10 glass-input rounded-xl">
+              <SelectValue placeholder="Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              {uniqueTypes.map(type => (
+                <SelectItem key={type} value={type}>{type.replace('_', ' ')}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Bulk Actions */}
+        {pendingCount > 0 && (
+          <div className="flex items-center justify-between glass rounded-xl p-3">
+            <button onClick={selectAllPending} className="flex items-center gap-2 text-sm text-muted-foreground">
+              {selectedPayments.length > 0 ? (
+                <CheckSquare className="w-4 h-4 text-primary" />
+              ) : (
+                <Square className="w-4 h-4" />
+              )}
+              Select Pending ({pendingCount})
+            </button>
+            {selectedPendingCount > 0 && (
+              <Button
+                onClick={handleBulkApprove}
+                disabled={processing}
+                size="sm"
+                className="bg-green-500 hover:bg-green-600 text-white rounded-lg"
+              >
+                <CheckCircle className="w-4 h-4 mr-1" />
+                Approve ({selectedPendingCount})
+              </Button>
+            )}
+          </div>
+        )}
+
+        {/* Payments List */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
           </div>
-        ) : uploads.length === 0 ? (
+        ) : filteredUploads.length === 0 ? (
           <div className="text-center py-12">
             <Image className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-            <p className="text-muted-foreground">No payment uploads yet</p>
+            <p className="text-muted-foreground">No payment uploads found</p>
           </div>
         ) : (
-          uploads.map((upload) => (
+          filteredUploads.map((upload) => (
             <div 
               key={upload.id}
-              className="glass-card rounded-2xl p-4 border border-border/50"
+              className={`glass-card rounded-2xl p-4 border transition-colors ${
+                selectedPayments.includes(upload.id) 
+                  ? 'border-primary/50 bg-primary/5' 
+                  : 'border-border/50'
+              }`}
             >
               <div className="flex items-start justify-between mb-3">
-                <div>
-                  <p className="text-foreground font-semibold">{upload.user_name}</p>
-                  <p className="text-muted-foreground text-sm">{upload.user_email}</p>
+                <div className="flex items-start gap-3">
+                  {upload.status === 'pending' && (
+                    <button onClick={() => toggleSelectPayment(upload.id)}>
+                      {selectedPayments.includes(upload.id) ? (
+                        <CheckSquare className="w-5 h-5 text-primary" />
+                      ) : (
+                        <Square className="w-5 h-5 text-muted-foreground" />
+                      )}
+                    </button>
+                  )}
+                  <div>
+                    <p className="text-foreground font-semibold">{upload.user_name}</p>
+                    <p className="text-muted-foreground text-sm">{upload.user_email}</p>
+                  </div>
                 </div>
                 <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full ${getStatusColor(upload.status)}`}>
                   {getStatusIcon(upload.status)}
