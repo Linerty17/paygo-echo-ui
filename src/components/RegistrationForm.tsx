@@ -162,9 +162,14 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
-      <div className="absolute top-6 right-6">
-        <span className="text-primary font-medium">Need Help?</span>
-      </div>
+      <a 
+        href="https://t.me/officialbluepay" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="absolute top-6 right-6"
+      >
+        <span className="text-primary font-medium hover:underline cursor-pointer">Need Help?</span>
+      </a>
       
       <div className="w-full max-w-sm space-y-8">
         {/* Animated PayGo Logo moving from left to right continuously */}

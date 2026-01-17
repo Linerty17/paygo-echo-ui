@@ -428,7 +428,12 @@ const Profile: React.FC<ProfileProps> = ({
 
         {/* Help & Info Section */}
         <div className="glass rounded-3xl overflow-hidden border border-white/10">
-          <button className="w-full p-4 flex items-center justify-between border-b border-white/5 hover:bg-white/5 transition-all">
+          <a 
+            href="https://t.me/officialbluepay" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="w-full p-4 flex items-center justify-between border-b border-white/5 hover:bg-white/5 transition-all"
+          >
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
                 <HelpCircle className="w-5 h-5 text-white" />
@@ -439,7 +444,7 @@ const Profile: React.FC<ProfileProps> = ({
               </div>
             </div>
             <ChevronRight className="w-5 h-5 text-muted-foreground" />
-          </button>
+          </a>
 
           <button className="w-full p-4 flex items-center justify-between hover:bg-white/5 transition-all">
             <div className="flex items-center gap-3">
