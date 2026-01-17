@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Lock, Mail, Eye, EyeOff, Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Loader2, Lock, Mail, Eye, EyeOff, Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings, Menu, X, ChevronLeft, Search } from 'lucide-react';
 import PaymentUploadsAdmin from '@/components/admin/PaymentUploadsAdmin';
 import UsersAdmin from '@/components/admin/UsersAdmin';
 import ReferralsAdmin from '@/components/admin/ReferralsAdmin';
@@ -14,6 +14,13 @@ import NotificationsAdmin from '@/components/admin/NotificationsAdmin';
 import SettingsAdmin from '@/components/admin/SettingsAdmin';
 
 type AdminView = 'stats' | 'payments' | 'users' | 'referrals' | 'audit' | 'notifications' | 'settings';
+
+interface SearchResult {
+  type: 'user' | 'payment' | 'referral';
+  id: string;
+  title: string;
+  subtitle: string;
+}
 
 const AdminPanel = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -26,6 +33,11 @@ const AdminPanel = () => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [currentView, setCurrentView] = useState<AdminView>('stats');
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -106,6 +118,124 @@ const AdminPanel = () => {
     setIsAdmin(false);
     setCurrentView('stats');
   };
+
+  // Global search function
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+    if (query.length < 2) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    setSearchLoading(true);
+    setShowSearchResults(true);
+
+    try {
+      const results: SearchResult[] = [];
+      const searchTerm = `%${query}%`;
+
+      // Search users
+      const { data: users } = await supabase
+        .from('profiles')
+        .select('id, name, email, phone')
+        .or(`name.ilike.${searchTerm},email.ilike.${searchTerm},phone.ilike.${searchTerm}`)
+        .limit(5);
+
+      if (users) {
+        users.forEach(u => {
+          results.push({
+            type: 'user',
+            id: u.id,
+            title: u.name,
+            subtitle: u.email
+          });
+        });
+      }
+
+      // Search payments
+      const { data: payments } = await supabase
+        .from('payment_uploads')
+        .select('id, user_name, user_email, amount, status')
+        .or(`user_name.ilike.${searchTerm},user_email.ilike.${searchTerm}`)
+        .limit(5);
+
+      if (payments) {
+        payments.forEach(p => {
+          results.push({
+            type: 'payment',
+            id: p.id,
+            title: `${p.user_name} - ₦${p.amount.toLocaleString()}`,
+            subtitle: `${p.status} • ${p.user_email}`
+          });
+        });
+      }
+
+      // Search referrals by joining with profiles
+      const { data: referrals } = await supabase
+        .from('referrals')
+        .select(`
+          id,
+          bonus_amount,
+          status,
+          referrer:profiles!referrals_referrer_id_fkey(name, email),
+          referred:profiles!referrals_referred_id_fkey(name, email)
+        `)
+        .limit(10);
+
+      if (referrals) {
+        referrals.forEach((r: any) => {
+          const referrerMatch = r.referrer?.name?.toLowerCase().includes(query.toLowerCase()) ||
+                               r.referrer?.email?.toLowerCase().includes(query.toLowerCase());
+          const referredMatch = r.referred?.name?.toLowerCase().includes(query.toLowerCase()) ||
+                               r.referred?.email?.toLowerCase().includes(query.toLowerCase());
+          
+          if (referrerMatch || referredMatch) {
+            results.push({
+              type: 'referral',
+              id: r.id,
+              title: `${r.referrer?.name || 'Unknown'} → ${r.referred?.name || 'Unknown'}`,
+              subtitle: `₦${r.bonus_amount.toLocaleString()} • ${r.status}`
+            });
+          }
+        });
+      }
+
+      setSearchResults(results.slice(0, 10));
+    } catch (error) {
+      console.error('Search error:', error);
+    }
+
+    setSearchLoading(false);
+  };
+
+  const handleResultClick = (result: SearchResult) => {
+    setShowSearchResults(false);
+    setSearchQuery('');
+    
+    switch (result.type) {
+      case 'user':
+        setCurrentView('users');
+        break;
+      case 'payment':
+        setCurrentView('payments');
+        break;
+      case 'referral':
+        setCurrentView('referrals');
+        break;
+    }
+  };
+
+  // Close search on click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSearchResults(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   if (loading) {
     return (
@@ -288,12 +418,69 @@ const AdminPanel = () => {
                 <Menu className="w-5 h-5 text-muted-foreground" />
               )}
             </button>
-            <h1 className="text-lg font-semibold text-foreground">
+            <h1 className="text-lg font-semibold text-foreground hidden sm:block">
               {menuItems.find(m => m.id === currentView)?.title || 'Dashboard'}
             </h1>
           </div>
+
+          {/* Global Search */}
+          <div ref={searchRef} className="relative flex-1 max-w-md mx-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search users, payments, referrals..."
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
+                className="pl-10 h-10 bg-muted/50 border-border/50 rounded-xl text-sm"
+              />
+              {searchLoading && (
+                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-muted-foreground" />
+              )}
+            </div>
+
+            {/* Search Results Dropdown */}
+            {showSearchResults && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50">
+                {searchResults.length === 0 ? (
+                  <div className="p-4 text-center text-muted-foreground text-sm">
+                    {searchLoading ? 'Searching...' : 'No results found'}
+                  </div>
+                ) : (
+                  <div className="max-h-80 overflow-y-auto">
+                    {searchResults.map((result) => (
+                      <button
+                        key={`${result.type}-${result.id}`}
+                        onClick={() => handleResultClick(result)}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors border-b border-border/50 last:border-b-0"
+                      >
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                          result.type === 'user' ? 'bg-blue-500/10 text-blue-500' :
+                          result.type === 'payment' ? 'bg-green-500/10 text-green-500' :
+                          'bg-purple-500/10 text-purple-500'
+                        }`}>
+                          {result.type === 'user' && <Users className="w-4 h-4" />}
+                          {result.type === 'payment' && <Image className="w-4 h-4" />}
+                          {result.type === 'referral' && <Gift className="w-4 h-4" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">{result.title}</p>
+                          <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>
+                        </div>
+                        <span className="text-xs text-muted-foreground capitalize px-2 py-1 bg-muted rounded-md">
+                          {result.type}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground hidden sm:block">{user?.email}</span>
+            <span className="text-xs text-muted-foreground hidden md:block">{user?.email}</span>
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
               <span className="text-white text-sm font-bold">{user?.email?.charAt(0).toUpperCase()}</span>
             </div>
