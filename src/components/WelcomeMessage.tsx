@@ -29,9 +29,9 @@ const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ onContinue }) => {
           <div className="absolute inset-0 w-full">
             <div className="animate-slide-logo-lr">
               <img 
-                src="/lovable-uploads/b28d1274-d692-42c9-81b7-61ae377c5939.png" 
+                src="/lovable-uploads/paygo-wide-logo.png" 
                 alt="PayGo Digital Logo" 
-                className="w-48 h-24 object-contain drop-shadow-2xl"
+                className="w-64 h-24 object-contain drop-shadow-2xl"
               />
             </div>
           </div>
