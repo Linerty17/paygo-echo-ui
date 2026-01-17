@@ -356,7 +356,7 @@ const Index = () => {
   if (accountStatus === 'banned' && isAuthenticated) {
     return (
       <BannedScreen 
-        onContactSupport={() => window.open('https://wa.me/message/your-support-link', '_blank')}
+        onContactSupport={() => window.open('https://t.me/officialbluepay', '_blank')}
       />
     );
   }

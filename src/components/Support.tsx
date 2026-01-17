@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, MessageCircle, Phone, Mail, HelpCircle } from 'lucide-react';
+import { ArrowLeft, MessageCircle, HelpCircle, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface SupportProps {
@@ -7,15 +7,8 @@ interface SupportProps {
 }
 
 const Support: React.FC<SupportProps> = ({ onBack }) => {
-  const handleLiveChat = () => {
-    const chatButton = document.querySelector('[aria-label="Open live chat"]') as HTMLButtonElement;
-    if (chatButton) {
-      chatButton.click();
-    }
-  };
-
-  const handleWhatsAppSupport = () => {
-    window.open('https://wa.me/2349023981389', '_blank');
+  const handleTelegramSupport = () => {
+    window.open('https://t.me/officialbluepay', '_blank');
   };
 
   return (
@@ -49,68 +42,25 @@ const Support: React.FC<SupportProps> = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Support Options */}
-        <div className="space-y-3">
-          {/* Live Chat */}
-          <div className="glass rounded-3xl p-5 border border-white/10">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
-                <MessageCircle className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">Live Chat</h3>
-                <p className="text-muted-foreground text-sm">Chat with our team in-app</p>
-              </div>
+        {/* Telegram Support */}
+        <div className="glass rounded-3xl p-5 border border-white/10">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg">
+              <Send className="w-6 h-6 text-white" />
             </div>
-            <Button 
-              onClick={handleLiveChat}
-              className="w-full h-12 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-600 hover:opacity-90 text-white font-semibold shadow-lg border-0"
-            >
-              <MessageCircle className="w-5 h-5 mr-2" />
-              Start Live Chat
-            </Button>
-          </div>
-
-          {/* WhatsApp Support */}
-          <div className="glass rounded-3xl p-5 border border-white/10">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
-                <Phone className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">WhatsApp</h3>
-                <p className="text-muted-foreground text-sm">Quick assistance on WhatsApp</p>
-              </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Telegram Support</h3>
+              <p className="text-muted-foreground text-sm">Chat with our team on Telegram</p>
             </div>
-            <Button 
-              onClick={handleWhatsAppSupport}
-              className="w-full h-12 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 hover:opacity-90 text-white font-semibold shadow-lg border-0"
-            >
-              <Phone className="w-5 h-5 mr-2" />
-              Chat on WhatsApp
-            </Button>
-            <p className="text-muted-foreground text-xs mt-3 text-center">+234 818 966 8037</p>
           </div>
-
-          {/* Email Support */}
-          <div className="glass rounded-3xl p-5 border border-white/10">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg">
-                <Mail className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">Email Support</h3>
-                <p className="text-muted-foreground text-sm">Send us a detailed message</p>
-              </div>
-            </div>
-            <Button 
-              onClick={() => window.open('mailto:support@paygo.com', '_blank')}
-              className="w-full h-12 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-600 hover:opacity-90 text-white font-semibold shadow-lg border-0"
-            >
-              <Mail className="w-5 h-5 mr-2" />
-              Send Email
-            </Button>
-          </div>
+          <Button 
+            onClick={handleTelegramSupport}
+            className="w-full h-12 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-600 hover:opacity-90 text-white font-semibold shadow-lg border-0"
+          >
+            <Send className="w-5 h-5 mr-2" />
+            Chat on Telegram
+          </Button>
+          <p className="text-muted-foreground text-xs mt-3 text-center">@officialbluepay</p>
         </div>
 
         {/* Footer */}
