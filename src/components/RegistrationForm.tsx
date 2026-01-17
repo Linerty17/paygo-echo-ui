@@ -215,9 +215,9 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
       <div className="absolute top-6 right-6">
-        <span className="text-purple-600 font-medium">Need Help?</span>
+        <span className="text-primary font-medium">Need Help?</span>
       </div>
       
       <div className="w-full max-w-sm space-y-8">
@@ -235,7 +235,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
         </div>
 
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Register to continue</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Register to continue</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -245,7 +245,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
               placeholder="Enter Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm placeholder:text-gray-500"
+              className="w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground"
               required
             />
           </div>
@@ -256,17 +256,17 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
               placeholder="Enter Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm placeholder:text-gray-500"
+              className="w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground"
               required
             />
           </div>
 
           <div>
             <Select value={country} onValueChange={setCountry} required>
-              <SelectTrigger className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm">
+              <SelectTrigger className="w-full h-14 text-lg glass-input rounded-xl">
                 <SelectValue placeholder="Select Country" />
               </SelectTrigger>
-              <SelectContent className="max-h-60">
+              <SelectContent className="max-h-60 glass-card border-white/20">
                 {countries.map((country) => (
                   <SelectItem key={country.code} value={country.code}>
                     <div className="flex items-center space-x-2">
@@ -285,14 +285,14 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
               placeholder="Enter Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm placeholder:text-gray-500"
+              className="w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground"
               required
             />
           </div>
 
           <Button
             type="submit"
-            className="w-full h-14 bg-black hover:bg-gray-800 text-white text-lg font-medium rounded-xl transition-colors"
+            className="w-full h-14 bg-primary hover:bg-primary/80 text-primary-foreground text-lg font-medium rounded-xl transition-colors lavender-glow"
           >
             Register
           </Button>
@@ -301,7 +301,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
         <div className="text-center mt-8">
           <button 
             onClick={onSwitchToLogin}
-            className="text-purple-600 font-medium"
+            className="text-primary font-medium"
           >
             Already have an account? Login
           </button>

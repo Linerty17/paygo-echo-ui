@@ -13,40 +13,40 @@ const EarnMore: React.FC<EarnMoreProps> = ({ onBack }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-4">
+      <div className="glass-header p-4">
         <div className="flex items-center space-x-4">
           <button onClick={onBack}>
-            <ArrowLeft className="w-6 h-6 text-gray-900" />
+            <ArrowLeft className="w-6 h-6 text-primary" />
           </button>
-          <h1 className="text-xl font-semibold text-gray-900">Earn More</h1>
+          <h1 className="text-xl font-semibold text-foreground">Earn More</h1>
         </div>
       </div>
 
-      <div className="min-h-screen bg-gradient-to-br from-purple-400 via-purple-500 to-orange-400 flex flex-col items-center justify-center p-6">
-        <div className="w-full max-w-md space-y-8 text-center text-white">
+      <div className="min-h-[calc(100vh-60px)] flex flex-col items-center justify-center p-6">
+        <div className="w-full max-w-md space-y-8 text-center">
           
           <div className="space-y-8">
-            <h1 className="text-5xl font-bold text-white mb-8">BluePay</h1>
+            <h1 className="text-5xl font-bold text-primary mb-8">BluePay</h1>
             
             <div className="space-y-6">
-              <p className="text-xl leading-relaxed">
+              <p className="text-xl leading-relaxed text-foreground">
                 Take your earnings to the next level with BluePay.
               </p>
               
-              <p className="text-lg leading-relaxed">
+              <p className="text-lg leading-relaxed text-muted-foreground">
                 Access exclusive features and higher earning opportunities.
               </p>
               
-              <p className="text-lg leading-relaxed">
+              <p className="text-lg leading-relaxed text-muted-foreground">
                 Join thousands of users already maximizing their income.
               </p>
             </div>
 
             <Button
               onClick={handleSignUpNow}
-              className="w-full h-16 bg-purple-600 hover:bg-purple-700 text-white text-xl font-bold rounded-xl transition-all duration-300 shadow-xl flex items-center justify-center space-x-3"
+              className="w-full h-16 bg-primary hover:bg-primary/80 text-primary-foreground text-xl font-bold rounded-xl transition-all duration-300 lavender-glow flex items-center justify-center space-x-3"
             >
               <span>Sign Up Now</span>
               <ExternalLink className="w-6 h-6" />

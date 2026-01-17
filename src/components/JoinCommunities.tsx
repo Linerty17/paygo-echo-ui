@@ -17,32 +17,32 @@ const JoinCommunities: React.FC<JoinCommunitiesProps> = ({ onBack }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-4">
+      <div className="glass-header p-4">
         <div className="flex items-center space-x-4">
           <button onClick={onBack}>
-            <ArrowLeft className="w-6 h-6 text-gray-900" />
+            <ArrowLeft className="w-6 h-6 text-primary" />
           </button>
-          <h1 className="text-xl font-semibold text-gray-900">Join Our Communities</h1>
+          <h1 className="text-xl font-semibold text-foreground">Join Our Communities</h1>
         </div>
       </div>
 
       <div className="p-6 space-y-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-purple-600 mb-4">Connect With Us</h2>
-          <p className="text-gray-600 text-lg">Join our official channels for updates and support</p>
+          <h2 className="text-3xl font-bold text-primary mb-4">Connect With Us</h2>
+          <p className="text-muted-foreground text-lg">Join our official channels for updates and support</p>
         </div>
 
         <div className="space-y-6">
           {/* WhatsApp Channel */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="glass-card rounded-2xl p-6">
             <div className="flex items-center space-x-4 mb-4">
-              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-2xl">💬</span>
+              <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center">
+                <span className="text-green-400 text-2xl">💬</span>
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-gray-900">WhatsApp Channel</h3>
+                <h3 className="text-xl font-semibold text-foreground">WhatsApp Channel</h3>
               </div>
             </div>
             <Button 
@@ -54,13 +54,13 @@ const JoinCommunities: React.FC<JoinCommunitiesProps> = ({ onBack }) => {
           </div>
 
           {/* Telegram Channel */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <div className="glass-card rounded-2xl p-6">
             <div className="flex items-center space-x-4 mb-4">
-              <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-2xl">✈️</span>
+              <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center">
+                <span className="text-blue-400 text-2xl">✈️</span>
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-gray-900">Telegram Channel</h3>
+                <h3 className="text-xl font-semibold text-foreground">Telegram Channel</h3>
               </div>
             </div>
             <Button 
