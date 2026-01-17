@@ -4,7 +4,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Gift } from 'lucide-react';
 import { z } from 'zod';
-import paygoLogo from '@/assets/paygo-logo.png';
 
 interface RegistrationFormProps {
   onRegister: (name: string, email: string, password: string, country: string, phone: string, referralCode?: string) => Promise<void>;
@@ -173,7 +172,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
           <div className="absolute inset-0 w-full">
             <div className="animate-slide-logo-lr">
               <img 
-                src={paygoLogo}
+                src="/lovable-uploads/1b5d08cd-7896-45fe-a778-2c43ba59d944.png" 
                 alt="PayGo Logo"
                 className="h-16 w-auto object-contain"
               />

@@ -8,7 +8,6 @@ import ImageCropper from './ImageCropper';
 import NotificationDropdown from './NotificationDropdown';
 import { toast } from 'sonner';
 import { UserNotification } from '@/hooks/useUserNotifications';
-import paygoLogo from '@/assets/paygo-logo.png';
 
 interface DashboardProps {
   userName: string;
@@ -211,7 +210,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         {/* Header with Logo and Actions */}
         <div className={`flex items-center justify-between transition-all duration-700 delay-100 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
           <img 
-            src={paygoLogo}
+            src="/lovable-uploads/19396cc7-ffeb-4564-ba8f-a6d4eff13269.png" 
             alt="PayGo Logo"
             className="h-8 object-contain drop-shadow-lg"
           />
