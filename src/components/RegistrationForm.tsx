@@ -3,12 +3,36 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
+import { z } from 'zod';
 
 interface RegistrationFormProps {
   onRegister: (name: string, email: string, password: string, country: string) => Promise<void>;
   onSwitchToLogin: () => void;
   isLoading?: boolean;
 }
+
+const registrationSchema = z.object({
+  name: z.string()
+    .trim()
+    .min(2, { message: "Name must be at least 2 characters" })
+    .max(100, { message: "Name must be less than 100 characters" }),
+  email: z.string()
+    .trim()
+    .email({ message: "Please enter a valid email address" })
+    .max(255, { message: "Email must be less than 255 characters" }),
+  password: z.string()
+    .min(6, { message: "Password must be at least 6 characters" })
+    .max(72, { message: "Password must be less than 72 characters" }),
+  country: z.string()
+    .min(1, { message: "Please select a country" })
+});
+
+type FormErrors = {
+  name?: string;
+  email?: string;
+  password?: string;
+  country?: string;
+};
 
 const countries = [
   { code: 'AF', name: 'Afghanistan', flag: '🇦🇫' },
@@ -209,13 +233,42 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
   const [password, setPassword] = useState('');
   const [country, setCountry] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  const validateForm = (): boolean => {
+    const result = registrationSchema.safeParse({ name, email, password, country });
+    
+    if (!result.success) {
+      const fieldErrors: FormErrors = {};
+      result.error.errors.forEach((error) => {
+        const field = error.path[0] as keyof FormErrors;
+        if (!fieldErrors[field]) {
+          fieldErrors[field] = error.message;
+        }
+      });
+      setErrors(fieldErrors);
+      return false;
+    }
+    
+    setErrors({});
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (name && email && password && country) {
-      setIsSubmitting(true);
-      await onRegister(name, email, password, country);
-      setIsSubmitting(false);
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    await onRegister(name.trim(), email.trim(), password, country);
+    setIsSubmitting(false);
+  };
+
+  const clearError = (field: keyof FormErrors) => {
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
     }
   };
 
@@ -249,10 +302,15 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
               type="text"
               placeholder="Enter Name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground"
-              required
+              onChange={(e) => {
+                setName(e.target.value);
+                clearError('name');
+              }}
+              className={`w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground ${errors.name ? 'border-red-500' : ''}`}
             />
+            {errors.name && (
+              <p className="text-red-400 text-sm mt-1">{errors.name}</p>
+            )}
           </div>
 
           <div>
@@ -260,15 +318,23 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
               type="email"
               placeholder="Enter Email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground"
-              required
+              onChange={(e) => {
+                setEmail(e.target.value);
+                clearError('email');
+              }}
+              className={`w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground ${errors.email ? 'border-red-500' : ''}`}
             />
+            {errors.email && (
+              <p className="text-red-400 text-sm mt-1">{errors.email}</p>
+            )}
           </div>
 
           <div>
-            <Select value={country} onValueChange={setCountry} required>
-              <SelectTrigger className="w-full h-14 text-lg glass-input rounded-xl">
+            <Select value={country} onValueChange={(value) => {
+              setCountry(value);
+              clearError('country');
+            }}>
+              <SelectTrigger className={`w-full h-14 text-lg glass-input rounded-xl ${errors.country ? 'border-red-500' : ''}`}>
                 <SelectValue placeholder="Select Country" />
               </SelectTrigger>
               <SelectContent className="max-h-60 glass-card border-white/20">
@@ -282,6 +348,9 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
                 ))}
               </SelectContent>
             </Select>
+            {errors.country && (
+              <p className="text-red-400 text-sm mt-1">{errors.country}</p>
+            )}
           </div>
 
           <div>
@@ -289,10 +358,15 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
               type="password"
               placeholder="Enter Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground"
-              required
+              onChange={(e) => {
+                setPassword(e.target.value);
+                clearError('password');
+              }}
+              className={`w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground ${errors.password ? 'border-red-500' : ''}`}
             />
+            {errors.password && (
+              <p className="text-red-400 text-sm mt-1">{errors.password}</p>
+            )}
           </div>
 
           <Button
