@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Upload, AlertCircle, CheckCircle2, Shield, Sparkles } from 'lucide-react';
+import { ArrowLeft, Upload, AlertCircle, CheckCircle2, Shield, Sparkles, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -25,15 +25,22 @@ const OnlinePaymentUpload: React.FC<OnlinePaymentUploadProps> = ({
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isApproved, setIsApproved] = useState(false);
+  const [hasPending, setHasPending] = useState(false);
   const [checkingStatus, setCheckingStatus] = useState(true);
   const { globalPayId } = useGlobalPayId();
 
-  // Check if user already has approved payment - instant check
-  const checkApprovalStatus = async () => {
+  // Check if user already has an approved or pending payment
+  const checkPaymentStatus = async () => {
+    if (!userId) {
+      setCheckingStatus(false);
+      return;
+    }
+
     try {
-      const { data } = await supabase
+      // Approved (active PAY ID)
+      const { data: approvedData, error: approvedError } = await supabase
         .from('payment_uploads')
-        .select('status, payid_status')
+        .select('id')
         .eq('user_id', userId)
         .eq('status', 'approved')
         .in('payment_type', ['payid_online', 'payid_offline'])
@@ -41,24 +48,45 @@ const OnlinePaymentUpload: React.FC<OnlinePaymentUploadProps> = ({
         .limit(1)
         .maybeSingle();
 
-      if (data) {
+      if (approvedError) throw approvedError;
+
+      if (approvedData) {
         setIsApproved(true);
+        setHasPending(false);
+        return;
       }
+
+      // Pending
+      const { data: pendingData, error: pendingError } = await supabase
+        .from('payment_uploads')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('status', 'pending')
+        .in('payment_type', ['payid_online', 'payid_offline'])
+        .limit(1)
+        .maybeSingle();
+
+      if (pendingError) throw pendingError;
+
+      setHasPending(!!pendingData);
     } catch (error) {
-      console.error('Error checking approval status:', error);
+      console.error('Error checking payment status:', error);
+      setHasPending(false);
     } finally {
       setCheckingStatus(false);
     }
   };
 
   useEffect(() => {
-    checkApprovalStatus();
+    checkPaymentStatus();
   }, [userId]);
 
-  // Real-time subscription for instant blocking when approved
+  // Real-time subscription for instant blocking when status changes
   useEffect(() => {
+    if (!userId) return;
+
     const channel = supabase
-      .channel(`upload_approval_${userId}`)
+      .channel(`upload_status_${userId}`)
       .on(
         'postgres_changes',
         {
@@ -68,8 +96,7 @@ const OnlinePaymentUpload: React.FC<OnlinePaymentUploadProps> = ({
           filter: `user_id=eq.${userId}`
         },
         () => {
-          // Instantly re-check status
-          checkApprovalStatus();
+          checkPaymentStatus();
         }
       )
       .subscribe();
@@ -77,6 +104,7 @@ const OnlinePaymentUpload: React.FC<OnlinePaymentUploadProps> = ({
     return () => {
       supabase.removeChannel(channel);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   // If already approved, show approval screen instantly
@@ -92,9 +120,94 @@ const OnlinePaymentUpload: React.FC<OnlinePaymentUploadProps> = ({
     );
   }
 
+  // Block multiple uploads if there's already a pending payment
+  if (hasPending) {
+    return (
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-32 -right-32 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute top-1/2 -left-32 w-48 h-48 bg-primary/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+
+        {/* Header */}
+        <div className="relative px-4 pt-4 pb-3">
+          <div className="flex items-center justify-between">
+            <button 
+              onClick={onBack}
+              className="glass w-10 h-10 rounded-2xl flex items-center justify-center border border-border/50 hover:border-primary/30 hover:scale-105 transition-all duration-300"
+            >
+              <ArrowLeft className="w-5 h-5 text-foreground" />
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-sm text-muted-foreground">Pending Payment</span>
+            </div>
+            <div className="w-10" />
+          </div>
+        </div>
+
+        <div className="relative px-4 pb-8 space-y-6">
+          <div className="text-center space-y-2">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Clock className="w-6 h-6 text-amber-500 animate-pulse" />
+              <h1 className="text-2xl font-bold text-foreground">Payment Pending</h1>
+            </div>
+            <p className="text-muted-foreground">Please wait till your pending payment is approved</p>
+          </div>
+
+          <div className="glass-card rounded-2xl p-4 border border-amber-500/30 bg-amber-500/5">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-5 h-5 text-amber-500" />
+              </div>
+              <div>
+                <p className="text-foreground font-medium text-sm">Upload blocked</p>
+                <p className="text-muted-foreground text-xs mt-1">
+                  You can’t upload another screenshot right now because you already submitted one. This prevents multiple uploads.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <Button 
+            onClick={onBack}
+            className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground text-lg font-semibold shadow-lg border-0"
+          >
+            Back to Dashboard
+          </Button>
+
+          <div className="text-center pt-2">
+            <p className="text-muted-foreground text-sm">You'll be notified when your payment is processed</p>
+            <p className="text-foreground font-semibold text-sm mt-2">PayGo Financial Services</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid file",
+          description: "Please upload an image (PNG/JPG).",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        toast({
+          title: "File too large",
+          description: "Please upload an image smaller than 10MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setUploadedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -117,6 +230,26 @@ const OnlinePaymentUpload: React.FC<OnlinePaymentUploadProps> = ({
     setUploading(true);
 
     try {
+      // Re-check pending to avoid multiple uploads
+      const { data: pendingData } = await supabase
+        .from('payment_uploads')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('status', 'pending')
+        .in('payment_type', ['payid_online', 'payid_offline'])
+        .limit(1)
+        .maybeSingle();
+
+      if (pendingData) {
+        setHasPending(true);
+        toast({
+          title: 'Payment Pending',
+          description: 'Please wait till your pending payment is approved before uploading again.',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       // Upload image to storage
       const fileExt = uploadedFile.name.split('.').pop();
       const fileName = `${userId}/${Date.now()}.${fileExt}`;
@@ -290,3 +423,4 @@ const OnlinePaymentUpload: React.FC<OnlinePaymentUploadProps> = ({
 };
 
 export default OnlinePaymentUpload;
+
