@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Copy, Users, Gift, Share2, Check, Loader2 } from 'lucide-react';
+import { ArrowLeft, Copy, Users, Gift, Share2, Check, Loader2, MessageCircle, Send, Twitter, Facebook, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -43,6 +43,10 @@ const EarnMore: React.FC<EarnMoreProps> = ({ onBack, referralCode, fetchReferral
     .filter(r => r.status === 'credited')
     .reduce((sum, r) => sum + r.bonus_amount, 0);
 
+  const getShareMessage = () => {
+    return `🎉 Join PayGo using my referral code: ${referralCode} and we both earn ₦2,500! Download now and start earning! 💰`;
+  };
+
   const handleCopyCode = async () => {
     if (!referralCode) return;
     
@@ -56,16 +60,45 @@ const EarnMore: React.FC<EarnMoreProps> = ({ onBack, referralCode, fetchReferral
     }
   };
 
-  const handleShare = async () => {
+  const handleShareWhatsApp = () => {
     if (!referralCode) return;
-    
-    const shareText = `Join PayGo using my referral code: ${referralCode} and we both earn ₦2,500! 🎉`;
+    const message = encodeURIComponent(getShareMessage());
+    window.open(`https://wa.me/?text=${message}`, '_blank');
+  };
+
+  const handleShareTelegram = () => {
+    if (!referralCode) return;
+    const message = encodeURIComponent(getShareMessage());
+    window.open(`https://t.me/share/url?url=&text=${message}`, '_blank');
+  };
+
+  const handleShareTwitter = () => {
+    if (!referralCode) return;
+    const message = encodeURIComponent(getShareMessage());
+    window.open(`https://twitter.com/intent/tweet?text=${message}`, '_blank');
+  };
+
+  const handleShareFacebook = () => {
+    if (!referralCode) return;
+    const message = encodeURIComponent(getShareMessage());
+    window.open(`https://www.facebook.com/sharer/sharer.php?quote=${message}`, '_blank');
+  };
+
+  const handleShareEmail = () => {
+    if (!referralCode) return;
+    const subject = encodeURIComponent('Join PayGo and earn ₦2,500!');
+    const body = encodeURIComponent(getShareMessage());
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+  };
+
+  const handleShareNative = async () => {
+    if (!referralCode) return;
     
     if (navigator.share) {
       try {
         await navigator.share({
           title: 'Join PayGo',
-          text: shareText,
+          text: getShareMessage(),
         });
       } catch (err) {
         if ((err as Error).name !== 'AbortError') {
@@ -131,13 +164,64 @@ const EarnMore: React.FC<EarnMoreProps> = ({ onBack, referralCode, fetchReferral
             </div>
           </div>
 
+          {/* Social Share Buttons */}
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground text-center">Share via</p>
+            <div className="grid grid-cols-5 gap-2">
+              <button
+                onClick={handleShareWhatsApp}
+                className="flex flex-col items-center p-3 rounded-xl bg-green-500/20 hover:bg-green-500/30 transition-colors"
+                disabled={!referralCode}
+              >
+                <MessageCircle className="w-6 h-6 text-green-400" />
+                <span className="text-xs text-muted-foreground mt-1">WhatsApp</span>
+              </button>
+              
+              <button
+                onClick={handleShareTelegram}
+                className="flex flex-col items-center p-3 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 transition-colors"
+                disabled={!referralCode}
+              >
+                <Send className="w-6 h-6 text-blue-400" />
+                <span className="text-xs text-muted-foreground mt-1">Telegram</span>
+              </button>
+              
+              <button
+                onClick={handleShareTwitter}
+                className="flex flex-col items-center p-3 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 transition-colors"
+                disabled={!referralCode}
+              >
+                <Twitter className="w-6 h-6 text-sky-400" />
+                <span className="text-xs text-muted-foreground mt-1">Twitter</span>
+              </button>
+              
+              <button
+                onClick={handleShareFacebook}
+                className="flex flex-col items-center p-3 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 transition-colors"
+                disabled={!referralCode}
+              >
+                <Facebook className="w-6 h-6 text-blue-500" />
+                <span className="text-xs text-muted-foreground mt-1">Facebook</span>
+              </button>
+              
+              <button
+                onClick={handleShareEmail}
+                className="flex flex-col items-center p-3 rounded-xl bg-primary/20 hover:bg-primary/30 transition-colors"
+                disabled={!referralCode}
+              >
+                <Mail className="w-6 h-6 text-primary" />
+                <span className="text-xs text-muted-foreground mt-1">Email</span>
+              </button>
+            </div>
+          </div>
+
           <Button
-            onClick={handleShare}
+            onClick={handleShareNative}
             className="w-full h-14 bg-primary hover:bg-primary/80 text-primary-foreground text-lg font-medium rounded-xl transition-colors lavender-glow"
             disabled={!referralCode}
           >
             <Share2 className="w-5 h-5 mr-2" />
-            Share Referral Code
+            More Sharing Options
           </Button>
         </div>
 
