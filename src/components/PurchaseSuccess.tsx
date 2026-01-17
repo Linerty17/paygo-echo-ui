@@ -1,6 +1,5 @@
-
-import React from 'react';
-import { ArrowLeft, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Check, ArrowRight, Sparkles, Phone, Wifi } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface PurchaseSuccessProps {
@@ -11,62 +10,131 @@ interface PurchaseSuccessProps {
 }
 
 const PurchaseSuccess: React.FC<PurchaseSuccessProps> = ({ onBack, type, amount, phoneNumber }) => {
+  const [showContent, setShowContent] = useState(false);
+  const [showCheck, setShowCheck] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+
+  const getCurrentDate = () => {
+    const now = new Date();
+    return now.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  useEffect(() => {
+    setTimeout(() => setShowCheck(true), 200);
+    setTimeout(() => setShowContent(true), 600);
+    setTimeout(() => setShowDetails(true), 900);
+  }, []);
+
+  const isData = type === 'data';
+  const TypeIcon = isData ? Wifi : Phone;
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="glass-header text-foreground p-4">
-        <div className="flex items-center space-x-4">
-          <button onClick={onBack}>
-            <ArrowLeft className="w-6 h-6 text-primary" />
-          </button>
-          <h1 className="text-xl font-semibold">{type === 'airtime' ? 'Airtime' : 'Data'} Purchase</h1>
-        </div>
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-emerald-500/10 rounded-full blur-[100px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-primary/10 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-lavender/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="flex flex-col items-center justify-center min-h-[80vh] p-6">
-        {/* Success Icon */}
-        <div className="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center mb-8 lavender-glow">
-          <Check className="w-12 h-12 text-green-400" />
+      {/* Floating Particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-emerald-400/30 rounded-full animate-bounce"
+            style={{
+              left: `${20 + i * 12}%`,
+              top: `${30 + (i % 3) * 20}%`,
+              animationDelay: `${i * 0.3}s`,
+              animationDuration: `${2 + i * 0.5}s`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Success Icon */}
+      <div className={`relative mb-8 transition-all duration-700 ${showCheck ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}>
+        <div className="w-28 h-28 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-2xl shadow-emerald-500/40">
+          <Check className="w-14 h-14 text-white" strokeWidth={3} />
         </div>
+        <div className="absolute -top-2 -right-2 w-10 h-10 glass rounded-full flex items-center justify-center border border-white/20 animate-bounce">
+          <Sparkles className="w-5 h-5 text-amber-400" />
+        </div>
+        {/* Ripple Effect */}
+        <div className="absolute inset-0 rounded-full border-4 border-emerald-400/30 animate-ping" />
+      </div>
 
-        <h2 className="text-2xl font-bold text-foreground mb-4 text-center">
-          {type === 'airtime' ? 'Airtime' : 'Data'} Purchase Successful!
-        </h2>
+      {/* Title */}
+      <h1 className={`text-2xl font-bold text-foreground mb-2 text-center transition-all duration-700 ${showContent ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+        {isData ? 'Data' : 'Airtime'} Purchase Successful!
+      </h1>
 
-        <p className="text-muted-foreground text-center mb-8">
-          Your {type} has been successfully added to {phoneNumber}
-        </p>
+      <p className={`text-muted-foreground text-center mb-6 transition-all duration-700 delay-100 ${showContent ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+        Your {type} has been delivered to {phoneNumber}
+      </p>
 
-        {/* Transaction Details */}
-        <div className="glass-card rounded-2xl p-6 mb-8 w-full max-w-sm">
-          <p className="text-center text-muted-foreground mb-2">Transaction Details</p>
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Amount:</span>
-              <span className="font-bold text-primary">{amount}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Phone:</span>
-              <span className="font-medium text-foreground">{phoneNumber}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Status:</span>
-              <span className="text-green-400 font-medium">Successful</span>
-            </div>
+      {/* Details Card */}
+      <div className={`glass rounded-3xl p-5 mb-6 w-full max-w-sm border border-white/10 transition-all duration-700 ${showDetails ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+        {/* Type Icon & Amount */}
+        <div className="flex items-center gap-4 mb-4 pb-4 border-b border-white/10">
+          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${
+            isData 
+              ? 'bg-gradient-to-br from-cyan-500 to-blue-600 shadow-cyan-500/30' 
+              : 'bg-gradient-to-br from-emerald-500 to-green-600 shadow-emerald-500/30'
+          }`}>
+            <TypeIcon className="w-7 h-7 text-white" />
+          </div>
+          <div>
+            <p className="text-muted-foreground text-sm">{isData ? 'Data Bundle' : 'Airtime'}</p>
+            <p className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent">
+              {amount}
+            </p>
           </div>
         </div>
 
-        <Button 
-          onClick={onBack}
-          className="w-full max-w-sm h-14 bg-primary hover:bg-primary/80 text-primary-foreground text-lg font-medium rounded-xl lavender-glow"
-        >
-          Continue to Dashboard
-        </Button>
-
-        <div className="mt-16 text-center">
-          <p className="text-foreground font-semibold">PayGo Financial Services LTD</p>
+        {/* Transaction Details */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Phone className="w-4 h-4 text-muted-foreground" />
+              <span className="text-muted-foreground text-sm">Phone</span>
+            </div>
+            <span className="font-semibold text-foreground">{phoneNumber}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground text-sm">Date</span>
+            <span className="font-medium text-foreground text-sm">{getCurrentDate()}</span>
+          </div>
+          <div className="flex items-center justify-between pt-2 border-t border-white/10">
+            <span className="text-muted-foreground text-sm">Status</span>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-emerald-400 font-medium text-sm">Successful</span>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Action Button */}
+      <Button 
+        onClick={onBack}
+        className={`w-full max-w-sm h-14 rounded-2xl bg-gradient-to-r from-primary via-lavender to-accent hover:opacity-90 text-white text-lg font-semibold shadow-lg shadow-primary/30 border-0 transition-all duration-700 ${showDetails ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
+      >
+        Continue to Dashboard
+        <ArrowRight className="w-5 h-5 ml-2" />
+      </Button>
+
+      {/* Footer */}
+      <p className={`mt-8 text-muted-foreground text-xs transition-all duration-700 delay-300 ${showDetails ? 'opacity-100' : 'opacity-0'}`}>
+        PayGo Financial Services
+      </p>
     </div>
   );
 };
