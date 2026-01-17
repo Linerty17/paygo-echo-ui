@@ -6,7 +6,7 @@ import { Loader2 } from 'lucide-react';
 import { z } from 'zod';
 
 interface RegistrationFormProps {
-  onRegister: (name: string, email: string, password: string, country: string) => Promise<void>;
+  onRegister: (name: string, email: string, password: string, country: string, referralCode?: string) => Promise<void>;
   onSwitchToLogin: () => void;
   isLoading?: boolean;
 }
@@ -24,7 +24,11 @@ const registrationSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters" })
     .max(72, { message: "Password must be less than 72 characters" }),
   country: z.string()
-    .min(1, { message: "Please select a country" })
+    .min(1, { message: "Please select a country" }),
+  referralCode: z.string()
+    .max(20, { message: "Referral code must be less than 20 characters" })
+    .optional()
+    .or(z.literal(''))
 });
 
 type FormErrors = {
@@ -32,6 +36,7 @@ type FormErrors = {
   email?: string;
   password?: string;
   country?: string;
+  referralCode?: string;
 };
 
 const countries = [
@@ -232,11 +237,12 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [country, setCountry] = useState('');
+  const [referralCode, setReferralCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
 
   const validateForm = (): boolean => {
-    const result = registrationSchema.safeParse({ name, email, password, country });
+    const result = registrationSchema.safeParse({ name, email, password, country, referralCode });
     
     if (!result.success) {
       const fieldErrors: FormErrors = {};
@@ -262,7 +268,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
     }
 
     setIsSubmitting(true);
-    await onRegister(name.trim(), email.trim(), password, country);
+    await onRegister(name.trim(), email.trim(), password, country, referralCode.trim().toUpperCase() || undefined);
     setIsSubmitting(false);
   };
 
@@ -366,6 +372,22 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
             />
             {errors.password && (
               <p className="text-red-400 text-sm mt-1">{errors.password}</p>
+            )}
+          </div>
+
+          <div>
+            <Input
+              type="text"
+              placeholder="Referral Code (Optional)"
+              value={referralCode}
+              onChange={(e) => {
+                setReferralCode(e.target.value.toUpperCase());
+                clearError('referralCode');
+              }}
+              className={`w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground ${errors.referralCode ? 'border-red-500' : ''}`}
+            />
+            {errors.referralCode && (
+              <p className="text-red-400 text-sm mt-1">{errors.referralCode}</p>
             )}
           </div>
 
