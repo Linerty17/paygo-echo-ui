@@ -189,7 +189,7 @@ export const useAuth = () => {
     return { error: null };
   };
 
-  const updateProfile = async (updates: Partial<Pick<Profile, 'name' | 'level' | 'balance' | 'last_weekly_claim' | 'phone' | 'avatar_url'>>) => {
+  const updateProfile = async (updates: Partial<Pick<Profile, 'name' | 'level' | 'balance' | 'last_weekly_claim' | 'phone' | 'avatar_url' | 'country'>>) => {
     if (!user) return { error: new Error('No user logged in') };
 
     const { data, error } = await supabase

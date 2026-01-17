@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { ArrowLeft, ChevronRight, Camera, User, Info, HelpCircle, Bell, LogOut, Shield, Sparkles, Sun, Moon, Monitor } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Camera, User, Info, HelpCircle, Bell, LogOut, Shield, Sparkles, Sun, Moon, Monitor, Edit3, Check, X, Phone, MapPin, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ImageCropper from './ImageCropper';
 import { toast } from 'sonner';
 import { useTheme } from 'next-themes';
@@ -11,30 +12,103 @@ interface ProfileProps {
   userEmail: string;
   userName: string;
   userPhone: string | null;
+  userCountry: string;
   profileImage: string | null;
   onProfileImageChange: (image: string) => void;
-  onProfileUpdate: (newName: string, newPhone: string) => void;
+  onProfileUpdate: (updates: { name?: string; phone?: string; country?: string }) => Promise<void>;
+  onLogout: () => void;
 }
+
+const countries = [
+  { code: 'DZ', name: 'Algeria', flag: '🇩🇿' },
+  { code: 'AO', name: 'Angola', flag: '🇦🇴' },
+  { code: 'BJ', name: 'Benin', flag: '🇧🇯' },
+  { code: 'BW', name: 'Botswana', flag: '🇧🇼' },
+  { code: 'BF', name: 'Burkina Faso', flag: '🇧🇫' },
+  { code: 'BI', name: 'Burundi', flag: '🇧🇮' },
+  { code: 'CV', name: 'Cabo Verde', flag: '🇨🇻' },
+  { code: 'CM', name: 'Cameroon', flag: '🇨🇲' },
+  { code: 'CF', name: 'Central African Republic', flag: '🇨🇫' },
+  { code: 'TD', name: 'Chad', flag: '🇹🇩' },
+  { code: 'KM', name: 'Comoros', flag: '🇰🇲' },
+  { code: 'CG', name: 'Congo', flag: '🇨🇬' },
+  { code: 'CD', name: 'Congo (DRC)', flag: '🇨🇩' },
+  { code: 'CI', name: "Côte d'Ivoire", flag: '🇨🇮' },
+  { code: 'DJ', name: 'Djibouti', flag: '🇩🇯' },
+  { code: 'EG', name: 'Egypt', flag: '🇪🇬' },
+  { code: 'GQ', name: 'Equatorial Guinea', flag: '🇬🇶' },
+  { code: 'ER', name: 'Eritrea', flag: '🇪🇷' },
+  { code: 'SZ', name: 'Eswatini', flag: '🇸🇿' },
+  { code: 'ET', name: 'Ethiopia', flag: '🇪🇹' },
+  { code: 'GA', name: 'Gabon', flag: '🇬🇦' },
+  { code: 'GM', name: 'Gambia', flag: '🇬🇲' },
+  { code: 'GH', name: 'Ghana', flag: '🇬🇭' },
+  { code: 'GN', name: 'Guinea', flag: '🇬🇳' },
+  { code: 'GW', name: 'Guinea-Bissau', flag: '🇬🇼' },
+  { code: 'KE', name: 'Kenya', flag: '🇰🇪' },
+  { code: 'LS', name: 'Lesotho', flag: '🇱🇸' },
+  { code: 'LR', name: 'Liberia', flag: '🇱🇷' },
+  { code: 'LY', name: 'Libya', flag: '🇱🇾' },
+  { code: 'MG', name: 'Madagascar', flag: '🇲🇬' },
+  { code: 'MW', name: 'Malawi', flag: '🇲🇼' },
+  { code: 'ML', name: 'Mali', flag: '🇲🇱' },
+  { code: 'MR', name: 'Mauritania', flag: '🇲🇷' },
+  { code: 'MU', name: 'Mauritius', flag: '🇲🇺' },
+  { code: 'MA', name: 'Morocco', flag: '🇲🇦' },
+  { code: 'MZ', name: 'Mozambique', flag: '🇲🇿' },
+  { code: 'NA', name: 'Namibia', flag: '🇳🇦' },
+  { code: 'NE', name: 'Niger', flag: '🇳🇪' },
+  { code: 'NG', name: 'Nigeria', flag: '🇳🇬' },
+  { code: 'RW', name: 'Rwanda', flag: '🇷🇼' },
+  { code: 'ST', name: 'São Tomé and Príncipe', flag: '🇸🇹' },
+  { code: 'SN', name: 'Senegal', flag: '🇸🇳' },
+  { code: 'SC', name: 'Seychelles', flag: '🇸🇨' },
+  { code: 'SL', name: 'Sierra Leone', flag: '🇸🇱' },
+  { code: 'SO', name: 'Somalia', flag: '🇸🇴' },
+  { code: 'ZA', name: 'South Africa', flag: '🇿🇦' },
+  { code: 'SS', name: 'South Sudan', flag: '🇸🇸' },
+  { code: 'SD', name: 'Sudan', flag: '🇸🇩' },
+  { code: 'TZ', name: 'Tanzania', flag: '🇹🇿' },
+  { code: 'TG', name: 'Togo', flag: '🇹🇬' },
+  { code: 'TN', name: 'Tunisia', flag: '🇹🇳' },
+  { code: 'UG', name: 'Uganda', flag: '🇺🇬' },
+  { code: 'ZM', name: 'Zambia', flag: '🇿🇲' },
+  { code: 'ZW', name: 'Zimbabwe', flag: '🇿🇼' }
+];
 
 const Profile: React.FC<ProfileProps> = ({ 
   onBack, 
   userEmail, 
   userName, 
   userPhone,
+  userCountry,
   profileImage, 
   onProfileImageChange,
-  onProfileUpdate 
+  onProfileUpdate,
+  onLogout
 }) => {
   const { theme, setTheme } = useTheme();
-  const [editingProfile, setEditingProfile] = useState(false);
+  const [editingField, setEditingField] = useState<'name' | 'phone' | 'country' | null>(null);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+  const [showEmail, setShowEmail] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [profileData, setProfileData] = useState({
-    fullName: userName,
-    email: userEmail,
+  
+  const [editValues, setEditValues] = useState({
+    name: userName,
     phone: userPhone || '',
-    about: 'PayGo user since 2023'
+    country: userCountry
   });
+
+  const maskEmail = (email: string) => {
+    const [localPart, domain] = email.split('@');
+    if (localPart.length <= 2) return `${localPart[0]}***@${domain}`;
+    return `${localPart.slice(0, 2)}${'*'.repeat(Math.min(localPart.length - 2, 6))}@${domain}`;
+  };
+
+  const getCountryInfo = (code: string) => {
+    return countries.find(c => c.code === code) || { name: code, flag: '🌍' };
+  };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -46,7 +120,6 @@ const Profile: React.FC<ProfileProps> = ({
       };
       reader.readAsDataURL(file);
     }
-    // Reset input so same file can be selected again
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -62,9 +135,24 @@ const Profile: React.FC<ProfileProps> = ({
     setImageToCrop(null);
   };
 
-  const handleProfileUpdateSubmit = () => {
-    onProfileUpdate(profileData.fullName, profileData.phone);
-    setEditingProfile(false);
+  const handleSaveField = async (field: 'name' | 'phone' | 'country') => {
+    setIsSaving(true);
+    try {
+      await onProfileUpdate({ [field]: editValues[field] });
+      toast.success(`${field.charAt(0).toUpperCase() + field.slice(1)} updated successfully!`);
+      setEditingField(null);
+    } catch (error) {
+      toast.error('Failed to update profile');
+    }
+    setIsSaving(false);
+  };
+
+  const handleCancelEdit = (field: 'name' | 'phone' | 'country') => {
+    setEditValues({
+      ...editValues,
+      [field]: field === 'name' ? userName : field === 'phone' ? (userPhone || '') : userCountry
+    });
+    setEditingField(null);
   };
 
   return (
@@ -117,8 +205,18 @@ const Profile: React.FC<ProfileProps> = ({
                 className="hidden" 
               />
             </div>
-            <h2 className="text-xl font-bold text-foreground">{profileData.fullName}</h2>
-            <p className="text-muted-foreground text-sm">{profileData.email}</p>
+            <h2 className="text-xl font-bold text-foreground">{userName}</h2>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <span className="text-muted-foreground text-sm">
+                {showEmail ? userEmail : maskEmail(userEmail)}
+              </span>
+              <button 
+                onClick={() => setShowEmail(!showEmail)}
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                {showEmail ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
             <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 glass rounded-full border border-primary/20">
               <Sparkles className="w-3 h-3 text-primary" />
               <span className="text-xs font-medium text-primary">Basic Member</span>
@@ -126,114 +224,236 @@ const Profile: React.FC<ProfileProps> = ({
           </div>
         </div>
 
-        {/* Profile Information */}
-        {editingProfile ? (
-          <div className="glass rounded-3xl p-5 space-y-4 border border-white/10">
-            <h3 className="text-lg font-bold text-foreground">Edit Profile</h3>
-            
-            <div>
-              <label className="block text-muted-foreground text-sm mb-2">Full Name</label>
-              <Input
-                value={profileData.fullName}
-                onChange={(e) => setProfileData({...profileData, fullName: e.target.value})}
-                className="w-full h-12 glass border border-white/10 rounded-2xl"
-              />
-            </div>
-
-            <div>
-              <label className="block text-muted-foreground text-sm mb-2">Email</label>
-              <Input
-                value={profileData.email}
-                className="w-full h-12 glass border border-white/10 rounded-2xl opacity-50"
-                disabled
-              />
-            </div>
-
-            <div>
-              <label className="block text-muted-foreground text-sm mb-2">Phone Number</label>
-              <Input
-                value={profileData.phone}
-                onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                className="w-full h-12 glass border border-white/10 rounded-2xl"
-              />
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <Button 
-                onClick={handleProfileUpdateSubmit}
-                className="flex-1 h-12 rounded-2xl bg-gradient-to-r from-primary to-lavender hover:opacity-90 border-0"
-              >
-                Save Changes
-              </Button>
-              <Button 
-                onClick={() => setEditingProfile(false)}
-                variant="outline"
-                className="flex-1 h-12 rounded-2xl glass border border-white/10"
-              >
-                Cancel
-              </Button>
-            </div>
+        {/* Editable Profile Fields */}
+        <div className="glass rounded-3xl overflow-hidden border border-white/10">
+          <div className="p-4 border-b border-white/5">
+            <h3 className="font-semibold text-foreground flex items-center gap-2">
+              <User className="w-4 h-4 text-primary" />
+              Personal Information
+            </h3>
+            <p className="text-muted-foreground text-xs mt-1">Tap any field to edit</p>
           </div>
-        ) : (
-          <div className="glass rounded-3xl overflow-hidden border border-white/10">
-            <button 
-              onClick={() => setEditingProfile(true)}
-              className="w-full p-4 flex items-center justify-between border-b border-white/5 hover:bg-white/5 transition-all"
-            >
+
+          {/* Name Field */}
+          <div className="p-4 border-b border-white/5">
+            {editingField === 'name' ? (
+              <div className="space-y-3">
+                <label className="text-muted-foreground text-xs flex items-center gap-2">
+                  <User className="w-3 h-3" /> Full Name
+                </label>
+                <Input
+                  value={editValues.name}
+                  onChange={(e) => setEditValues({...editValues, name: e.target.value})}
+                  className="h-12 glass border border-primary/30 rounded-2xl focus:border-primary"
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => handleSaveField('name')}
+                    disabled={isSaving || !editValues.name.trim()}
+                    size="sm"
+                    className="flex-1 h-10 rounded-xl bg-gradient-to-r from-primary to-lavender hover:opacity-90"
+                  >
+                    <Check className="w-4 h-4 mr-1" /> Save
+                  </Button>
+                  <Button 
+                    onClick={() => handleCancelEdit('name')}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 h-10 rounded-xl glass border border-white/10"
+                  >
+                    <X className="w-4 h-4 mr-1" /> Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <button 
+                onClick={() => setEditingField('name')}
+                className="w-full flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500/20 to-purple-600/20 flex items-center justify-center">
+                    <User className="w-5 h-5 text-violet-400" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-muted-foreground text-xs">Full Name</p>
+                    <p className="font-medium text-foreground">{userName}</p>
+                  </div>
+                </div>
+                <Edit3 className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              </button>
+            )}
+          </div>
+
+          {/* Phone Field */}
+          <div className="p-4 border-b border-white/5">
+            {editingField === 'phone' ? (
+              <div className="space-y-3">
+                <label className="text-muted-foreground text-xs flex items-center gap-2">
+                  <Phone className="w-3 h-3" /> Phone Number
+                </label>
+                <Input
+                  value={editValues.phone}
+                  onChange={(e) => setEditValues({...editValues, phone: e.target.value})}
+                  className="h-12 glass border border-primary/30 rounded-2xl focus:border-primary"
+                  type="tel"
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => handleSaveField('phone')}
+                    disabled={isSaving}
+                    size="sm"
+                    className="flex-1 h-10 rounded-xl bg-gradient-to-r from-primary to-lavender hover:opacity-90"
+                  >
+                    <Check className="w-4 h-4 mr-1" /> Save
+                  </Button>
+                  <Button 
+                    onClick={() => handleCancelEdit('phone')}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 h-10 rounded-xl glass border border-white/10"
+                  >
+                    <X className="w-4 h-4 mr-1" /> Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <button 
+                onClick={() => setEditingField('phone')}
+                className="w-full flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-600/20 flex items-center justify-center">
+                    <Phone className="w-5 h-5 text-emerald-400" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-muted-foreground text-xs">Phone Number</p>
+                    <p className="font-medium text-foreground">{userPhone || 'Not set'}</p>
+                  </div>
+                </div>
+                <Edit3 className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              </button>
+            )}
+          </div>
+
+          {/* Country Field */}
+          <div className="p-4 border-b border-white/5">
+            {editingField === 'country' ? (
+              <div className="space-y-3">
+                <label className="text-muted-foreground text-xs flex items-center gap-2">
+                  <MapPin className="w-3 h-3" /> Country
+                </label>
+                <Select value={editValues.country} onValueChange={(value) => setEditValues({...editValues, country: value})}>
+                  <SelectTrigger className="h-12 glass border border-primary/30 rounded-2xl">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60 glass-card border-white/20">
+                    {countries.map((c) => (
+                      <SelectItem key={c.code} value={c.code}>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg">{c.flag}</span>
+                          <span>{c.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => handleSaveField('country')}
+                    disabled={isSaving}
+                    size="sm"
+                    className="flex-1 h-10 rounded-xl bg-gradient-to-r from-primary to-lavender hover:opacity-90"
+                  >
+                    <Check className="w-4 h-4 mr-1" /> Save
+                  </Button>
+                  <Button 
+                    onClick={() => handleCancelEdit('country')}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 h-10 rounded-xl glass border border-white/10"
+                  >
+                    <X className="w-4 h-4 mr-1" /> Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <button 
+                onClick={() => setEditingField('country')}
+                className="w-full flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-600/20 flex items-center justify-center">
+                    <MapPin className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-muted-foreground text-xs">Country</p>
+                    <p className="font-medium text-foreground flex items-center gap-2">
+                      <span>{getCountryInfo(userCountry).flag}</span>
+                      <span>{getCountryInfo(userCountry).name}</span>
+                    </p>
+                  </div>
+                </div>
+                <Edit3 className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              </button>
+            )}
+          </div>
+
+          {/* Email Field - Read Only */}
+          <div className="p-4">
+            <div className="flex items-center justify-between opacity-60">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
-                  <User className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-600/20 flex items-center justify-center">
+                  <Mail className="w-5 h-5 text-amber-400" />
                 </div>
                 <div className="text-left">
-                  <h3 className="font-semibold text-foreground">Profile Information</h3>
-                  <p className="text-muted-foreground text-sm">View and edit your details</p>
+                  <p className="text-muted-foreground text-xs">Email Address</p>
+                  <p className="font-medium text-foreground flex items-center gap-2">
+                    {showEmail ? userEmail : maskEmail(userEmail)}
+                    <button 
+                      onClick={() => setShowEmail(!showEmail)}
+                      className="text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {showEmail ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                    </button>
+                  </p>
                 </div>
               </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
-            </button>
+              <Lock className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground text-xs mt-2 ml-13 pl-[52px]">Email cannot be changed</p>
+          </div>
+        </div>
 
-            <div className="p-4 space-y-3 border-b border-white/5">
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground text-sm">Full Name</span>
-                <span className="font-medium text-foreground">{profileData.fullName}</span>
+        {/* Help & Info Section */}
+        <div className="glass rounded-3xl overflow-hidden border border-white/10">
+          <button className="w-full p-4 flex items-center justify-between border-b border-white/5 hover:bg-white/5 transition-all">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
+                <HelpCircle className="w-5 h-5 text-white" />
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground text-sm">Email</span>
-                <span className="font-medium text-foreground text-right max-w-[200px] truncate">{profileData.email}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground text-sm">Phone</span>
-                <span className="font-medium text-foreground">{profileData.phone}</span>
+              <div className="text-left">
+                <h3 className="font-semibold text-foreground">Help & Support</h3>
+                <p className="text-muted-foreground text-sm">Get help with PayGo</p>
               </div>
             </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          </button>
 
-            <button className="w-full p-4 flex items-center justify-between border-b border-white/5 hover:bg-white/5 transition-all">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
-                  <HelpCircle className="w-5 h-5 text-white" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-semibold text-foreground">Help & Support</h3>
-                  <p className="text-muted-foreground text-sm">Get help with PayGo</p>
-                </div>
+          <button className="w-full p-4 flex items-center justify-between hover:bg-white/5 transition-all">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg">
+                <Info className="w-5 h-5 text-white" />
               </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
-            </button>
-
-            <button className="w-full p-4 flex items-center justify-between hover:bg-white/5 transition-all">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg">
-                  <Info className="w-5 h-5 text-white" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-semibold text-foreground">About PayGo</h3>
-                  <p className="text-muted-foreground text-sm">Learn more about us</p>
-                </div>
+              <div className="text-left">
+                <h3 className="font-semibold text-foreground">About PayGo</h3>
+                <p className="text-muted-foreground text-sm">Learn more about us</p>
               </div>
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
-            </button>
-          </div>
-        )}
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          </button>
+        </div>
 
         {/* Settings */}
         <div className="glass rounded-3xl overflow-hidden border border-white/10">
@@ -308,7 +528,10 @@ const Profile: React.FC<ProfileProps> = ({
         </div>
 
         {/* Logout Button */}
-        <button className="w-full glass rounded-3xl p-4 border border-red-500/20 hover:bg-red-500/10 transition-all flex items-center justify-center gap-3">
+        <button 
+          onClick={onLogout}
+          className="w-full glass rounded-3xl p-4 border border-red-500/20 hover:bg-red-500/10 transition-all flex items-center justify-center gap-3"
+        >
           <LogOut className="w-5 h-5 text-red-400" />
           <span className="text-red-400 font-semibold">Logout</span>
         </button>

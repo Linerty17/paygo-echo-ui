@@ -281,8 +281,8 @@ const Index = () => {
     await updateProfile({ avatar_url: image });
   };
 
-  const handleProfileUpdate = async (newName: string, newPhone: string) => {
-    await updateProfile({ name: newName, phone: newPhone });
+  const handleProfileUpdate = async (updates: { name?: string; phone?: string; country?: string }) => {
+    await updateProfile(updates);
   };
 
   const formatBalance = (balance: number) => {
@@ -457,9 +457,11 @@ const Index = () => {
           userEmail={userEmail}
           userName={userName}
           userPhone={profile?.phone || null}
+          userCountry={profile?.country || 'NG'}
           profileImage={userProfileImage}
           onProfileImageChange={handleProfileImageChange}
           onProfileUpdate={handleProfileUpdate}
+          onLogout={handleLogout}
         />
         <LiveChat />
       </>
