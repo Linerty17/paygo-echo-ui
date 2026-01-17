@@ -27,6 +27,7 @@ const EarnMore: React.FC<EarnMoreProps> = ({ onBack, referralCode, fetchReferral
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   useEffect(() => {
     loadReferrals();
@@ -43,8 +44,13 @@ const EarnMore: React.FC<EarnMoreProps> = ({ onBack, referralCode, fetchReferral
     .filter(r => r.status === 'credited')
     .reduce((sum, r) => sum + r.bonus_amount, 0);
 
+  const getReferralLink = () => {
+    const baseUrl = window.location.origin;
+    return `${baseUrl}/?ref=${referralCode}`;
+  };
+
   const getShareMessage = () => {
-    return `🎉 Join PayGo using my referral code: ${referralCode} and we both earn ₦2,500! Download now and start earning! 💰`;
+    return `🎉 Join PayGo using my referral code: ${referralCode} and we both earn ₦2,500! Download now and start earning! 💰\n\n${getReferralLink()}`;
   };
 
   const handleCopyCode = async () => {
@@ -57,6 +63,19 @@ const EarnMore: React.FC<EarnMoreProps> = ({ onBack, referralCode, fetchReferral
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error('Failed to copy code');
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (!referralCode) return;
+    
+    try {
+      await navigator.clipboard.writeText(getReferralLink());
+      setLinkCopied(true);
+      toast.success('Referral link copied!');
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      toast.error('Failed to copy link');
     }
   };
 
@@ -161,6 +180,32 @@ const EarnMore: React.FC<EarnMoreProps> = ({ onBack, referralCode, fetchReferral
                   <Copy className="w-5 h-5 text-primary" />
                 )}
               </button>
+            </div>
+          </div>
+
+          {/* Referral Link */}
+          <div className="bg-background/50 rounded-xl p-4 border border-primary/30">
+            <p className="text-sm text-muted-foreground mb-2">Your Referral Link</p>
+            <div className="flex items-center space-x-2">
+              <div className="flex-1 bg-background/30 rounded-lg px-3 py-2 overflow-hidden">
+                <p className="text-sm text-foreground truncate">
+                  {referralCode ? `${window.location.origin}/?ref=${referralCode}` : 'Loading...'}
+                </p>
+              </div>
+              <Button
+                onClick={handleCopyLink}
+                variant="outline"
+                size="sm"
+                className="flex-shrink-0 border-primary/30 hover:bg-primary/20"
+                disabled={!referralCode}
+              >
+                {linkCopied ? (
+                  <Check className="w-4 h-4 text-green-400" />
+                ) : (
+                  <Copy className="w-4 h-4" />
+                )}
+                <span className="ml-2">{linkCopied ? 'Copied!' : 'Copy Link'}</span>
+              </Button>
             </div>
           </div>
 
