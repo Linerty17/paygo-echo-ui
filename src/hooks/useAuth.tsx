@@ -18,6 +18,7 @@ interface Profile {
   last_weekly_claim: string | null;
   phone: string | null;
   avatar_url: string | null;
+  is_admin: boolean;
 }
 
 interface Referral {

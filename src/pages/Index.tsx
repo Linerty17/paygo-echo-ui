@@ -11,7 +11,6 @@ import UpgradeProcessing from '@/components/UpgradeProcessing';
 import JoinCommunities from '@/components/JoinCommunities';
 import Support from '@/components/Support';
 import Profile from '@/components/Profile';
-import BuyPayId from '@/components/BuyPayId';
 import Airtime from '@/components/Airtime';
 import Data from '@/components/Data';
 import PaymentConfirmation from '@/components/PaymentConfirmation';
@@ -25,10 +24,13 @@ import PaymentPending from '@/components/PaymentPending';
 import LiveChat from '@/components/LiveChat';
 import PayIdPaymentPage from '@/components/PayIdPaymentPage';
 import UpgradePaymentPage from '@/components/UpgradePaymentPage';
+import PayIdPlanSelect from '@/components/PayIdPlanSelect';
+import OnlinePaymentUpload from '@/components/OnlinePaymentUpload';
+import PaymentUploadsAdmin from '@/components/admin/PaymentUploadsAdmin';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 
-type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'upgradeProcessing' | 'upgradePayment' | 'payIdPayment' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'paymentPending' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
+type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'upgradeProcessing' | 'upgradePayment' | 'payIdPayment' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'paymentPending' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess' | 'onlinePaymentUpload' | 'paymentUploadsAdmin';
 
 const Index = () => {
   const { user, profile, loading, signUp, signIn, signOut, updateProfile, fetchReferrals, claimWeeklyReward, isAuthenticated } = useAuth();
@@ -480,11 +482,37 @@ const Index = () => {
   if (appState === 'buyPayId') {
     return (
       <>
-        <BuyPayId 
+        <PayIdPlanSelect 
           onBack={handleBackToDashboard} 
-          onPayClicked={handlePayClicked}
+          onSelectOnline={() => navigateToPage('paymentPending')}
+          onSelectOffline={() => navigateToPage('preparingPayment')}
+          onTapToUpload={() => navigateToPage('onlinePaymentUpload')}
+        />
+        <LiveChat />
+      </>
+    );
+  }
+
+  if (appState === 'onlinePaymentUpload') {
+    return (
+      <>
+        <OnlinePaymentUpload 
+          onBack={handleBackToDashboard} 
+          onUploadComplete={() => navigateToPage('paymentPending')}
+          userId={user?.id || ''}
           userName={userName}
           userEmail={userEmail}
+        />
+        <LiveChat />
+      </>
+    );
+  }
+
+  if (appState === 'paymentUploadsAdmin') {
+    return (
+      <>
+        <PaymentUploadsAdmin 
+          onBack={handleBackToDashboard}
         />
         <LiveChat />
       </>
@@ -626,6 +654,7 @@ const Index = () => {
         canClaimWeeklyReward={canClaimWeeklyReward()}
         nextClaimTime={nextClaimTime}
         onProfileImageChange={handleProfileImageChange}
+        isAdmin={profile?.is_admin || false}
       />
       <LiveChat />
     </>

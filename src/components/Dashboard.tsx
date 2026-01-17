@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, Eye, EyeOff, ArrowUpRight, Sparkles, User, CreditCard, Play, Phone, Database, Headphones, Globe, Gift, UserCircle, LogOut, TrendingUp, Zap, ChevronRight, Check, Camera } from 'lucide-react';
+import { Bell, Eye, EyeOff, ArrowUpRight, Sparkles, User, CreditCard, Play, Phone, Database, Headphones, Globe, Gift, UserCircle, LogOut, TrendingUp, Zap, ChevronRight, Check, Camera, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PromotionsCarousel from './PromotionsCarousel';
 import OnboardingModal from './OnboardingModal';
@@ -24,6 +24,7 @@ interface DashboardProps {
   canClaimWeeklyReward?: boolean;
   nextClaimTime?: Date | null;
   onProfileImageChange?: (image: string) => void;
+  isAdmin?: boolean;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({
@@ -42,7 +43,8 @@ const Dashboard: React.FC<DashboardProps> = ({
   onClaimRewards,
   canClaimWeeklyReward = true,
   nextClaimTime = null,
-  onProfileImageChange
+  onProfileImageChange,
+  isAdmin = false
 }) => {
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [showVideo, setShowVideo] = useState(false);
@@ -158,7 +160,8 @@ const Dashboard: React.FC<DashboardProps> = ({
     { icon: Headphones, label: "Support", page: "support", gradient: "from-amber-500 via-orange-500 to-yellow-500", glow: "shadow-amber-500/40" },
     { icon: Globe, label: "Group", page: "joinCommunities", gradient: "from-indigo-500 via-purple-500 to-violet-500", glow: "shadow-indigo-500/40" },
     { icon: Gift, label: "Earn More", page: "earnMore", gradient: "from-pink-500 via-fuchsia-500 to-purple-500", glow: "shadow-pink-500/40" },
-    { icon: UserCircle, label: "Profile", page: "profile", gradient: "from-slate-400 via-gray-500 to-zinc-600", glow: "shadow-slate-500/40" }
+    { icon: UserCircle, label: "Profile", page: "profile", gradient: "from-slate-400 via-gray-500 to-zinc-600", glow: "shadow-slate-500/40" },
+    ...(isAdmin ? [{ icon: Shield, label: "Uploads", page: "paymentUploadsAdmin", gradient: "from-red-500 via-rose-500 to-pink-500", glow: "shadow-red-500/40" }] : [])
   ];
 
   const handleServiceClick = (service: any) => {
