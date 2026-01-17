@@ -30,6 +30,7 @@ import PaymentUploadsAdmin from '@/components/admin/PaymentUploadsAdmin';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserNotifications } from '@/hooks/useUserNotifications';
 import { useAccountStatus } from '@/hooks/useAccountStatus';
+import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 
 // Full-screen notification screens
@@ -42,7 +43,7 @@ import UnbannedScreen from '@/components/screens/UnbannedScreen';
 type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'upgradeProcessing' | 'upgradePayment' | 'payIdPayment' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'paymentPending' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess' | 'onlinePaymentUpload' | 'paymentUploadsAdmin';
 
 const Index = () => {
-  const { user, profile, loading, signUp, signIn, signOut, updateProfile, fetchReferrals, claimWeeklyReward, isAuthenticated } = useAuth();
+  const { user, profile, profileLoading, profileError, refreshProfile, loading, signUp, signIn, signOut, updateProfile, fetchReferrals, claimWeeklyReward, isAuthenticated } = useAuth();
   
   // Real-time notifications and account status
   const { notifications, latestNotification, unreadCount, markAsRead, markAllAsRead, clearLatest } = useUserNotifications(user?.id);
@@ -72,13 +73,12 @@ const Index = () => {
   const [nextClaimTime, setNextClaimTime] = useState<Date | null>(null);
 
   // Get user data from profile
-  const userName = profile?.name || '';
+  const userName = profile?.name || (user?.user_metadata as any)?.name || user?.email?.split('@')[0] || '';
   const userEmail = profile?.email || user?.email || '';
   const currentBalance = profile?.balance ?? 0;
   const userLevel = profile?.level || 1;
   
-  // Profile is still loading if we have a user but no profile yet
-  const profileLoading = isAuthenticated && !profile;
+  // Note: we don't block the whole app on profile fetch; we show a retry screen if it fails.
 
   // Handle real-time notifications
   useEffect(() => {
@@ -416,12 +416,32 @@ const Index = () => {
     );
   }
 
-  // Show loading state while checking auth or loading profile
-  // Important: don't block logged-out users with account-status loading.
-  if (loading || (isAuthenticated && accountStatus === 'loading') || profileLoading) {
+  // Show loading state while checking auth / account status.
+  // Don't block the whole app on profile fetch (it can be slow or fail on new devices).
+  if (loading || (isAuthenticated && accountStatus === 'loading')) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // If auth succeeded but profile cannot be fetched/created, show a clear recovery screen.
+  if (isAuthenticated && !profile && profileError && !profileLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="w-full max-w-sm glass-card rounded-2xl p-4 border border-white/10 space-y-3">
+          <h1 className="text-lg font-bold text-foreground">We couldn’t load your profile</h1>
+          <p className="text-sm text-muted-foreground">{profileError}</p>
+          <div className="flex gap-2">
+            <Button className="flex-1" onClick={() => refreshProfile()}>
+              Retry
+            </Button>
+            <Button className="flex-1" variant="outline" onClick={handleLogout}>
+              Logout
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
