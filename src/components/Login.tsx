@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
+import { z } from 'zod';
 
 interface LoginProps {
   onLogin: (email: string, password: string) => Promise<void>;
@@ -9,17 +10,61 @@ interface LoginProps {
   isLoading?: boolean;
 }
 
+const loginSchema = z.object({
+  email: z.string()
+    .trim()
+    .email({ message: "Please enter a valid email address" })
+    .max(255, { message: "Email must be less than 255 characters" }),
+  password: z.string()
+    .min(1, { message: "Password is required" })
+    .max(72, { message: "Password must be less than 72 characters" })
+});
+
+type FormErrors = {
+  email?: string;
+  password?: string;
+};
+
 const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister, isLoading }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  const validateForm = (): boolean => {
+    const result = loginSchema.safeParse({ email, password });
+    
+    if (!result.success) {
+      const fieldErrors: FormErrors = {};
+      result.error.errors.forEach((error) => {
+        const field = error.path[0] as keyof FormErrors;
+        if (!fieldErrors[field]) {
+          fieldErrors[field] = error.message;
+        }
+      });
+      setErrors(fieldErrors);
+      return false;
+    }
+    
+    setErrors({});
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && password) {
-      setIsSubmitting(true);
-      await onLogin(email, password);
-      setIsSubmitting(false);
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    await onLogin(email.trim(), password);
+    setIsSubmitting(false);
+  };
+
+  const clearError = (field: keyof FormErrors) => {
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
     }
   };
 
@@ -53,10 +98,15 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister, isLoading })
               type="email"
               placeholder="Enter Email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground"
-              required
+              onChange={(e) => {
+                setEmail(e.target.value);
+                clearError('email');
+              }}
+              className={`w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground ${errors.email ? 'border-red-500' : ''}`}
             />
+            {errors.email && (
+              <p className="text-red-400 text-sm mt-1">{errors.email}</p>
+            )}
           </div>
 
           <div>
@@ -64,10 +114,15 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister, isLoading })
               type="password"
               placeholder="Enter Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground"
-              required
+              onChange={(e) => {
+                setPassword(e.target.value);
+                clearError('password');
+              }}
+              className={`w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground ${errors.password ? 'border-red-500' : ''}`}
             />
+            {errors.password && (
+              <p className="text-red-400 text-sm mt-1">{errors.password}</p>
+            )}
           </div>
 
           <Button
