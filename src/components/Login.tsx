@@ -1,25 +1,21 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2 } from 'lucide-react';
 
 interface LoginProps {
-  onLogin: (email: string, password: string) => Promise<void>;
+  onLogin: (email: string, password: string) => void;
   onSwitchToRegister: () => void;
-  isLoading?: boolean;
 }
 
-const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister, isLoading }) => {
+const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email && password) {
-      setIsSubmitting(true);
-      await onLogin(email, password);
-      setIsSubmitting(false);
+      onLogin(email, password);
     }
   };
 
@@ -72,17 +68,9 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister, isLoading })
 
           <Button
             type="submit"
-            disabled={isSubmitting || isLoading}
-            className="w-full h-14 bg-primary hover:bg-primary/80 text-primary-foreground text-lg font-medium rounded-xl transition-colors lavender-glow disabled:opacity-50"
+            className="w-full h-14 bg-primary hover:bg-primary/80 text-primary-foreground text-lg font-medium rounded-xl transition-colors lavender-glow"
           >
-            {isSubmitting || isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Logging in...
-              </>
-            ) : (
-              'Login'
-            )}
+            Login
           </Button>
         </form>
 

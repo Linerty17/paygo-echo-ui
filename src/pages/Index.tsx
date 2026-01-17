@@ -24,15 +24,19 @@ import PaymentFailed from '@/components/PaymentFailed';
 import LiveChat from '@/components/LiveChat';
 import PayIdPaymentPage from '@/components/PayIdPaymentPage';
 import UpgradePaymentPage from '@/components/UpgradePaymentPage';
-import { useAuth } from '@/hooks/useAuth';
-import { Loader2 } from 'lucide-react';
 
 type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'upgradeProcessing' | 'upgradePayment' | 'payIdPayment' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'paymentFailed' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
 
+interface User {
+  name: string;
+  email: string;
+  password: string;
+}
+
 const Index = () => {
-  const { user, profile, loading, signUp, signIn, signOut, updateProfile, isAuthenticated } = useAuth();
-  
   const [appState, setAppState] = useState<AppState>('registration');
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
   const [userProfileImage, setUserProfileImage] = useState<string | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(1);
@@ -40,29 +44,40 @@ const Index = () => {
   const [purchaseAmount, setPurchaseAmount] = useState('');
   const [purchasePhone, setPurchasePhone] = useState('');
   const [transferAmount, setTransferAmount] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [navigationHistory, setNavigationHistory] = useState<AppState[]>([]);
+  const [registeredUsers, setRegisteredUsers] = useState<User[]>([]);
+  const [currentBalance, setCurrentBalance] = useState(180000);
   const [selectedUpgradeLevel, setSelectedUpgradeLevel] = useState('');
   const [selectedUpgradePrice, setSelectedUpgradePrice] = useState('');
 
-  // Get user data from profile
-  const userName = profile?.name || '';
-  const userEmail = profile?.email || user?.email || '';
-  const currentBalance = profile?.balance || 180000;
+  // Load registered users from localStorage on component mount
+  useEffect(() => {
+    const savedUsers = localStorage.getItem('paygo_registered_users');
+    if (savedUsers) {
+      setRegisteredUsers(JSON.parse(savedUsers));
+    }
+  }, []);
 
   // Handle browser back button and prevent app exit
   useEffect(() => {
     const handlePopState = (event: PopStateEvent) => {
       event.preventDefault();
       
-      if (isAuthenticated && navigationHistory.length > 0) {
+      if (isLoggedIn && navigationHistory.length > 0) {
+        // Go back to previous page in navigation history
         const previousPage = navigationHistory[navigationHistory.length - 1];
         setNavigationHistory(prev => prev.slice(0, -1));
         setAppState(previousPage);
+        
+        // Push the current state to prevent browser exit
         window.history.pushState({ page: previousPage }, '', window.location.href);
-      } else if (isAuthenticated) {
+      } else if (isLoggedIn) {
+        // If no history but logged in, go to dashboard
         setAppState('dashboard');
         window.history.pushState({ page: 'dashboard' }, '', window.location.href);
       } else {
+        // If not logged in, stay on auth pages and prevent exit
         if (appState === 'login') {
           setAppState('registration');
         } else {
@@ -72,46 +87,71 @@ const Index = () => {
       }
     };
 
+    // Push initial state to prevent immediate exit
     window.history.pushState({ page: appState }, '', window.location.href);
     
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [isAuthenticated, navigationHistory, appState]);
+  }, [isLoggedIn, navigationHistory, appState]);
 
-  // Update app state when authentication changes
-  useEffect(() => {
-    if (!loading && isAuthenticated && (appState === 'registration' || appState === 'login')) {
-      setAppState('welcome');
-    }
-  }, [isAuthenticated, loading, appState]);
-
+  // Update navigation history when changing pages
   const navigateToPage = (newState: AppState) => {
-    if (isAuthenticated && appState !== newState) {
+    if (isLoggedIn && appState !== newState) {
       setNavigationHistory(prev => [...prev, appState]);
     }
     setAppState(newState);
+    // Push new state to browser history
     window.history.pushState({ page: newState }, '', window.location.href);
   };
 
-  const handleRegister = async (name: string, email: string, password: string, country: string) => {
-    const result = await signUp(email, password, name, country);
-    if (!result.error) {
-      setAppState('welcome');
-      setNavigationHistory([]);
+  const handleRegister = (name: string, email: string, password: string, country: string) => {
+    console.log('Registration:', { name, email, password, country });
+    
+    // Check if user already exists
+    const existingUser = registeredUsers.find(user => user.email === email);
+    if (existingUser) {
+      alert('User already exists with this email. Please login instead.');
+      setAppState('login');
+      return;
     }
-  };
 
-  const handleLogin = async (email: string, password: string) => {
-    const result = await signIn(email, password);
-    if (!result.error) {
-      setAppState('welcome');
-      setNavigationHistory([]);
-    }
-  };
+    // Add new user to registered users
+    const newUser: User = { name, email, password };
+    const updatedUsers = [...registeredUsers, newUser];
+    setRegisteredUsers(updatedUsers);
+    
+    // Save to localStorage
+    localStorage.setItem('paygo_registered_users', JSON.stringify(updatedUsers));
 
-  const handleLogout = async () => {
-    await signOut();
+    setUserName(name);
+    setUserEmail(email);
+    setIsLoggedIn(true);
+    setAppState('welcome');
     setNavigationHistory([]);
+  };
+
+  const handleLogin = (email: string, password: string) => {
+    console.log('Login:', { email, password });
+    
+    // Find user in registered users
+    const user = registeredUsers.find(u => u.email === email && u.password === password);
+    if (!user) {
+      alert('Invalid email or password. Please register first if you don\'t have an account.');
+      return;
+    }
+
+    setUserName(user.name);
+    setUserEmail(email);
+    setIsLoggedIn(true);
+    setAppState('welcome');
+    setNavigationHistory([]);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setNavigationHistory([]);
+    setUserName('');
+    setUserEmail('');
     setUserProfileImage(null);
     setAppState('login');
   };
@@ -173,9 +213,9 @@ const Index = () => {
     navigateToPage('payIdPayment');
   };
 
-  const handleTransferComplete = async (amount: string) => {
+  const handleTransferComplete = (amount: string) => {
     const transferValue = parseFloat(amount.replace(/[₦,]/g, ''));
-    await updateProfile({ balance: currentBalance - transferValue });
+    setCurrentBalance(prev => prev - transferValue);
     setTransferAmount(amount);
     navigateToPage('transferSuccess');
   };
@@ -200,16 +240,15 @@ const Index = () => {
     navigateToPage('bankTransfer');
   };
 
-  const handleDataPurchaseSuccess = async () => {
-    const purchaseValue = parseFloat(purchaseAmount.replace(/[₦,]/g, ''));
-    await updateProfile({ balance: currentBalance - purchaseValue });
+  const handleDataPurchaseSuccess = () => {
     setPurchaseType('data');
+    setCurrentBalance(prev => prev - parseFloat(purchaseAmount.replace(/[₦,]/g, '')));
     navigateToPage('purchaseSuccess');
   };
 
-  const handleAirtimePurchaseSuccess = async (amount: string, phone: string) => {
+  const handleAirtimePurchaseSuccess = (amount: string, phone: string) => {
     const purchaseValue = parseFloat(amount.replace(/[₦,]/g, ''));
-    await updateProfile({ balance: currentBalance - purchaseValue });
+    setCurrentBalance(prev => prev - purchaseValue);
     setPurchaseType('airtime');
     setPurchaseAmount(amount);
     setPurchasePhone(phone);
@@ -220,44 +259,39 @@ const Index = () => {
     setUserProfileImage(image);
   };
 
-  const handleProfileUpdate = async (newName: string) => {
-    await updateProfile({ name: newName });
+  const handleProfileUpdate = (newName: string) => {
+    setUserName(newName);
+    // Update in registered users as well
+    const updatedUsers = registeredUsers.map(user => 
+      user.email === userEmail ? { ...user, name: newName } : user
+    );
+    setRegisteredUsers(updatedUsers);
+    localStorage.setItem('paygo_registered_users', JSON.stringify(updatedUsers));
   };
 
   const formatBalance = (balance: number) => {
     return `₦${balance.toLocaleString()}.00`;
   };
 
-  // Show loading state while checking auth
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // Only show registration if not authenticated
-  if (appState === 'registration' && !isAuthenticated) {
+  // Only show registration if no users are registered or not logged in
+  if (appState === 'registration') {
     return (
       <>
         <RegistrationForm 
           onRegister={handleRegister}
           onSwitchToLogin={handleSwitchToLogin}
-          isLoading={loading}
         />
         <LiveChat />
       </>
     );
   }
 
-  if (appState === 'login' && !isAuthenticated) {
+  if (appState === 'login') {
     return (
       <>
         <Login 
           onLogin={handleLogin}
           onSwitchToRegister={handleSwitchToRegister}
-          isLoading={loading}
         />
         <LiveChat />
       </>
@@ -265,13 +299,12 @@ const Index = () => {
   }
 
   // All other pages require authentication
-  if (!isAuthenticated) {
+  if (!isLoggedIn) {
     return (
       <>
         <Login 
           onLogin={handleLogin}
           onSwitchToRegister={handleSwitchToRegister}
-          isLoading={loading}
         />
         <LiveChat />
       </>

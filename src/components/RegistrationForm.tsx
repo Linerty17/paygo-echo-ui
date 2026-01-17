@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2 } from 'lucide-react';
 
 interface RegistrationFormProps {
-  onRegister: (name: string, email: string, password: string, country: string) => Promise<void>;
+  onRegister: (name: string, email: string, password: string, country: string) => void;
   onSwitchToLogin: () => void;
-  isLoading?: boolean;
 }
 
 const countries = [
@@ -203,19 +201,16 @@ const countries = [
   { code: 'ZW', name: 'Zimbabwe', flag: '🇿🇼' }
 ];
 
-const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitchToLogin, isLoading }) => {
+const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitchToLogin }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [country, setCountry] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name && email && password && country) {
-      setIsSubmitting(true);
-      await onRegister(name, email, password, country);
-      setIsSubmitting(false);
+      onRegister(name, email, password, country);
     }
   };
 
@@ -297,17 +292,9 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
 
           <Button
             type="submit"
-            disabled={isSubmitting || isLoading}
-            className="w-full h-14 bg-primary hover:bg-primary/80 text-primary-foreground text-lg font-medium rounded-xl transition-colors lavender-glow disabled:opacity-50"
+            className="w-full h-14 bg-primary hover:bg-primary/80 text-primary-foreground text-lg font-medium rounded-xl transition-colors lavender-glow"
           >
-            {isSubmitting || isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Registering...
-              </>
-            ) : (
-              'Register'
-            )}
+            Register
           </Button>
         </form>
 
