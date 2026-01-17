@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, MessageCircle, Send, Users } from 'lucide-react';
+import { ArrowLeft, Send, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface JoinCommunitiesProps {
@@ -7,12 +7,8 @@ interface JoinCommunitiesProps {
 }
 
 const JoinCommunities: React.FC<JoinCommunitiesProps> = ({ onBack }) => {
-  const handleJoinWhatsApp = () => {
-    window.open('https://chat.whatsapp.com/B8kfCmRCwgbKiUMCZ8fQhe?mode=wwt', '_blank');
-  };
-
   const handleJoinTelegram = () => {
-    window.open('https://t.me/officialbluepay2025', '_blank');
+    window.open('https://t.me/officialbluepay', '_blank');
   };
 
   return (
@@ -46,47 +42,25 @@ const JoinCommunities: React.FC<JoinCommunitiesProps> = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Community Options */}
-        <div className="space-y-4">
-          {/* WhatsApp Channel */}
-          <div className="glass rounded-3xl p-5 border border-white/10">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/30">
-                <MessageCircle className="w-7 h-7 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-foreground">WhatsApp Group</h3>
-                <p className="text-muted-foreground text-sm">Join our official WhatsApp community</p>
-              </div>
+        {/* Telegram Channel */}
+        <div className="glass rounded-3xl p-5 border border-white/10">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <Send className="w-7 h-7 text-white" />
             </div>
-            <Button 
-              onClick={handleJoinWhatsApp}
-              className="w-full h-12 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 hover:opacity-90 text-white font-semibold shadow-lg border-0"
-            >
-              <MessageCircle className="w-5 h-5 mr-2" />
-              Join WhatsApp
-            </Button>
-          </div>
-
-          {/* Telegram Channel */}
-          <div className="glass rounded-3xl p-5 border border-white/10">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <Send className="w-7 h-7 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-foreground">Telegram Channel</h3>
-                <p className="text-muted-foreground text-sm">Get instant updates on Telegram</p>
-              </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-foreground">Telegram Channel</h3>
+              <p className="text-muted-foreground text-sm">Get instant updates on Telegram</p>
             </div>
-            <Button 
-              onClick={handleJoinTelegram}
-              className="w-full h-12 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-600 hover:opacity-90 text-white font-semibold shadow-lg border-0"
-            >
-              <Send className="w-5 h-5 mr-2" />
-              Join Telegram
-            </Button>
           </div>
+          <Button 
+            onClick={handleJoinTelegram}
+            className="w-full h-12 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-600 hover:opacity-90 text-white font-semibold shadow-lg border-0"
+          >
+            <Send className="w-5 h-5 mr-2" />
+            Join Telegram
+          </Button>
+          <p className="text-muted-foreground text-xs mt-3 text-center">@officialbluepay</p>
         </div>
 
         {/* Benefits */}
