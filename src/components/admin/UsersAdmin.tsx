@@ -350,8 +350,15 @@ const UsersAdmin: React.FC<UsersAdminProps> = ({ onBack, onLogAudit }) => {
                       <Square className="w-5 h-5 text-muted-foreground" />
                     )}
                   </button>
-                  <div>
-                    <p className="text-foreground font-semibold">{user.name}</p>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-foreground font-semibold">{user.name}</p>
+                      {user.account_status === 'banned' && (
+                        <span className="px-2 py-0.5 text-xs font-medium bg-red-500/20 text-red-400 rounded-full">
+                          Banned
+                        </span>
+                      )}
+                    </div>
                     <p className="text-muted-foreground text-sm">{user.email}</p>
                     {user.phone && <p className="text-muted-foreground text-xs">{user.phone}</p>}
                   </div>
@@ -388,6 +395,18 @@ const UsersAdmin: React.FC<UsersAdminProps> = ({ onBack, onLogAudit }) => {
               <p className="text-xs text-muted-foreground mt-1">
                 Joined: {new Date(user.created_at).toLocaleDateString()}
               </p>
+
+              {/* User Action Buttons */}
+              <div className="mt-3 pt-3 border-t border-white/10">
+                <UserActionsAdmin
+                  userId={user.user_id}
+                  userName={user.name}
+                  userEmail={user.email}
+                  currentStatus={user.account_status || 'active'}
+                  onActionComplete={fetchUsers}
+                  onLogAudit={onLogAudit}
+                />
+              </div>
             </div>
           ))
         )}

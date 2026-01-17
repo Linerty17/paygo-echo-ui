@@ -144,6 +144,15 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack, onLog
 
       if (error) throw error;
 
+      // Send real-time notification to user
+      await supabase.from('user_notifications').insert({
+        user_id: upload.user_id,
+        type: 'payment_approved',
+        title: 'Payment Approved! 🎉',
+        message: 'Your payment has been verified and approved.',
+        metadata: { payid_code: 'PAY-25353531', amount: upload.amount, payment_type: upload.payment_type }
+      });
+
       toast({
         title: "Payment Approved!",
         description: `Payment from ${upload.user_name} has been approved`,
@@ -182,6 +191,15 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack, onLog
         .eq('id', upload.id);
 
       if (error) throw error;
+
+      // Send real-time notification to user
+      await supabase.from('user_notifications').insert({
+        user_id: upload.user_id,
+        type: 'payment_declined',
+        title: 'Payment Not Confirmed',
+        message: 'Your payment could not be verified. Please ensure you upload a valid payment receipt.',
+        metadata: { amount: upload.amount, payment_type: upload.payment_type }
+      });
 
       toast({
         title: "Payment Declined",
