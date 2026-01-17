@@ -30,7 +30,7 @@ import { Loader2 } from 'lucide-react';
 type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'upgradeProcessing' | 'upgradePayment' | 'payIdPayment' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'paymentFailed' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
 
 const Index = () => {
-  const { user, profile, loading, signUp, signIn, signOut, updateProfile, isAuthenticated } = useAuth();
+  const { user, profile, loading, signUp, signIn, signOut, updateProfile, fetchReferrals, isAuthenticated } = useAuth();
   
   const [appState, setAppState] = useState<AppState>('registration');
   const [userProfileImage, setUserProfileImage] = useState<string | null>(null);
@@ -93,8 +93,8 @@ const Index = () => {
     window.history.pushState({ page: newState }, '', window.location.href);
   };
 
-  const handleRegister = async (name: string, email: string, password: string, country: string) => {
-    const result = await signUp(email, password, name, country);
+  const handleRegister = async (name: string, email: string, password: string, country: string, referralCode?: string) => {
+    const result = await signUp(email, password, name, country, referralCode);
     if (!result.error) {
       setAppState('welcome');
       setNavigationHistory([]);
@@ -292,7 +292,11 @@ const Index = () => {
   if (appState === 'earnMore') {
     return (
       <>
-        <EarnMore onBack={handleBackToDashboard} />
+        <EarnMore 
+          onBack={handleBackToDashboard} 
+          referralCode={profile?.referral_code || null}
+          fetchReferrals={fetchReferrals}
+        />
         <LiveChat />
       </>
     );

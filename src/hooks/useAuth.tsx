@@ -11,8 +11,24 @@ interface Profile {
   country: string;
   level: number;
   balance: number;
+  referral_code: string | null;
+  referred_by: string | null;
   created_at: string;
   updated_at: string;
+}
+
+interface Referral {
+  id: string;
+  referrer_id: string;
+  referred_id: string;
+  bonus_amount: number;
+  status: string;
+  created_at: string;
+  credited_at: string | null;
+  referred_profile?: {
+    name: string;
+    email: string;
+  };
 }
 
 export const useAuth = () => {
@@ -69,7 +85,7 @@ export const useAuth = () => {
     }
   };
 
-  const signUp = async (email: string, password: string, name: string, country: string) => {
+  const signUp = async (email: string, password: string, name: string, country: string, referredBy?: string) => {
     setLoading(true);
     
     const redirectUrl = `${window.location.origin}/`;
@@ -81,7 +97,8 @@ export const useAuth = () => {
         emailRedirectTo: redirectUrl,
         data: {
           name,
-          country
+          country,
+          referred_by: referredBy || null
         }
       }
     });
@@ -99,6 +116,38 @@ export const useAuth = () => {
 
     toast.success('Registration successful!');
     return { data, error: null };
+  };
+
+  const fetchReferrals = async (): Promise<Referral[]> => {
+    if (!profile) return [];
+
+    const { data, error } = await supabase
+      .from('referrals')
+      .select('*')
+      .eq('referrer_id', profile.id)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching referrals:', error);
+      return [];
+    }
+
+    // Fetch referred profiles separately
+    const referrals: Referral[] = [];
+    for (const r of data || []) {
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('name, email')
+        .eq('id', r.referred_id)
+        .single();
+      
+      referrals.push({
+        ...r,
+        referred_profile: profileData || undefined
+      });
+    }
+
+    return referrals;
   };
 
   const signIn = async (email: string, password: string) => {
@@ -162,6 +211,7 @@ export const useAuth = () => {
     signOut,
     updateProfile,
     fetchProfile,
+    fetchReferrals,
     isAuthenticated: !!session
   };
 };
