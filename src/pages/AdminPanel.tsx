@@ -4,7 +4,9 @@ import { User, Session } from '@supabase/supabase-js';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Lock, Mail, Eye, EyeOff, Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings, Menu, X, ChevronLeft, Search, Clock } from 'lucide-react';
+import { Loader2, Lock, Mail, Eye, EyeOff, Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings, X, Search, Clock } from 'lucide-react';
+import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
+import AdminSidebar from '@/components/admin/AdminSidebar';
 import PaymentUploadsAdmin from '@/components/admin/PaymentUploadsAdmin';
 import UsersAdmin from '@/components/admin/UsersAdmin';
 import ReferralsAdmin from '@/components/admin/ReferralsAdmin';
@@ -22,6 +24,16 @@ interface SearchResult {
   subtitle: string;
 }
 
+const menuItems = [
+  { id: 'stats' as AdminView, icon: BarChart3, title: 'Dashboard', num: 1 },
+  { id: 'payments' as AdminView, icon: Image, title: 'Payments', num: 2 },
+  { id: 'users' as AdminView, icon: Users, title: 'Users', num: 3 },
+  { id: 'referrals' as AdminView, icon: Gift, title: 'Referrals', num: 4 },
+  { id: 'audit' as AdminView, icon: FileText, title: 'Audit Logs', num: 5 },
+  { id: 'notifications' as AdminView, icon: Bell, title: 'Notifications', num: 6 },
+  { id: 'settings' as AdminView, icon: Settings, title: 'Settings', num: 7 },
+];
+
 const AdminPanel = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -32,7 +44,6 @@ const AdminPanel = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
   const [currentView, setCurrentView] = useState<AdminView>('stats');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
@@ -79,7 +90,7 @@ const AdminPanel = () => {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -364,17 +375,6 @@ const AdminPanel = () => {
     );
   }
 
-  // Menu Items
-  const menuItems = [
-    { id: 'stats' as AdminView, icon: BarChart3, title: 'Dashboard', num: 1 },
-    { id: 'payments' as AdminView, icon: Image, title: 'Payments', num: 2 },
-    { id: 'users' as AdminView, icon: Users, title: 'Users', num: 3 },
-    { id: 'referrals' as AdminView, icon: Gift, title: 'Referrals', num: 4 },
-    { id: 'audit' as AdminView, icon: FileText, title: 'Audit Logs', num: 5 },
-    { id: 'notifications' as AdminView, icon: Bell, title: 'Notifications', num: 6 },
-    { id: 'settings' as AdminView, icon: Settings, title: 'Settings', num: 7 },
-  ];
-
   // Render current view content
   const renderContent = () => {
     switch (currentView) {
@@ -390,209 +390,71 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <div 
-        className={`fixed lg:relative z-40 h-screen transition-all duration-300 ${
-          sidebarOpen ? 'w-64' : 'w-14'
-        }`}
-      >
-        {/* Sidebar Overlay for mobile (only when expanded) */}
-        {sidebarOpen && (
-          <div 
-            className="fixed inset-0 bg-black/50 lg:hidden z-30"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
-
-        {/* Sidebar Content */}
-        <div 
-          className={`fixed lg:relative h-full bg-card border-r border-border/50 transition-all duration-300 z-40 ${
-            sidebarOpen ? 'w-64 translate-x-0' : 'w-14 translate-x-0'
-          }`}
-        >
-          {/* Sidebar Header */}
-          <div className="h-16 flex items-center justify-between px-4 border-b border-border/50">
-            <div className={`flex items-center gap-3 ${!sidebarOpen ? 'hidden' : ''}`}>
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center flex-shrink-0">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-bold text-foreground">Admin</span>
+    <SidebarProvider defaultOpen={true}>
+      <div className="min-h-screen flex w-full">
+        <AdminSidebar 
+          currentView={currentView}
+          onViewChange={setCurrentView}
+          onLogout={handleLogout}
+          userEmail={user?.email}
+        />
+        
+        <SidebarInset className="flex-1">
+          {/* Top Header */}
+          <header className="h-16 flex items-center justify-between px-4 border-b border-border/50 bg-card/50 backdrop-blur sticky top-0 z-30">
+            <div className="flex items-center gap-3">
+              <SidebarTrigger className="w-10 h-10 rounded-xl hover:bg-muted" />
+              <h1 className="text-lg font-semibold text-foreground hidden sm:block">
+                {menuItems.find(m => m.id === currentView)?.title || 'Dashboard'}
+              </h1>
             </div>
-            <button 
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center lg:hidden"
-            >
-              {sidebarOpen ? (
-                <ChevronLeft className="w-5 h-5 text-muted-foreground" />
-              ) : (
-                <Menu className="w-5 h-5 text-muted-foreground" />
-              )}
-            </button>
-          </div>
 
-          {/* Sidebar Menu */}
-          <nav className="p-3 space-y-1">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  setCurrentView(item.id);
-                  if (window.innerWidth < 1024) setSidebarOpen(false);
-                }}
-                className={`w-full flex items-center rounded-xl transition-all ${
-                  sidebarOpen ? 'gap-3 px-3 py-3' : 'justify-center px-0 py-3'
-                } ${
-                  currentView === item.id
-                    ? 'bg-primary text-white'
-                    : 'hover:bg-muted text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                  currentView === item.id ? 'bg-white/20' : 'bg-muted'
-                }`}>
-                  <span className={`text-sm font-bold ${currentView === item.id ? 'text-white' : 'text-primary'}`}>
-                    {item.num}
-                  </span>
-                </div>
-                {sidebarOpen && (
-                  <>
-                    <item.icon className="w-5 h-5 flex-shrink-0" />
-                    <span className="font-medium">{item.title}</span>
-                  </>
+            {/* Global Search */}
+            <div ref={searchRef} className="relative flex-1 max-w-md mx-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search users, payments, referrals..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  onFocus={handleSearchFocus}
+                  className="pl-10 h-10 bg-muted/50 border-border/50 rounded-xl text-sm"
+                />
+                {searchLoading && (
+                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-muted-foreground" />
                 )}
-              </button>
-            ))}
-          </nav>
-
-          {/* Sidebar Footer */}
-          <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-border/50">
-            {sidebarOpen && (
-              <div className="mb-3 px-3 py-2">
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
               </div>
-            )}
-            <button
-              onClick={handleLogout}
-              className={`w-full flex items-center rounded-xl text-red-500 hover:bg-red-500/10 transition-all ${
-                sidebarOpen ? 'gap-3 px-3 py-3' : 'justify-center px-0 py-3'
-              }`}
-            >
-              <LogOut className="w-5 h-5 flex-shrink-0" />
-              {sidebarOpen && <span className="font-medium">Logout</span>}
-            </button>
-          </div>
-        </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 min-h-screen">
-        {/* Top Header */}
-        <header className="h-16 flex items-center justify-between px-4 border-b border-border/50 bg-card/50 backdrop-blur sticky top-0 z-30">
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="w-10 h-10 rounded-xl hover:bg-muted flex items-center justify-center"
-            >
-              {sidebarOpen ? (
-                <ChevronLeft className="w-5 h-5 text-muted-foreground" />
-              ) : (
-                <Menu className="w-5 h-5 text-muted-foreground" />
-              )}
-            </button>
-            <h1 className="text-lg font-semibold text-foreground hidden sm:block">
-              {menuItems.find(m => m.id === currentView)?.title || 'Dashboard'}
-            </h1>
-          </div>
-
-          {/* Global Search */}
-          <div ref={searchRef} className="relative flex-1 max-w-md mx-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search users, payments, referrals..."
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                onFocus={handleSearchFocus}
-                className="pl-10 h-10 bg-muted/50 border-border/50 rounded-xl text-sm"
-              />
-              {searchLoading && (
-                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-muted-foreground" />
-              )}
-            </div>
-
-            {/* Search Results Dropdown */}
-            {(showSearchResults || (searchFocused && recentSearches.length > 0 && searchQuery.length < 2)) && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50">
-                {/* Recent Searches - show when no query */}
-                {searchQuery.length < 2 && recentSearches.length > 0 && (
-                  <div>
-                    <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Clock className="w-3 h-3" />
-                        <span>Recent Searches</span>
-                      </div>
-                      <button
-                        onClick={clearRecentSearches}
-                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        Clear all
-                      </button>
-                    </div>
-                    <div className="max-h-60 overflow-y-auto">
-                      {recentSearches.map((result) => (
-                        <div
-                          key={`recent-${result.type}-${result.id}`}
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => handleRecentClick(result)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') handleRecentClick(result);
-                          }}
-                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors border-b border-border/50 last:border-b-0 group cursor-pointer"
-                        >
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                            result.type === 'user' ? 'bg-blue-500/10 text-blue-500' :
-                            result.type === 'payment' ? 'bg-green-500/10 text-green-500' :
-                            'bg-purple-500/10 text-purple-500'
-                          }`}>
-                            {result.type === 'user' && <Users className="w-4 h-4" />}
-                            {result.type === 'payment' && <Image className="w-4 h-4" />}
-                            {result.type === 'referral' && <Gift className="w-4 h-4" />}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-foreground truncate">{result.title}</p>
-                            <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={(e) => removeRecentSearch(result.id, e)}
-                            className="p-1 rounded hover:bg-muted-foreground/20 opacity-0 group-hover:opacity-100 transition-opacity"
-                            aria-label="Remove from recent"
-                          >
-                            <X className="w-3 h-3 text-muted-foreground" />
-                          </button>
+              {/* Search Results Dropdown */}
+              {(showSearchResults || (searchFocused && recentSearches.length > 0 && searchQuery.length < 2)) && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50">
+                  {/* Recent Searches - show when no query */}
+                  {searchQuery.length < 2 && recentSearches.length > 0 && (
+                    <div>
+                      <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Clock className="w-3 h-3" />
+                          <span>Recent Searches</span>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Search Results - show when query exists */}
-                {searchQuery.length >= 2 && (
-                  <>
-                    {searchResults.length === 0 ? (
-                      <div className="p-4 text-center text-muted-foreground text-sm">
-                        {searchLoading ? 'Searching...' : 'No results found'}
+                        <button
+                          onClick={clearRecentSearches}
+                          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          Clear all
+                        </button>
                       </div>
-                    ) : (
-                      <div className="max-h-80 overflow-y-auto">
-                        {searchResults.map((result) => (
-                          <button
-                            key={`${result.type}-${result.id}`}
-                            onClick={() => handleResultClick(result)}
-                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors border-b border-border/50 last:border-b-0"
+                      <div className="max-h-60 overflow-y-auto">
+                        {recentSearches.map((result) => (
+                          <div
+                            key={`recent-${result.type}-${result.id}`}
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => handleRecentClick(result)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleRecentClick(result);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors border-b border-border/50 last:border-b-0 group cursor-pointer"
                           >
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                               result.type === 'user' ? 'bg-blue-500/10 text-blue-500' :
@@ -607,33 +469,76 @@ const AdminPanel = () => {
                               <p className="text-sm font-medium text-foreground truncate">{result.title}</p>
                               <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>
                             </div>
-                            <span className="text-xs text-muted-foreground capitalize px-2 py-1 bg-muted rounded-md">
-                              {result.type}
-                            </span>
-                          </button>
+                            <button
+                              type="button"
+                              onClick={(e) => removeRecentSearch(result.id, e)}
+                              className="p-1 rounded hover:bg-muted-foreground/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                              aria-label="Remove from recent"
+                            >
+                              <X className="w-3 h-3 text-muted-foreground" />
+                            </button>
+                          </div>
                         ))}
                       </div>
-                    )}
-                  </>
-                )}
-              </div>
-            )}
-          </div>
+                    </div>
+                  )}
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground hidden md:block">{user?.email}</span>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
-              <span className="text-white text-sm font-bold">{user?.email?.charAt(0).toUpperCase()}</span>
+                  {/* Search Results - show when query exists */}
+                  {searchQuery.length >= 2 && (
+                    <>
+                      {searchResults.length === 0 ? (
+                        <div className="p-4 text-center text-muted-foreground text-sm">
+                          {searchLoading ? 'Searching...' : 'No results found'}
+                        </div>
+                      ) : (
+                        <div className="max-h-80 overflow-y-auto">
+                          {searchResults.map((result) => (
+                            <button
+                              key={`${result.type}-${result.id}`}
+                              onClick={() => handleResultClick(result)}
+                              className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors border-b border-border/50 last:border-b-0"
+                            >
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                                result.type === 'user' ? 'bg-blue-500/10 text-blue-500' :
+                                result.type === 'payment' ? 'bg-green-500/10 text-green-500' :
+                                'bg-purple-500/10 text-purple-500'
+                              }`}>
+                                {result.type === 'user' && <Users className="w-4 h-4" />}
+                                {result.type === 'payment' && <Image className="w-4 h-4" />}
+                                {result.type === 'referral' && <Gift className="w-4 h-4" />}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-foreground truncate">{result.title}</p>
+                                <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>
+                              </div>
+                              <span className="text-xs text-muted-foreground capitalize px-2 py-1 bg-muted rounded-md">
+                                {result.type}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
             </div>
-          </div>
-        </header>
 
-        {/* Page Content - Embedded without back buttons */}
-        <div className="admin-content-area">
-          {renderContent()}
-        </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground hidden md:block">{user?.email}</span>
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
+                <span className="text-white text-sm font-bold">{user?.email?.charAt(0).toUpperCase()}</span>
+              </div>
+            </div>
+          </header>
+
+          {/* Page Content */}
+          <div className="admin-content-area p-4">
+            {renderContent()}
+          </div>
+        </SidebarInset>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
