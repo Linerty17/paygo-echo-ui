@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import TypewriterText from './TypewriterText';
@@ -24,9 +24,9 @@ const BuyPayId: React.FC<BuyPayIdProps> = ({ onBack, onPayClicked, userName, use
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paygo-lavender">
       {/* Header */}
-      <div className="bg-purple-600 text-white p-4">
+      <div className="glass-header text-white p-4">
         <div className="flex items-center space-x-4">
           <button onClick={onBack}>
             <ArrowLeft className="w-6 h-6" />
@@ -37,16 +37,16 @@ const BuyPayId: React.FC<BuyPayIdProps> = ({ onBack, onPayClicked, userName, use
 
       <div className="p-6 space-y-6">
         <div>
-          <label className="block text-gray-900 text-lg font-medium mb-3">Amount</label>
-          <div className="w-full h-14 bg-white rounded-xl shadow-sm flex items-center px-4 border-0">
-            <span className="text-lg text-gray-500">{amount}</span>
+          <label className="block text-foreground text-lg font-medium mb-3">Amount</label>
+          <div className="w-full h-14 glass-card rounded-xl flex items-center px-4">
+            <span className="text-lg text-muted-foreground">{amount}</span>
           </div>
         </div>
 
         <div>
-          <label className="block text-gray-900 text-lg font-medium mb-3">Full Name</label>
-          <div className="w-full h-14 bg-white rounded-xl shadow-sm flex items-center px-4 border-0">
-            <span className="text-lg text-gray-900">
+          <label className="block text-foreground text-lg font-medium mb-3">Full Name</label>
+          <div className="w-full h-14 glass-card rounded-xl flex items-center px-4">
+            <span className="text-lg text-foreground">
               <TypewriterText 
                 text={userName} 
                 speed={100}
@@ -57,9 +57,9 @@ const BuyPayId: React.FC<BuyPayIdProps> = ({ onBack, onPayClicked, userName, use
         </div>
 
         <div>
-          <label className="block text-gray-900 text-lg font-medium mb-3">Your Email Address</label>
-          <div className="w-full h-14 bg-white rounded-xl shadow-sm flex items-center px-4 border-0">
-            <span className="text-lg text-gray-900">
+          <label className="block text-foreground text-lg font-medium mb-3">Your Email Address</label>
+          <div className="w-full h-14 glass-card rounded-xl flex items-center px-4">
+            <span className="text-lg text-foreground">
               <TypewriterText 
                 text={userEmail} 
                 speed={80}
@@ -71,18 +71,18 @@ const BuyPayId: React.FC<BuyPayIdProps> = ({ onBack, onPayClicked, userName, use
         {showPayButton && (
           <Button 
             onClick={handlePay}
-            className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8 animate-fade-in"
+            className="w-full h-14 gradient-purple hover:opacity-90 text-white text-lg font-medium rounded-xl mt-8 animate-fade-in"
           >
             Pay
           </Button>
         )}
 
-        <p className="text-center text-gray-600 text-sm mt-6">
+        <p className="text-center text-muted-foreground text-sm mt-6">
           Your PAY ID will be displayed on the app once your payment is confirmed.
         </p>
 
         <div className="text-center mt-12">
-          <p className="text-gray-900 font-semibold">PayGo Financial Services LTD</p>
+          <p className="text-foreground font-semibold">PayGo Financial Services LTD</p>
         </div>
       </div>
     </div>

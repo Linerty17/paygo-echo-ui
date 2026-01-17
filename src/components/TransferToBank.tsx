@@ -48,31 +48,34 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack, onTransferCompl
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paygo-lavender">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-4">
+      <div className="glass-header text-white p-4">
         <div className="flex items-center space-x-4">
           <button onClick={onBack}>
-            <ArrowLeft className="w-6 h-6 text-gray-900" />
+            <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-semibold text-gray-900">Transfer to Bank</h1>
+          <h1 className="text-xl font-semibold">Transfer to Bank</h1>
         </div>
       </div>
 
       <div className="p-6 space-y-6">
         {/* Balance Display */}
-        <div className="bg-purple-600 text-white p-6 rounded-2xl">
-          <p className="text-sm opacity-90">Available Balance</p>
-          <p className="text-3xl font-bold">{currentBalance}</p>
+        <div className="gradient-purple text-white p-6 rounded-2xl relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+          <div className="relative z-10">
+            <p className="text-sm opacity-90">Available Balance</p>
+            <p className="text-3xl font-bold">{currentBalance}</p>
+          </div>
         </div>
 
         {/* Bank Selection */}
         <div>
-          <label className="block text-gray-700 mb-2">Select Bank</label>
+          <label className="block text-muted-foreground mb-2">Select Bank</label>
           <select
             value={selectedBank}
             onChange={(e) => setSelectedBank(e.target.value)}
-            className="w-full h-14 px-4 bg-white border border-gray-300 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+            className="w-full h-14 px-4 glass-input rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="">Choose a bank</option>
             {banks.map((bank) => (
@@ -83,56 +86,56 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack, onTransferCompl
 
         {/* Account Number */}
         <div>
-          <label className="block text-gray-700 mb-2">Account Number</label>
+          <label className="block text-muted-foreground mb-2">Account Number</label>
           <Input
             type="text"
             placeholder="Enter account number"
             value={accountNumber}
             onChange={(e) => setAccountNumber(e.target.value)}
-            className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm"
+            className="w-full h-14 text-lg border-0 glass-input rounded-xl"
           />
         </div>
 
         {/* Account Name */}
         <div>
-          <label className="block text-gray-700 mb-2">Account Name</label>
+          <label className="block text-muted-foreground mb-2">Account Name</label>
           <Input
             type="text"
             placeholder="Enter account name"
             value={accountName}
             onChange={(e) => setAccountName(e.target.value)}
-            className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm"
+            className="w-full h-14 text-lg border-0 glass-input rounded-xl"
           />
         </div>
 
         {/* Amount */}
         <div>
-          <label className="block text-gray-700 mb-2">Amount</label>
+          <label className="block text-muted-foreground mb-2">Amount</label>
           <Input
             type="text"
             placeholder="Enter amount"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm"
+            className="w-full h-14 text-lg border-0 glass-input rounded-xl"
           />
         </div>
 
         {/* PAY ID Code */}
         <div>
-          <label className="block text-gray-700 mb-2">PAY ID Code</label>
+          <label className="block text-muted-foreground mb-2">PAY ID Code</label>
           <Input
             type="text"
             placeholder="Enter PAY ID Code"
             value={payIdCode}
             onChange={(e) => setPayIdCode(e.target.value)}
-            className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm"
+            className="w-full h-14 text-lg border-0 glass-input rounded-xl"
           />
-          <p className="text-gray-500 text-sm mt-2">Enter your PAY ID code to authorize withdrawal</p>
+          <p className="text-muted-foreground text-sm mt-2">Enter your PAY ID code to authorize withdrawal</p>
         </div>
 
         <Button 
           onClick={handleTransfer}
-          className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8"
+          className="w-full h-14 gradient-purple hover:opacity-90 text-white text-lg font-medium rounded-xl mt-8"
         >
           Transfer Money
         </Button>
