@@ -27,12 +27,12 @@ const PreparingPayment: React.FC<PreparingPaymentProps> = ({ onBack, onComplete 
   }, [onComplete]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-purple-600 text-white p-4">
+      <div className="glass-header text-foreground p-4">
         <div className="flex items-center space-x-4">
           <button onClick={onBack}>
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-6 h-6 text-primary" />
           </button>
           <h1 className="text-xl font-semibold">Buy PAY ID</h1>
         </div>
@@ -41,24 +41,29 @@ const PreparingPayment: React.FC<PreparingPaymentProps> = ({ onBack, onComplete 
       <div className="flex flex-col items-center justify-center min-h-[80vh] p-6">
         {/* Loading Spinner */}
         <div className="w-24 h-24 mb-8">
-          <div className="animate-spin rounded-full h-24 w-24 border-4 border-purple-200 border-t-purple-600"></div>
+          <div className="animate-spin rounded-full h-24 w-24 border-4 border-primary/20 border-t-primary"></div>
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+        <h2 className="text-2xl font-bold text-foreground mb-4 text-center">
           Preparing Payment Account
         </h2>
 
-        <p className="text-gray-600 text-center mb-8 max-w-sm">
+        <p className="text-muted-foreground text-center mb-8 max-w-sm">
           Please wait while we set up your payment...
         </p>
 
         {/* Progress Bar */}
         <div className="w-full max-w-md mb-8">
-          <Progress value={progress} className="h-2" />
+          <div className="h-2 glass rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-primary transition-all duration-300 rounded-full"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
 
         <div className="mt-16 text-center">
-          <p className="text-gray-900 font-semibold">PayGo Financial Services LTD</p>
+          <p className="text-foreground font-semibold">PayGo Financial Services LTD</p>
         </div>
       </div>
     </div>

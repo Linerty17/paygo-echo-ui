@@ -20,16 +20,16 @@ const LevelBenefits: React.FC<LevelBenefitsProps> = ({
   benefits, 
   onProceedToPayment 
 }) => {
-  const getLevelBackgroundColor = (level: string) => {
+  const getLevelGradient = (level: string) => {
     switch (level.toLowerCase()) {
-      case 'silver': return 'bg-gray-200';
-      case 'gold': return 'bg-yellow-200';
-      case 'platinum': return 'bg-blue-200';
-      case 'emerald': return 'bg-green-200';
-      case 'ruby': return 'bg-red-200';
-      case 'diamond': return 'bg-purple-200';
-      case 'black': return 'bg-gray-800';
-      default: return 'bg-gray-200';
+      case 'silver': return 'from-gray-400/20 to-gray-600/20';
+      case 'gold': return 'from-yellow-400/20 to-yellow-600/20';
+      case 'platinum': return 'from-blue-400/20 to-blue-600/20';
+      case 'emerald': return 'from-green-400/20 to-green-600/20';
+      case 'ruby': return 'from-red-400/20 to-red-600/20';
+      case 'diamond': return 'from-purple-400/20 to-purple-600/20';
+      case 'black': return 'from-gray-700/40 to-gray-900/40';
+      default: return 'from-gray-400/20 to-gray-600/20';
     }
   };
 
@@ -47,12 +47,12 @@ const LevelBenefits: React.FC<LevelBenefitsProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-purple-600 text-white p-4">
+      <div className="glass-header text-foreground p-4">
         <div className="flex items-center space-x-4">
           <button onClick={onBack}>
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-6 h-6 text-primary" />
           </button>
           <h1 className="text-xl font-semibold">Level Benefits</h1>
         </div>
@@ -60,26 +60,28 @@ const LevelBenefits: React.FC<LevelBenefitsProps> = ({
 
       <div className="p-6 space-y-6">
         {/* Level Card */}
-        <div className={`${getLevelBackgroundColor(levelName)} rounded-2xl p-6`}>
+        <div className={`glass-card bg-gradient-to-br ${getLevelGradient(levelName)} rounded-2xl p-6 lavender-glow`}>
           <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 glass rounded-full flex items-center justify-center">
               <span className="text-2xl">{getLevelIcon(levelName)}</span>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">{levelName} Level</h2>
-              <p className="text-xl font-semibold text-gray-900">{price}</p>
+              <h2 className="text-2xl font-bold text-foreground">{levelName} Level</h2>
+              <p className="text-xl font-semibold text-primary">{price}</p>
             </div>
           </div>
         </div>
 
         {/* Benefits Section */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
-          <h3 className="text-xl font-bold text-purple-600 mb-6">Benefits & Features</h3>
+        <div className="glass-card rounded-2xl p-6">
+          <h3 className="text-xl font-bold text-primary mb-6">Benefits & Features</h3>
           <div className="space-y-4">
             {benefits.map((benefit, index) => (
               <div key={index} className="flex items-center space-x-3">
-                <Check className="w-5 h-5 text-purple-600" />
-                <span className="text-gray-700">{benefit}</span>
+                <div className="w-6 h-6 glass rounded-full flex items-center justify-center">
+                  <Check className="w-4 h-4 text-primary" />
+                </div>
+                <span className="text-foreground">{benefit}</span>
               </div>
             ))}
           </div>
@@ -87,12 +89,12 @@ const LevelBenefits: React.FC<LevelBenefitsProps> = ({
 
         <Button 
           onClick={onProceedToPayment}
-          className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl"
+          className="w-full h-14 bg-primary hover:bg-primary/80 text-primary-foreground text-lg font-medium rounded-xl lavender-glow"
         >
           Proceed to Payment
         </Button>
 
-        <p className="text-center text-gray-600 text-sm">
+        <p className="text-center text-muted-foreground text-sm">
           Your upgrade will be activated immediately after payment is confirmed
         </p>
       </div>

@@ -87,23 +87,23 @@ const LiveChat: React.FC = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-purple-600 rounded-full flex items-center justify-center shadow-lg hover:bg-purple-700 transition-colors z-50"
+          className="fixed bottom-6 right-6 w-14 h-14 bg-primary rounded-full flex items-center justify-center shadow-lg hover:bg-primary/80 transition-colors z-50 lavender-glow"
         >
-          <MessageCircle className="w-6 h-6 text-white" />
+          <MessageCircle className="w-6 h-6 text-primary-foreground" />
         </button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-80 h-96 bg-white rounded-2xl shadow-xl border border-gray-200 flex flex-col z-50">
+        <div className="fixed bottom-6 right-6 w-80 h-96 glass-card rounded-2xl flex flex-col z-50">
           {/* Header */}
-          <div className="bg-purple-600 text-white p-4 rounded-t-2xl flex justify-between items-center">
+          <div className="shiny-gradient text-foreground p-4 rounded-t-2xl flex justify-between items-center">
             <div>
               <h3 className="font-semibold">PayGo Assistant</h3>
-              <p className="text-sm opacity-90">Online</p>
+              <p className="text-sm text-muted-foreground">Online</p>
             </div>
             <button onClick={() => setIsOpen(false)}>
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5 text-primary" />
             </button>
           </div>
 
@@ -117,8 +117,8 @@ const LiveChat: React.FC = () => {
                 <div
                   className={`max-w-[80%] p-3 rounded-2xl ${
                     message.isUser
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-100 text-gray-900'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'glass text-foreground'
                   }`}
                 >
                   <p className="text-sm">{message.text}</p>
@@ -128,16 +128,16 @@ const LiveChat: React.FC = () => {
           </div>
 
           {/* Input */}
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-4 border-t border-white/10">
             <div className="flex space-x-2">
               <Input
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message..."
-                className="flex-1"
+                className="flex-1 glass-input"
               />
-              <Button onClick={sendMessage} size="sm" className="bg-purple-600 hover:bg-purple-700">
+              <Button onClick={sendMessage} size="sm" className="bg-primary hover:bg-primary/80 text-primary-foreground">
                 <Send className="w-4 h-4" />
               </Button>
             </div>
