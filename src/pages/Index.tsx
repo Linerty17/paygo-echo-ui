@@ -21,14 +21,14 @@ import PayIdSuccess from '@/components/PayIdSuccess';
 import PurchaseSuccess from '@/components/PurchaseSuccess';
 import TransferSuccess from '@/components/TransferSuccess';
 import AirtimeSuccess from '@/components/AirtimeSuccess';
-import PaymentFailed from '@/components/PaymentFailed';
+import PaymentPending from '@/components/PaymentPending';
 import LiveChat from '@/components/LiveChat';
 import PayIdPaymentPage from '@/components/PayIdPaymentPage';
 import UpgradePaymentPage from '@/components/UpgradePaymentPage';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 
-type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'upgradeProcessing' | 'upgradePayment' | 'payIdPayment' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'paymentFailed' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
+type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'upgradeProcessing' | 'upgradePayment' | 'payIdPayment' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'paymentPending' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
 
 const Index = () => {
   const { user, profile, loading, signUp, signIn, signOut, updateProfile, fetchReferrals, isAuthenticated } = useAuth();
@@ -253,11 +253,12 @@ const Index = () => {
   };
 
   const handlePaymentComplete = () => {
-    navigateToPage('paymentFailed');
+    navigateToPage('paymentPending');
   };
 
-  const handleTryAgainPayment = () => {
-    navigateToPage('bankTransfer');
+  const handleRefreshPayment = () => {
+    // Could add logic to check payment status
+    console.log('Checking payment status...');
   };
 
   const handleDataPurchaseSuccess = async () => {
@@ -539,12 +540,12 @@ const Index = () => {
     );
   }
 
-  if (appState === 'paymentFailed') {
+  if (appState === 'paymentPending') {
     return (
       <>
-        <PaymentFailed 
+        <PaymentPending 
           onBack={handleBackToDashboard} 
-          onTryAgain={handleTryAgainPayment}
+          onRefresh={handleRefreshPayment}
           onGoToDashboard={handleBackToDashboard}
         />
         <LiveChat />
