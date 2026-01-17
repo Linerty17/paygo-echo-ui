@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Search, RefreshCw, Users, Edit, Save, X, Wallet, Shield, ShieldOff } from 'lucide-react';
+import { ArrowLeft, Search, RefreshCw, Users, Edit, Save, X, Wallet, Download, Filter, Trash2, CheckSquare, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface UserProfile {
   id: string;
@@ -16,22 +23,26 @@ interface UserProfile {
   level: number;
   referral_code: string | null;
   referred_by: string | null;
-  is_admin: boolean | null;
   created_at: string;
 }
 
 interface UsersAdminProps {
   onBack: () => void;
+  onLogAudit: (action: string, entityType: string, entityId: string, details: object) => void;
 }
 
-const UsersAdmin: React.FC<UsersAdminProps> = ({ onBack }) => {
+const UsersAdmin: React.FC<UsersAdminProps> = ({ onBack, onLogAudit }) => {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterLevel, setFilterLevel] = useState<string>('all');
+  const [filterCountry, setFilterCountry] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('newest');
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [editBalance, setEditBalance] = useState('');
   const [editLevel, setEditLevel] = useState('');
   const [saving, setSaving] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -59,11 +70,28 @@ const UsersAdmin: React.FC<UsersAdminProps> = ({ onBack }) => {
     fetchUsers();
   }, []);
 
-  const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.phone?.includes(searchQuery)
-  );
+  const filteredUsers = users
+    .filter(user => 
+      (user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.phone?.includes(searchQuery)) &&
+      (filterLevel === 'all' || user.level.toString() === filterLevel) &&
+      (filterCountry === 'all' || user.country === filterCountry)
+    )
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'newest': return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case 'oldest': return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case 'balance_high': return b.balance - a.balance;
+        case 'balance_low': return a.balance - b.balance;
+        case 'level_high': return b.level - a.level;
+        case 'name': return a.name.localeCompare(b.name);
+        default: return 0;
+      }
+    });
+
+  const uniqueCountries = [...new Set(users.map(u => u.country).filter(Boolean))];
+  const uniqueLevels = [...new Set(users.map(u => u.level))].sort((a, b) => a - b);
 
   const handleEdit = (user: UserProfile) => {
     setEditingUser(user);
@@ -75,12 +103,17 @@ const UsersAdmin: React.FC<UsersAdminProps> = ({ onBack }) => {
     if (!editingUser) return;
     setSaving(true);
     
+    const oldBalance = editingUser.balance;
+    const oldLevel = editingUser.level;
+    const newBalance = parseFloat(editBalance) || 0;
+    const newLevel = parseInt(editLevel) || 1;
+    
     try {
       const { error } = await supabase
         .from('profiles')
         .update({ 
-          balance: parseFloat(editBalance) || 0,
-          level: parseInt(editLevel) || 1
+          balance: newBalance,
+          level: newLevel
         })
         .eq('id', editingUser.id);
 
@@ -89,6 +122,15 @@ const UsersAdmin: React.FC<UsersAdminProps> = ({ onBack }) => {
       toast({
         title: "User Updated!",
         description: `${editingUser.name}'s profile has been updated`,
+      });
+
+      onLogAudit('update_user', 'profiles', editingUser.id, {
+        user_name: editingUser.name,
+        user_email: editingUser.email,
+        old_balance: oldBalance,
+        new_balance: newBalance,
+        old_level: oldLevel,
+        new_level: newLevel
       });
 
       fetchUsers();
@@ -105,29 +147,54 @@ const UsersAdmin: React.FC<UsersAdminProps> = ({ onBack }) => {
     }
   };
 
-  const toggleAdmin = async (user: UserProfile) => {
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ is_admin: !user.is_admin })
-        .eq('id', user.id);
+  const toggleSelectUser = (userId: string) => {
+    setSelectedUsers(prev => 
+      prev.includes(userId) 
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId]
+    );
+  };
 
-      if (error) throw error;
-
-      toast({
-        title: user.is_admin ? "Admin Removed" : "Admin Granted",
-        description: `${user.name} is ${user.is_admin ? 'no longer' : 'now'} an admin`,
-      });
-
-      fetchUsers();
-    } catch (error) {
-      console.error('Error toggling admin:', error);
-      toast({
-        title: "Error",
-        description: "Could not update admin status",
-        variant: "destructive"
-      });
+  const selectAllVisible = () => {
+    if (selectedUsers.length === filteredUsers.length) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers(filteredUsers.map(u => u.id));
     }
+  };
+
+  const exportToCSV = () => {
+    const dataToExport = selectedUsers.length > 0 
+      ? filteredUsers.filter(u => selectedUsers.includes(u.id))
+      : filteredUsers;
+
+    const headers = ['Name', 'Email', 'Phone', 'Country', 'Balance', 'Level', 'Referral Code', 'Joined'];
+    const rows = dataToExport.map(user => [
+      user.name,
+      user.email,
+      user.phone || '',
+      user.country,
+      user.balance,
+      user.level,
+      user.referral_code || '',
+      new Date(user.created_at).toLocaleDateString()
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `users_export_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+
+    toast({
+      title: "Exported!",
+      description: `${dataToExport.length} users exported to CSV`,
+    });
   };
 
   return (
@@ -141,28 +208,24 @@ const UsersAdmin: React.FC<UsersAdminProps> = ({ onBack }) => {
             </button>
             <h1 className="text-xl font-semibold">User Management</h1>
           </div>
-          <button 
-            onClick={fetchUsers}
-            className="glass w-10 h-10 rounded-xl flex items-center justify-center"
-          >
-            <RefreshCw className={`w-5 h-5 text-primary ${loading ? 'animate-spin' : ''}`} />
-          </button>
+          <div className="flex gap-2">
+            <button 
+              onClick={exportToCSV}
+              className="glass w-10 h-10 rounded-xl flex items-center justify-center"
+            >
+              <Download className="w-5 h-5 text-primary" />
+            </button>
+            <button 
+              onClick={fetchUsers}
+              className="glass w-10 h-10 rounded-xl flex items-center justify-center"
+            >
+              <RefreshCw className={`w-5 h-5 text-primary ${loading ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="p-4 space-y-4">
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="Search by name, email or phone..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 h-12 glass-input rounded-xl"
-          />
-        </div>
-
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3">
           <div className="glass-card rounded-xl p-4 text-center">
@@ -179,6 +242,79 @@ const UsersAdmin: React.FC<UsersAdminProps> = ({ onBack }) => {
           </div>
         </div>
 
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search by name, email or phone..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-12 h-12 glass-input rounded-xl"
+          />
+        </div>
+
+        {/* Filters */}
+        <div className="grid grid-cols-3 gap-2">
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="h-10 glass-input rounded-xl text-xs">
+              <SelectValue placeholder="Sort" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Newest</SelectItem>
+              <SelectItem value="oldest">Oldest</SelectItem>
+              <SelectItem value="balance_high">Balance ↓</SelectItem>
+              <SelectItem value="balance_low">Balance ↑</SelectItem>
+              <SelectItem value="level_high">Level ↓</SelectItem>
+              <SelectItem value="name">Name A-Z</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={filterLevel} onValueChange={setFilterLevel}>
+            <SelectTrigger className="h-10 glass-input rounded-xl text-xs">
+              <SelectValue placeholder="Level" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Levels</SelectItem>
+              {uniqueLevels.map(level => (
+                <SelectItem key={level} value={String(level)}>Level {level}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={filterCountry} onValueChange={setFilterCountry}>
+            <SelectTrigger className="h-10 glass-input rounded-xl text-xs">
+              <SelectValue placeholder="Country" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Countries</SelectItem>
+              {uniqueCountries.map(country => (
+                <SelectItem key={country} value={country}>{country}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Bulk Selection */}
+        {filteredUsers.length > 0 && (
+          <div className="flex items-center justify-between glass rounded-xl p-3">
+            <button
+              onClick={selectAllVisible}
+              className="flex items-center gap-2 text-sm text-muted-foreground"
+            >
+              {selectedUsers.length === filteredUsers.length ? (
+                <CheckSquare className="w-4 h-4 text-primary" />
+              ) : (
+                <Square className="w-4 h-4" />
+              )}
+              Select All ({filteredUsers.length})
+            </button>
+            {selectedUsers.length > 0 && (
+              <span className="text-xs text-primary">{selectedUsers.length} selected</span>
+            )}
+          </div>
+        )}
+
         {/* Users List */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
@@ -193,35 +329,33 @@ const UsersAdmin: React.FC<UsersAdminProps> = ({ onBack }) => {
           filteredUsers.map((user) => (
             <div 
               key={user.id}
-              className="glass-card rounded-2xl p-4 border border-border/50"
+              className={`glass-card rounded-2xl p-4 border transition-colors ${
+                selectedUsers.includes(user.id) 
+                  ? 'border-primary/50 bg-primary/5' 
+                  : 'border-border/50'
+              }`}
             >
               <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="text-foreground font-semibold">{user.name}</p>
-                    {user.is_admin && (
-                      <span className="px-2 py-0.5 bg-red-500/20 text-red-500 text-xs rounded-full">Admin</span>
+                <div className="flex items-start gap-3">
+                  <button onClick={() => toggleSelectUser(user.id)}>
+                    {selectedUsers.includes(user.id) ? (
+                      <CheckSquare className="w-5 h-5 text-primary" />
+                    ) : (
+                      <Square className="w-5 h-5 text-muted-foreground" />
                     )}
+                  </button>
+                  <div>
+                    <p className="text-foreground font-semibold">{user.name}</p>
+                    <p className="text-muted-foreground text-sm">{user.email}</p>
+                    {user.phone && <p className="text-muted-foreground text-xs">{user.phone}</p>}
                   </div>
-                  <p className="text-muted-foreground text-sm">{user.email}</p>
-                  {user.phone && <p className="text-muted-foreground text-xs">{user.phone}</p>}
                 </div>
-                <div className="flex gap-2">
-                  <button 
-                    onClick={() => toggleAdmin(user)}
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                      user.is_admin ? 'bg-red-500/20 text-red-500' : 'glass text-muted-foreground'
-                    }`}
-                  >
-                    {user.is_admin ? <ShieldOff className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
-                  </button>
-                  <button 
-                    onClick={() => handleEdit(user)}
-                    className="glass w-9 h-9 rounded-xl flex items-center justify-center"
-                  >
-                    <Edit className="w-4 h-4 text-primary" />
-                  </button>
-                </div>
+                <button 
+                  onClick={() => handleEdit(user)}
+                  className="glass w-9 h-9 rounded-xl flex items-center justify-center"
+                >
+                  <Edit className="w-4 h-4 text-primary" />
+                </button>
               </div>
 
               <div className="grid grid-cols-3 gap-3 text-center">

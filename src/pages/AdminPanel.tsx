@@ -4,13 +4,17 @@ import { User, Session } from '@supabase/supabase-js';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Lock, Mail, Eye, EyeOff, Shield, ArrowLeft, LogOut, Users, Image, Gift, BarChart3 } from 'lucide-react';
+import { Loader2, Lock, Mail, Eye, EyeOff, Shield, ArrowLeft, LogOut, Users, Image, Gift, BarChart3, Crown, FileText, Bell, Settings } from 'lucide-react';
 import PaymentUploadsAdmin from '@/components/admin/PaymentUploadsAdmin';
 import UsersAdmin from '@/components/admin/UsersAdmin';
 import ReferralsAdmin from '@/components/admin/ReferralsAdmin';
 import StatsAdmin from '@/components/admin/StatsAdmin';
+import RolesAdmin from '@/components/admin/RolesAdmin';
+import AuditLogsAdmin from '@/components/admin/AuditLogsAdmin';
+import NotificationsAdmin from '@/components/admin/NotificationsAdmin';
+import SettingsAdmin from '@/components/admin/SettingsAdmin';
 
-type AdminView = 'dashboard' | 'payments' | 'users' | 'referrals' | 'stats';
+type AdminView = 'dashboard' | 'payments' | 'users' | 'referrals' | 'stats' | 'roles' | 'audit' | 'notifications' | 'settings';
 
 const AdminPanel = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -54,36 +58,43 @@ const AdminPanel = () => {
   }, []);
 
   const checkAdminStatus = async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('is_admin')
-      .eq('user_id', userId)
-      .maybeSingle();
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('role', 'admin')
+        .maybeSingle();
 
-    if (error) {
+      setIsAdmin(!!data);
+    } catch (error) {
       console.error('Error checking admin status:', error);
       setIsAdmin(false);
-    } else {
-      setIsAdmin(data?.is_admin || false);
     }
     setLoading(false);
+  };
+
+  const logAudit = async (action: string, entityType: string, entityId: string, details: object) => {
+    try {
+      await supabase.from('audit_logs').insert({
+        admin_user_id: user?.id || '',
+        admin_email: user?.email || '',
+        action,
+        entity_type: entityType,
+        entity_id: entityId,
+        details
+      });
+    } catch (error) {
+      console.error('Error logging audit:', error);
+    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoggingIn(true);
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      toast({
-        title: "Login Failed",
-        description: "Invalid email or password",
-        variant: "destructive"
-      });
+      toast({ title: "Login Failed", description: "Invalid email or password", variant: "destructive" });
     }
     setLoggingIn(false);
   };
@@ -104,97 +115,48 @@ const AdminPanel = () => {
     );
   }
 
-  // Show specific admin views
-  if (currentView === 'payments' && isAdmin) {
-    return <PaymentUploadsAdmin onBack={() => setCurrentView('dashboard')} />;
-  }
-  if (currentView === 'users' && isAdmin) {
-    return <UsersAdmin onBack={() => setCurrentView('dashboard')} />;
-  }
-  if (currentView === 'referrals' && isAdmin) {
-    return <ReferralsAdmin onBack={() => setCurrentView('dashboard')} />;
-  }
-  if (currentView === 'stats' && isAdmin) {
-    return <StatsAdmin onBack={() => setCurrentView('dashboard')} />;
+  // Render views
+  if (isAdmin) {
+    switch (currentView) {
+      case 'payments': return <PaymentUploadsAdmin onBack={() => setCurrentView('dashboard')} onLogAudit={logAudit} />;
+      case 'users': return <UsersAdmin onBack={() => setCurrentView('dashboard')} onLogAudit={logAudit} />;
+      case 'referrals': return <ReferralsAdmin onBack={() => setCurrentView('dashboard')} />;
+      case 'stats': return <StatsAdmin onBack={() => setCurrentView('dashboard')} />;
+      case 'roles': return <RolesAdmin onBack={() => setCurrentView('dashboard')} currentUserEmail={user?.email || ''} onLogAudit={logAudit} />;
+      case 'audit': return <AuditLogsAdmin onBack={() => setCurrentView('dashboard')} />;
+      case 'notifications': return <NotificationsAdmin onBack={() => setCurrentView('dashboard')} />;
+      case 'settings': return <SettingsAdmin onBack={() => setCurrentView('dashboard')} />;
+    }
   }
 
-  // Not logged in - show login form
   if (!session) {
     return (
       <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center p-4">
-        {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-32 -right-32 w-64 h-64 bg-red-500/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute top-1/2 -left-32 w-48 h-48 bg-primary/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
-
         <div className="relative w-full max-w-md">
-          <div className="absolute -inset-1 bg-gradient-to-r from-red-500/50 via-primary/50 to-red-500/50 rounded-[28px] blur-xl opacity-40" />
-          
-          <div className="relative glass-card rounded-3xl p-8">
+          <div className="glass-card rounded-3xl p-8">
             <div className="text-center mb-8">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg shadow-red-500/30">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
                 <Shield className="w-8 h-8 text-white" />
               </div>
               <h1 className="text-2xl font-bold text-foreground">Admin Access</h1>
-              <p className="text-muted-foreground text-sm mt-1">Authorized personnel only</p>
             </div>
-
             <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="block text-sm text-muted-foreground mb-2">Email</label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-12 h-14 glass-input rounded-xl"
-                    placeholder="admin@email.com"
-                    required
-                  />
-                </div>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="pl-12 h-14 glass-input rounded-xl" placeholder="admin@email.com" required />
               </div>
-
-              <div>
-                <label className="block text-sm text-muted-foreground mb-2">Password</label>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-12 pr-12 h-14 glass-input rounded-xl"
-                    placeholder="••••••••"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-5 h-5 text-muted-foreground" />
-                    ) : (
-                      <Eye className="w-5 h-5 text-muted-foreground" />
-                    )}
-                  </button>
-                </div>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} className="pl-12 pr-12 h-14 glass-input rounded-xl" placeholder="••••••••" required />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2">
+                  {showPassword ? <EyeOff className="w-5 h-5 text-muted-foreground" /> : <Eye className="w-5 h-5 text-muted-foreground" />}
+                </button>
               </div>
-
-              <Button
-                type="submit"
-                disabled={loggingIn}
-                className="w-full h-14 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white text-lg font-semibold"
-              >
-                {loggingIn ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>
-                    <Lock className="w-5 h-5 mr-2" />
-                    Access Admin Panel
-                  </>
-                )}
+              <Button type="submit" disabled={loggingIn} className="w-full h-14 rounded-xl bg-gradient-to-r from-red-500 to-rose-600 text-white text-lg font-semibold">
+                {loggingIn ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Lock className="w-5 h-5 mr-2" />Access Admin Panel</>}
               </Button>
             </form>
           </div>
@@ -203,66 +165,32 @@ const AdminPanel = () => {
     );
   }
 
-  // Logged in but not admin
   if (!isAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="glass-card rounded-3xl p-8 text-center max-w-md">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/20 flex items-center justify-center">
-            <Shield className="w-8 h-8 text-red-500" />
-          </div>
+          <Shield className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-foreground mb-2">Access Denied</h2>
-          <p className="text-muted-foreground mb-6">
-            You don't have admin privileges. Please contact an administrator.
-          </p>
-          <Button onClick={handleLogout} variant="outline" className="rounded-xl">
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
+          <p className="text-muted-foreground mb-6">You don't have admin privileges.</p>
+          <Button onClick={handleLogout} variant="outline" className="rounded-xl"><LogOut className="w-4 h-4 mr-2" />Logout</Button>
         </div>
       </div>
     );
   }
 
-  // Admin dashboard with menu options
   const menuItems = [
-    { 
-      id: 'stats' as AdminView, 
-      icon: BarChart3, 
-      title: 'Dashboard Stats', 
-      description: 'View platform analytics and metrics',
-      gradient: 'from-blue-500 to-cyan-600',
-      shadowColor: 'shadow-blue-500/30'
-    },
-    { 
-      id: 'payments' as AdminView, 
-      icon: Image, 
-      title: 'Payment Uploads', 
-      description: 'Review and approve payment screenshots',
-      gradient: 'from-amber-500 to-orange-600',
-      shadowColor: 'shadow-amber-500/30'
-    },
-    { 
-      id: 'users' as AdminView, 
-      icon: Users, 
-      title: 'User Management', 
-      description: 'Manage users, balances, and levels',
-      gradient: 'from-green-500 to-emerald-600',
-      shadowColor: 'shadow-green-500/30'
-    },
-    { 
-      id: 'referrals' as AdminView, 
-      icon: Gift, 
-      title: 'Referrals', 
-      description: 'View all referral activities and bonuses',
-      gradient: 'from-purple-500 to-violet-600',
-      shadowColor: 'shadow-purple-500/30'
-    },
+    { id: 'stats' as AdminView, icon: BarChart3, title: 'Dashboard Stats', description: 'Platform analytics', gradient: 'from-blue-500 to-cyan-600' },
+    { id: 'payments' as AdminView, icon: Image, title: 'Payment Uploads', description: 'Review payments', gradient: 'from-amber-500 to-orange-600' },
+    { id: 'users' as AdminView, icon: Users, title: 'User Management', description: 'Manage users & balances', gradient: 'from-green-500 to-emerald-600' },
+    { id: 'roles' as AdminView, icon: Crown, title: 'Role Management', description: 'Grant/revoke roles', gradient: 'from-red-500 to-rose-600' },
+    { id: 'referrals' as AdminView, icon: Gift, title: 'Referrals', description: 'Referral activities', gradient: 'from-purple-500 to-violet-600' },
+    { id: 'audit' as AdminView, icon: FileText, title: 'Audit Logs', description: 'Admin action history', gradient: 'from-slate-500 to-gray-600' },
+    { id: 'notifications' as AdminView, icon: Bell, title: 'Notifications', description: 'Notification center', gradient: 'from-pink-500 to-rose-600' },
+    { id: 'settings' as AdminView, icon: Settings, title: 'Settings', description: 'Admin preferences', gradient: 'from-indigo-500 to-blue-600' },
   ];
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Header */}
+    <div className="min-h-screen bg-background">
       <div className="glass-header text-foreground p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -274,29 +202,17 @@ const AdminPanel = () => {
               <p className="text-xs text-muted-foreground">{user?.email}</p>
             </div>
           </div>
-          <Button onClick={handleLogout} variant="ghost" size="icon" className="rounded-xl">
-            <LogOut className="w-5 h-5 text-muted-foreground" />
-          </Button>
+          <Button onClick={handleLogout} variant="ghost" size="icon" className="rounded-xl"><LogOut className="w-5 h-5" /></Button>
         </div>
       </div>
-
-      <div className="p-4 space-y-4">
+      <div className="p-4 grid grid-cols-2 gap-3">
         {menuItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => setCurrentView(item.id)}
-            className="w-full glass-card rounded-2xl p-6 border border-border/50 hover:border-primary/30 transition-all text-left"
-          >
-            <div className="flex items-center gap-4">
-              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-lg ${item.shadowColor}`}>
-                <item.icon className="w-7 h-7 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-bold text-foreground">{item.title}</h3>
-                <p className="text-muted-foreground text-sm">{item.description}</p>
-              </div>
-              <ArrowLeft className="w-5 h-5 text-muted-foreground rotate-180" />
+          <button key={item.id} onClick={() => setCurrentView(item.id)} className="glass-card rounded-2xl p-4 border border-border/50 hover:border-primary/30 transition-all text-left">
+            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-3`}>
+              <item.icon className="w-6 h-6 text-white" />
             </div>
+            <h3 className="text-sm font-bold text-foreground">{item.title}</h3>
+            <p className="text-muted-foreground text-xs">{item.description}</p>
           </button>
         ))}
       </div>
