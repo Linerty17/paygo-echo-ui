@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Gift } from 'lucide-react';
 import { z } from 'zod';
 
 interface RegistrationFormProps {
@@ -240,6 +240,17 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
   const [referralCode, setReferralCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [hasReferral, setHasReferral] = useState(false);
+
+  // Auto-fill referral code from URL parameter
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refCode = urlParams.get('ref');
+    if (refCode) {
+      setReferralCode(refCode.toUpperCase());
+      setHasReferral(true);
+    }
+  }, []);
 
   const validateForm = (): boolean => {
     const result = registrationSchema.safeParse({ name, email, password, country, referralCode });
@@ -376,16 +387,29 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
           </div>
 
           <div>
-            <Input
-              type="text"
-              placeholder="Referral Code (Optional)"
-              value={referralCode}
-              onChange={(e) => {
-                setReferralCode(e.target.value.toUpperCase());
-                clearError('referralCode');
-              }}
-              className={`w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground ${errors.referralCode ? 'border-red-500' : ''}`}
-            />
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Referral Code (Optional)"
+                value={referralCode}
+                onChange={(e) => {
+                  setReferralCode(e.target.value.toUpperCase());
+                  clearError('referralCode');
+                }}
+                className={`w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground ${errors.referralCode ? 'border-red-500' : ''} ${hasReferral ? 'border-green-500/50 pr-12' : ''}`}
+              />
+              {hasReferral && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <Gift className="w-5 h-5 text-green-400" />
+                </div>
+              )}
+            </div>
+            {hasReferral && (
+              <p className="text-green-400 text-sm mt-1 flex items-center">
+                <Gift className="w-4 h-4 mr-1" />
+                Referral code applied! You'll both earn ₦2,500
+              </p>
+            )}
             {errors.referralCode && (
               <p className="text-red-400 text-sm mt-1">{errors.referralCode}</p>
             )}
