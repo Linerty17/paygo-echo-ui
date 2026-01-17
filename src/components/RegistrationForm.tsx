@@ -172,9 +172,9 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
           <div className="absolute inset-0 w-full">
             <div className="animate-slide-logo-lr">
               <img 
-                src="/lovable-uploads/1b5d08cd-7896-45fe-a778-2c43ba59d944.png" 
+                src="/lovable-uploads/paygo-wide-logo.png" 
                 alt="PayGo Logo"
-                className="h-16 w-auto object-contain"
+                className="w-56 h-20 object-contain drop-shadow-2xl"
               />
             </div>
           </div>

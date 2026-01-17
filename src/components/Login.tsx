@@ -81,9 +81,9 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister, isLoading })
           <div className="absolute inset-0 w-full">
             <div className="animate-slide-logo-lr">
               <img 
-                src="/lovable-uploads/a3ef4c06-bb4a-4f2b-86aa-ca0eb1b2d464.png" 
+                src="/lovable-uploads/paygo-wide-logo.png" 
                 alt="PayGo Logo"
-                className="h-16 object-contain"
+                className="w-56 h-20 object-contain drop-shadow-2xl"
               />
             </div>
           </div>
