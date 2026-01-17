@@ -53,29 +53,65 @@ const EarnMore: React.FC<EarnMoreProps> = ({ onBack, referralCode, fetchReferral
     return `🎉 Join PayGo using my referral code: ${referralCode} and we both earn ₦2,500! Download now and start earning! 💰\n\n${getReferralLink()}`;
   };
 
-  const handleCopyCode = async () => {
-    if (!referralCode) return;
+  const copyToClipboard = async (text: string): Promise<boolean> => {
+    // Try modern clipboard API first
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        // Fall through to fallback
+      }
+    }
     
+    // Fallback for older browsers or non-secure contexts
     try {
-      await navigator.clipboard.writeText(referralCode);
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      const success = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      return success;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleCopyCode = async () => {
+    if (!referralCode) {
+      toast.error('No referral code available');
+      return;
+    }
+    
+    const success = await copyToClipboard(referralCode);
+    if (success) {
       setCopied(true);
       toast.success('Referral code copied!');
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error('Failed to copy code');
+    } else {
+      toast.error('Failed to copy code. Please copy manually: ' + referralCode);
     }
   };
 
   const handleCopyLink = async () => {
-    if (!referralCode) return;
+    if (!referralCode) {
+      toast.error('No referral link available');
+      return;
+    }
     
-    try {
-      await navigator.clipboard.writeText(getReferralLink());
+    const link = getReferralLink();
+    const success = await copyToClipboard(link);
+    if (success) {
       setLinkCopied(true);
       toast.success('Referral link copied!');
       setTimeout(() => setLinkCopied(false), 2000);
-    } catch {
-      toast.error('Failed to copy link');
+    } else {
+      toast.error('Failed to copy link. Please copy manually.');
     }
   };
 
