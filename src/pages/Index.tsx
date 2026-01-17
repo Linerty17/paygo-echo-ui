@@ -513,6 +513,7 @@ const Index = () => {
       <>
         <PaymentUploadsAdmin 
           onBack={handleBackToDashboard}
+          onLogAudit={() => {}} // Stub for non-admin context
         />
         <LiveChat />
       </>

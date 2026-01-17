@@ -76,7 +76,8 @@ const AdminPanel = () => {
 
   const logAudit = async (action: string, entityType: string, entityId: string, details: object) => {
     try {
-      await supabase.from('audit_logs').insert({
+      // Use type assertion since audit_logs table was just created and types haven't synced
+      await (supabase.from('audit_logs') as any).insert({
         admin_user_id: user?.id || '',
         admin_email: user?.email || '',
         action,
