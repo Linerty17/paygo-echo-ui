@@ -31,7 +31,7 @@ const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ onContinue }) => {
               <img 
                 src="/lovable-uploads/paygo-wide-logo.png" 
                 alt="PayGo Digital Logo" 
-                className="w-64 h-24 object-contain drop-shadow-2xl"
+                className="w-72 h-20 object-fill drop-shadow-2xl"
               />
             </div>
           </div>

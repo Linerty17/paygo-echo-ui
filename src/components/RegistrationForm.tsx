@@ -174,7 +174,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
               <img 
                 src="/lovable-uploads/paygo-wide-logo.png" 
                 alt="PayGo Logo"
-                className="w-56 h-20 object-contain drop-shadow-2xl"
+                className="w-64 h-16 object-fill drop-shadow-2xl"
               />
             </div>
           </div>
