@@ -571,6 +571,7 @@ const Index = () => {
         <PayIdPaymentPage 
           onBack={handleBackToDashboard} 
           onTransferConfirmed={handleTransferConfirmed}
+          userId={user?.id || ''}
           userEmail={userEmail}
           userName={userName}
         />
