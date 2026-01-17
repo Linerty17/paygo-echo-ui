@@ -22,9 +22,9 @@ const UpgradePaymentPage: React.FC<UpgradePaymentPageProps> = ({
   const [receiptUploaded, setReceiptUploaded] = useState(false);
 
   const accountDetails = {
-    accountNumber: '6493714067',
+    accountNumber: '6412635787',
     bankName: 'Moniepoint MFB',
-    accountName: 'FELIX MOSES IYALLA'
+    accountName: 'IKECHUKWU CELESTINE OKUMEFUNA'
   };
 
   const handleCopyAccount = () => {
@@ -48,42 +48,42 @@ const UpgradePaymentPage: React.FC<UpgradePaymentPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-gray-50 w-full overflow-x-hidden">
+    <div className="min-h-screen min-h-[100dvh] bg-background w-full overflow-x-hidden">
       {/* Header */}
-      <div className="bg-purple-600 text-white p-4 w-full">
+      <div className="glass-header text-foreground p-4 w-full">
         <div className="flex items-center space-x-4">
           <button onClick={onBack}>
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-6 h-6 text-primary" />
           </button>
           <h1 className="text-xl font-semibold">{levelName} Level Payment</h1>
         </div>
       </div>
 
       <div className="p-4 space-y-6 w-full max-w-md mx-auto">
-        <div className="bg-orange-100 border border-orange-300 rounded-xl p-4">
-          <p className="text-orange-800 text-sm font-medium">
+        <div className="glass-card rounded-xl p-4 border-primary/30">
+          <p className="text-primary text-sm font-medium">
             Please transfer the exact amount to the account below and upload your receipt
           </p>
         </div>
 
-        <div className="bg-purple-100 border border-purple-300 rounded-xl p-4">
-          <p className="text-purple-800 text-sm font-medium">
-            You are upgrading to <strong>{levelName} Level</strong> - Amount: <strong>{amount}</strong>
+        <div className="glass-card rounded-xl p-4">
+          <p className="text-foreground text-sm font-medium">
+            You are upgrading to <strong className="text-primary">{levelName} Level</strong> - Amount: <strong className="text-primary">{amount}</strong>
           </p>
         </div>
 
         {/* Bank Account Details */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Transfer to this account</h3>
+        <div className="glass-card rounded-2xl p-6">
+          <h3 className="text-lg font-bold text-foreground mb-4">Transfer to this account</h3>
           
           <div className="space-y-4">
             <div>
-              <label className="block text-gray-600 text-sm mb-1">Account Number</label>
-              <div className="flex items-center justify-between bg-gray-50 rounded-xl p-4">
-                <span className="text-lg font-bold text-purple-600">{accountDetails.accountNumber}</span>
+              <label className="block text-muted-foreground text-sm mb-1">Account Number</label>
+              <div className="flex items-center justify-between glass rounded-xl p-4">
+                <span className="text-lg font-bold text-primary">{accountDetails.accountNumber}</span>
                 <Button 
                   onClick={handleCopyAccount}
-                  className="bg-orange-500 hover:bg-orange-600 text-white p-2 rounded-lg"
+                  className="bg-primary hover:bg-primary/80 text-primary-foreground p-2 rounded-lg"
                 >
                   <Copy className="w-4 h-4" />
                 </Button>
@@ -91,16 +91,16 @@ const UpgradePaymentPage: React.FC<UpgradePaymentPageProps> = ({
             </div>
 
             <div>
-              <label className="block text-gray-600 text-sm mb-1">Bank Name</label>
-              <div className="bg-gray-50 rounded-xl p-4">
-                <span className="text-lg font-medium">{accountDetails.bankName}</span>
+              <label className="block text-muted-foreground text-sm mb-1">Bank Name</label>
+              <div className="glass rounded-xl p-4">
+                <span className="text-lg font-medium text-foreground">{accountDetails.bankName}</span>
               </div>
             </div>
 
             <div>
-              <label className="block text-gray-600 text-sm mb-1">Account Name</label>
-              <div className="bg-gray-50 rounded-xl p-4">
-                <span className="text-lg font-medium">{accountDetails.accountName}</span>
+              <label className="block text-muted-foreground text-sm mb-1">Account Name</label>
+              <div className="glass rounded-xl p-4">
+                <span className="text-lg font-medium text-foreground">{accountDetails.accountName}</span>
               </div>
             </div>
           </div>
@@ -108,28 +108,28 @@ const UpgradePaymentPage: React.FC<UpgradePaymentPageProps> = ({
 
         {/* Amount */}
         <div>
-          <label className="block text-gray-900 text-lg font-medium mb-3">Amount to Transfer</label>
-          <div className="w-full h-14 bg-white rounded-xl shadow-sm flex items-center px-4 border-0">
-            <span className="text-xl text-gray-900 font-bold">{amount}</span>
+          <label className="block text-foreground text-lg font-medium mb-3">Amount to Transfer</label>
+          <div className="w-full h-14 glass-card rounded-xl flex items-center px-4">
+            <span className="text-xl text-foreground font-bold">{amount}</span>
           </div>
         </div>
 
         {/* Email (Auto-filled) */}
         <div>
-          <label className="block text-gray-900 text-lg font-medium mb-3">Your Email Address</label>
+          <label className="block text-foreground text-lg font-medium mb-3">Your Email Address</label>
           <Input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm"
+            className="w-full h-14 text-lg glass-input rounded-xl"
             disabled
           />
         </div>
 
         {/* Receipt Upload */}
         <div>
-          <label className="block text-gray-900 text-lg font-medium mb-3">Upload Payment Receipt</label>
-          <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center">
+          <label className="block text-foreground text-lg font-medium mb-3">Upload Payment Receipt</label>
+          <div className="border-2 border-dashed border-white/20 rounded-xl p-6 text-center glass">
             <input 
               type="file" 
               accept="image/*" 
@@ -139,12 +139,12 @@ const UpgradePaymentPage: React.FC<UpgradePaymentPageProps> = ({
             />
             <label htmlFor="receipt-upload" className="cursor-pointer">
               {receiptUploaded ? (
-                <div className="text-green-600">
+                <div className="text-green-400">
                   <div className="text-2xl mb-2">✓</div>
                   <p>Receipt uploaded successfully</p>
                 </div>
               ) : (
-                <div className="text-gray-600">
+                <div className="text-muted-foreground">
                   <div className="text-2xl mb-2">📄</div>
                   <p>Tap to upload payment receipt</p>
                 </div>
@@ -155,13 +155,13 @@ const UpgradePaymentPage: React.FC<UpgradePaymentPageProps> = ({
 
         <Button 
           onClick={handleConfirmTransfer}
-          className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8"
+          className="w-full h-14 bg-primary hover:bg-primary/80 text-primary-foreground text-lg font-medium rounded-xl mt-8 lavender-glow"
         >
           Confirm Transfer
         </Button>
 
         <div className="text-center mt-8">
-          <p className="text-gray-900 font-semibold">PayGo Financial Services LTD</p>
+          <p className="text-foreground font-semibold">PayGo Financial Services LTD</p>
         </div>
       </div>
     </div>
