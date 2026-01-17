@@ -608,6 +608,7 @@ const Index = () => {
         onClaimRewards={handleClaimRewards}
         canClaimWeeklyReward={canClaimWeeklyReward()}
         nextClaimTime={nextClaimTime}
+        onProfileImageChange={handleProfileImageChange}
       />
       <LiveChat />
     </>
