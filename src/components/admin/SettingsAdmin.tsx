@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Settings, Bell, Shield, Download, Database, Volume2, VolumeX, Moon, Sun, Smartphone, Monitor } from 'lucide-react';
+import { ArrowLeft, Settings, Bell, Shield, Download, Database, Volume2, VolumeX, Moon, Sun, Smartphone, Monitor, KeyRound, Save, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface SettingsAdminProps {
   onBack: () => void;
@@ -15,6 +17,61 @@ const SettingsAdmin: React.FC<SettingsAdminProps> = ({ onBack }) => {
     autoRefresh: localStorage.getItem('admin_auto_refresh') !== 'false',
     darkMode: document.documentElement.classList.contains('dark'),
   });
+  
+  const [globalPayId, setGlobalPayId] = useState('');
+  const [savingPayId, setSavingPayId] = useState(false);
+  const [loadingPayId, setLoadingPayId] = useState(true);
+
+  useEffect(() => {
+    const fetchGlobalPayId = async () => {
+      const { data } = await supabase
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'global_payid')
+        .maybeSingle();
+      
+      if (data?.value) {
+        setGlobalPayId(data.value);
+      }
+      setLoadingPayId(false);
+    };
+    fetchGlobalPayId();
+  }, []);
+
+  const handleSavePayId = async () => {
+    if (!globalPayId.trim()) {
+      toast({
+        title: "Error",
+        description: "PAY ID cannot be empty",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setSavingPayId(true);
+    try {
+      const { error } = await supabase
+        .from('app_settings')
+        .update({ value: globalPayId.trim() })
+        .eq('key', 'global_payid');
+      
+      if (error) throw error;
+      
+      toast({
+        title: "PAY ID Updated",
+        description: `Global PAY ID changed to ${globalPayId}`,
+      });
+    } catch (error) {
+      console.error('Error updating PAY ID:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update PAY ID",
+        variant: "destructive"
+      });
+    } finally {
+      setSavingPayId(false);
+    }
+  };
 
   const handleBrowserNotifications = async () => {
     if (settings.browserNotifications) {
@@ -183,6 +240,43 @@ const SettingsAdmin: React.FC<SettingsAdminProps> = ({ onBack }) => {
             </div>
           </div>
         ))}
+
+        {/* Global PAY ID */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 px-2">
+            <KeyRound className="w-5 h-5 text-primary" />
+            <h3 className="text-sm font-semibold text-foreground">Global PAY ID</h3>
+          </div>
+          
+          <div className="glass-card rounded-2xl p-4">
+            <p className="text-muted-foreground text-sm mb-4">
+              This PAY ID is used across all transactions. Changing it will affect all users.
+            </p>
+            <div className="flex gap-2">
+              <Input
+                value={globalPayId}
+                onChange={(e) => setGlobalPayId(e.target.value)}
+                placeholder={loadingPayId ? "Loading..." : "Enter PAY ID"}
+                disabled={loadingPayId}
+                className="flex-1 h-12 rounded-xl"
+              />
+              <Button
+                onClick={handleSavePayId}
+                disabled={savingPayId || loadingPayId}
+                className="h-12 px-6 rounded-xl bg-primary hover:bg-primary/80"
+              >
+                {savingPayId ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
 
         {/* Data Export */}
         <div className="space-y-3">

@@ -16,28 +16,21 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack, onTransferCompl
   const [amount, setAmount] = useState('');
   const [accountName, setAccountName] = useState('');
   const [payIdCode, setPayIdCode] = useState('');
-  const [userPayId, setUserPayId] = useState<string | null>(null);
+  const [globalPayId, setGlobalPayId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUserPayId = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase
-          .from('payment_uploads')
-          .select('payid_code')
-          .eq('user_id', user.id)
-          .eq('status', 'approved')
-          .neq('payid_status', 'revoked')
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-        
-        if (data?.payid_code) {
-          setUserPayId(data.payid_code);
-        }
+    const fetchGlobalPayId = async () => {
+      const { data } = await supabase
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'global_payid')
+        .maybeSingle();
+      
+      if (data?.value) {
+        setGlobalPayId(data.value);
       }
     };
-    fetchUserPayId();
+    fetchGlobalPayId();
   }, []);
 
   const banks = [
@@ -54,7 +47,7 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack, onTransferCompl
       return;
     }
 
-    if (!userPayId || payIdCode !== userPayId) {
+    if (!globalPayId || payIdCode !== globalPayId) {
       alert('Invalid PAY ID Code. Please enter a valid PAY ID to proceed with withdrawal.');
       return;
     }

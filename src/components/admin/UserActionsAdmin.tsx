@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
@@ -37,11 +37,23 @@ const UserActionsAdmin: React.FC<UserActionsAdminProps> = ({
   const [showDeclineDialog, setShowDeclineDialog] = useState(false);
   const [showRevokeDialog, setShowRevokeDialog] = useState(false);
   const [reason, setReason] = useState('');
-  const [payIdCode, setPayIdCode] = useState(() => {
-    const randomNum = Math.floor(10000000 + Math.random() * 90000000);
-    return `PAY-${randomNum}`;
-  });
+  const [payIdCode, setPayIdCode] = useState('');
   const [processing, setProcessing] = useState(false);
+
+  useEffect(() => {
+    const fetchGlobalPayId = async () => {
+      const { data } = await supabase
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'global_payid')
+        .maybeSingle();
+      
+      if (data?.value) {
+        setPayIdCode(data.value);
+      }
+    };
+    fetchGlobalPayId();
+  }, []);
 
   const sendNotification = async (type: string, title: string, message: string, metadata?: Record<string, any>) => {
     await supabase.from('user_notifications').insert({

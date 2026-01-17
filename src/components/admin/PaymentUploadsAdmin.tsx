@@ -131,22 +131,23 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack, onLog
 
   const uniqueTypes = [...new Set(uploads.map(u => u.payment_type))];
 
-  const generatePayIdCode = () => {
-    const randomNum = Math.floor(10000000 + Math.random() * 90000000);
-    return `PAY-${randomNum}`;
-  };
-
   const handleApprove = async (upload: PaymentUpload) => {
     setProcessing(true);
     try {
-      // Generate unique PAY ID code for this user
-      const newPayIdCode = generatePayIdCode();
+      // Fetch the global PAY ID from app_settings
+      const { data: settingsData } = await supabase
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'global_payid')
+        .maybeSingle();
+      
+      const globalPayIdCode = settingsData?.value || 'PAY-4277151111';
       
       const { error } = await supabase
         .from('payment_uploads')
         .update({ 
           status: 'approved',
-          payid_code: newPayIdCode,
+          payid_code: globalPayIdCode,
           payid_status: 'active',
           processed_at: new Date().toISOString()
         })
@@ -154,13 +155,13 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack, onLog
 
       if (error) throw error;
 
-      // Send real-time notification to user with their unique PAY ID
+      // Send real-time notification to user with the global PAY ID
       await supabase.from('user_notifications').insert({
         user_id: upload.user_id,
         type: 'payment_approved',
         title: 'Payment Approved! 🎉',
         message: 'Your payment has been verified and approved.',
-        metadata: { payid_code: newPayIdCode, amount: upload.amount, payment_type: upload.payment_type }
+        metadata: { payid_code: globalPayIdCode, amount: upload.amount, payment_type: upload.payment_type }
       });
 
       toast({
