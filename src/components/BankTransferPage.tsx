@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ACCOUNT_DETAILS } from '@/config/accountDetails';
 
 interface BankTransferPageProps {
   onBack: () => void;
@@ -22,15 +22,7 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({
   const [email, setEmail] = useState(userEmail);
   const [receiptUploaded, setReceiptUploaded] = useState(false);
 
-  const getAccountDetails = (level?: string) => {
-    return {
-      accountNumber: '6412635787',
-      bankName: 'Moniepoint MFB',
-      accountName: 'IKECHUKWU CELESTINE OKUMEFUNA'
-    };
-  };
-
-  const accountDetails = getAccountDetails(levelName);
+  const accountDetails = ACCOUNT_DETAILS;
 
   const handleCopyAccount = () => {
     navigator.clipboard.writeText(accountDetails.accountNumber);
