@@ -3,6 +3,7 @@ import { ArrowLeft, Globe, MapPin, Sparkles, Shield, Zap, CreditCard, Clock, Ale
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import PaymentApprovedScreen from '@/components/screens/PaymentApprovedScreen';
+import { useGlobalPayId } from '@/hooks/useGlobalPayId';
 
 interface PayIdPlanSelectProps {
   onBack: () => void;
@@ -31,22 +32,7 @@ const PayIdPlanSelect: React.FC<PayIdPlanSelectProps> = ({
 }) => {
   const [paymentRecord, setPaymentRecord] = useState<PaymentRecord | null>(null);
   const [loading, setLoading] = useState(true);
-  const [globalPayId, setGlobalPayId] = useState<string>('PAY-4277151111');
-
-  useEffect(() => {
-    const fetchGlobalPayId = async () => {
-      const { data } = await supabase
-        .from('app_settings')
-        .select('value')
-        .eq('key', 'global_payid')
-        .maybeSingle();
-      
-      if (data?.value) {
-        setGlobalPayId(data.value);
-      }
-    };
-    fetchGlobalPayId();
-  }, []);
+  const { globalPayId } = useGlobalPayId();
 
   useEffect(() => {
     const checkPaymentStatus = async () => {

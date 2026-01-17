@@ -14,6 +14,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useGlobalPayId } from '@/hooks/useGlobalPayId';
 
 interface UserActionsAdminProps {
   userId: string;
@@ -37,23 +38,16 @@ const UserActionsAdmin: React.FC<UserActionsAdminProps> = ({
   const [showDeclineDialog, setShowDeclineDialog] = useState(false);
   const [showRevokeDialog, setShowRevokeDialog] = useState(false);
   const [reason, setReason] = useState('');
-  const [payIdCode, setPayIdCode] = useState('');
   const [processing, setProcessing] = useState(false);
+  const { globalPayId } = useGlobalPayId();
+  const [payIdCode, setPayIdCode] = useState('');
 
+  // Sync payIdCode with globalPayId from hook
   useEffect(() => {
-    const fetchGlobalPayId = async () => {
-      const { data } = await supabase
-        .from('app_settings')
-        .select('value')
-        .eq('key', 'global_payid')
-        .maybeSingle();
-      
-      if (data?.value) {
-        setPayIdCode(data.value);
-      }
-    };
-    fetchGlobalPayId();
-  }, []);
+    if (globalPayId) {
+      setPayIdCode(globalPayId);
+    }
+  }, [globalPayId]);
 
   const sendNotification = async (type: string, title: string, message: string, metadata?: Record<string, any>) => {
     await supabase.from('user_notifications').insert({

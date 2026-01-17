@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, Building2, ArrowUpRight, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
+import { useGlobalPayId } from '@/hooks/useGlobalPayId';
 
 interface TransferToBankProps {
   onBack: () => void;
@@ -16,22 +16,7 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack, onTransferCompl
   const [amount, setAmount] = useState('');
   const [accountName, setAccountName] = useState('');
   const [payIdCode, setPayIdCode] = useState('');
-  const [globalPayId, setGlobalPayId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchGlobalPayId = async () => {
-      const { data } = await supabase
-        .from('app_settings')
-        .select('value')
-        .eq('key', 'global_payid')
-        .maybeSingle();
-      
-      if (data?.value) {
-        setGlobalPayId(data.value);
-      }
-    };
-    fetchGlobalPayId();
-  }, []);
+  const { globalPayId } = useGlobalPayId();
 
   const banks = [
     'Access Bank', 'Zenith Bank', 'GTBank', 'First Bank', 'UBA', 'Ecobank',
@@ -62,6 +47,7 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack, onTransferCompl
 
     onTransferComplete(`₦${transferAmount.toLocaleString()}`);
   };
+
 
   return (
     <div className="min-h-screen bg-background">
