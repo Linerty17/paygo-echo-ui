@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, Sparkles, Wifi } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
+import { useGlobalPayId } from '@/hooks/useGlobalPayId';
 
 interface DataProps {
   onBack: () => void;
@@ -14,22 +14,7 @@ const Data: React.FC<DataProps> = ({ onBack, onDataPurchaseSuccess }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedPlan, setSelectedPlan] = useState('');
   const [payIdCode, setPayIdCode] = useState('');
-  const [globalPayId, setGlobalPayId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchGlobalPayId = async () => {
-      const { data } = await supabase
-        .from('app_settings')
-        .select('value')
-        .eq('key', 'global_payid')
-        .maybeSingle();
-      
-      if (data?.value) {
-        setGlobalPayId(data.value);
-      }
-    };
-    fetchGlobalPayId();
-  }, []);
+  const { globalPayId } = useGlobalPayId();
 
   const networks = [
     { name: 'Airtel', gradient: 'from-red-500 to-red-600' },
@@ -45,6 +30,7 @@ const Data: React.FC<DataProps> = ({ onBack, onDataPurchaseSuccess }) => {
     { amount: '₦800', data: '5GB', validity: '30 Days' },
     { amount: '₦1500', data: '10GB', validity: '30 Days' },
   ];
+
 
   const handleBuyData = () => {
     if (!selectedNetwork || !phoneNumber || !selectedPlan || !payIdCode) {

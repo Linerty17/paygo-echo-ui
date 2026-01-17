@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, Sparkles, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
+import { useGlobalPayId } from '@/hooks/useGlobalPayId';
 
 interface AirtimeProps {
   onBack: () => void;
@@ -14,22 +14,7 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack, onPurchaseSuccess }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedAmount, setSelectedAmount] = useState('');
   const [payIdCode, setPayIdCode] = useState('');
-  const [globalPayId, setGlobalPayId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchGlobalPayId = async () => {
-      const { data } = await supabase
-        .from('app_settings')
-        .select('value')
-        .eq('key', 'global_payid')
-        .maybeSingle();
-      
-      if (data?.value) {
-        setGlobalPayId(data.value);
-      }
-    };
-    fetchGlobalPayId();
-  }, []);
+  const { globalPayId } = useGlobalPayId();
 
   const networks = [
     { name: 'Airtel', gradient: 'from-red-500 to-red-600' },
