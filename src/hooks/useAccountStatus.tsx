@@ -34,8 +34,14 @@ export const useAccountStatus = (userId: string | undefined): AccountStatusResul
   }, [userId]);
 
   useEffect(() => {
-    if (!userId) return;
+    // If no user yet (logged out / on auth screens), don't block the UI with a loading state
+    if (!userId) {
+      setStatus('active');
+      return;
+    }
 
+    // When a user appears, go into loading briefly while we check
+    setStatus('loading');
     checkStatus();
 
     // Subscribe to profile changes for real-time ban/unban detection
@@ -47,10 +53,10 @@ export const useAccountStatus = (userId: string | undefined): AccountStatusResul
           event: 'UPDATE',
           schema: 'public',
           table: 'profiles',
-          filter: `user_id=eq.${userId}`
+          filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          const newStatus = payload.new.account_status;
+          const newStatus = (payload.new as any)?.account_status;
           setStatus(newStatus === 'banned' ? 'banned' : 'active');
         }
       )
