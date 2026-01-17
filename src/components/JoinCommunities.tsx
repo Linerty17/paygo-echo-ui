@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Send, Users } from 'lucide-react';
+import { ArrowLeft, Send, Users, MessageCircle, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface JoinCommunitiesProps {
@@ -8,7 +8,7 @@ interface JoinCommunitiesProps {
 
 const JoinCommunities: React.FC<JoinCommunitiesProps> = ({ onBack }) => {
   const handleJoinTelegram = () => {
-    window.open('https://t.me/officialbluepay', '_blank');
+    window.open('https://t.me/officialbluepay2025', '_blank');
   };
 
   return (
@@ -60,7 +60,33 @@ const JoinCommunities: React.FC<JoinCommunitiesProps> = ({ onBack }) => {
             <Send className="w-5 h-5 mr-2" />
             Join Telegram
           </Button>
-          <p className="text-muted-foreground text-xs mt-3 text-center">@officialbluepay</p>
+          <p className="text-muted-foreground text-xs mt-3 text-center">@officialbluepay2025</p>
+        </div>
+
+        {/* WhatsApp - Coming Soon */}
+        <div className="glass rounded-3xl p-5 border border-white/10 opacity-60">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-green-500/30">
+              <MessageCircle className="w-7 h-7 text-white" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-foreground">WhatsApp Group</h3>
+                <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-500 text-xs font-medium flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  Coming Soon
+                </span>
+              </div>
+              <p className="text-muted-foreground text-sm">Join our official WhatsApp community</p>
+            </div>
+          </div>
+          <Button 
+            disabled
+            className="w-full h-12 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold shadow-lg border-0 opacity-50 cursor-not-allowed"
+          >
+            <MessageCircle className="w-5 h-5 mr-2" />
+            Coming Soon
+          </Button>
         </div>
 
         {/* Benefits */}
