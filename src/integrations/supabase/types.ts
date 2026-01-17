@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          avatar_url: string | null
           balance: number
           country: string
           created_at: string
@@ -24,12 +25,14 @@ export type Database = {
           last_weekly_claim: string | null
           level: number
           name: string
+          phone: string | null
           referral_code: string | null
           referred_by: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          avatar_url?: string | null
           balance?: number
           country: string
           created_at?: string
@@ -38,12 +41,14 @@ export type Database = {
           last_weekly_claim?: string | null
           level?: number
           name: string
+          phone?: string | null
           referral_code?: string | null
           referred_by?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          avatar_url?: string | null
           balance?: number
           country?: string
           created_at?: string
@@ -52,6 +57,7 @@ export type Database = {
           last_weekly_claim?: string | null
           level?: number
           name?: string
+          phone?: string | null
           referral_code?: string | null
           referred_by?: string | null
           updated_at?: string

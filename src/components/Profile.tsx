@@ -9,15 +9,17 @@ interface ProfileProps {
   onBack: () => void;
   userEmail: string;
   userName: string;
+  userPhone: string | null;
   profileImage: string | null;
   onProfileImageChange: (image: string) => void;
-  onProfileUpdate: (newName: string) => void;
+  onProfileUpdate: (newName: string, newPhone: string) => void;
 }
 
 const Profile: React.FC<ProfileProps> = ({ 
   onBack, 
   userEmail, 
   userName, 
+  userPhone,
   profileImage, 
   onProfileImageChange,
   onProfileUpdate 
@@ -28,7 +30,7 @@ const Profile: React.FC<ProfileProps> = ({
   const [profileData, setProfileData] = useState({
     fullName: userName,
     email: userEmail,
-    phone: '+234 801 234 5678',
+    phone: userPhone || '',
     about: 'PayGo user since 2023'
   });
 
@@ -59,7 +61,7 @@ const Profile: React.FC<ProfileProps> = ({
   };
 
   const handleProfileUpdateSubmit = () => {
-    onProfileUpdate(profileData.fullName);
+    onProfileUpdate(profileData.fullName, profileData.phone);
     setEditingProfile(false);
   };
 
