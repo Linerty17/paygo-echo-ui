@@ -34,54 +34,82 @@ const PayIdPlanSelect: React.FC<PayIdPlanSelectProps> = ({
   const [loading, setLoading] = useState(true);
   const { globalPayId } = useGlobalPayId();
 
-  useEffect(() => {
-    const checkPaymentStatus = async () => {
-      if (!userId) {
+  const checkPaymentStatus = async () => {
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // First check for approved payment with active PAY ID
+      const { data: approvedData, error: approvedError } = await supabase
+        .from('payment_uploads')
+        .select('id, payment_type, amount, status, payid_code, payid_status, created_at')
+        .eq('user_id', userId)
+        .eq('status', 'approved')
+        .in('payment_type', ['payid_online', 'payid_offline'])
+        .neq('payid_status', 'revoked')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (approvedData && !approvedError) {
+        setPaymentRecord(approvedData);
         setLoading(false);
         return;
       }
 
-      try {
-        // First check for approved payment with active PAY ID
-        const { data: approvedData, error: approvedError } = await supabase
-          .from('payment_uploads')
-          .select('id, payment_type, amount, status, payid_code, payid_status, created_at')
-          .eq('user_id', userId)
-          .eq('status', 'approved')
-          .in('payment_type', ['payid_online', 'payid_offline'])
-          .neq('payid_status', 'revoked')
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
+      // Then check for pending payment
+      const { data: pendingData, error: pendingError } = await supabase
+        .from('payment_uploads')
+        .select('id, payment_type, amount, status, payid_code, payid_status, created_at')
+        .eq('user_id', userId)
+        .eq('status', 'pending')
+        .in('payment_type', ['payid_online', 'payid_offline'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-        if (approvedData && !approvedError) {
-          setPaymentRecord(approvedData);
-          setLoading(false);
-          return;
-        }
-
-        // Then check for pending payment
-        const { data: pendingData, error: pendingError } = await supabase
-          .from('payment_uploads')
-          .select('id, payment_type, amount, status, payid_code, payid_status, created_at')
-          .eq('user_id', userId)
-          .eq('status', 'pending')
-          .in('payment_type', ['payid_online', 'payid_offline'])
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (pendingData && !pendingError) {
-          setPaymentRecord(pendingData);
-        }
-      } catch (error) {
-        console.error('Error checking payment status:', error);
-      } finally {
-        setLoading(false);
+      if (pendingData && !pendingError) {
+        setPaymentRecord(pendingData);
+      } else {
+        setPaymentRecord(null);
       }
-    };
+    } catch (error) {
+      console.error('Error checking payment status:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     checkPaymentStatus();
+  }, [userId]);
+
+  // Real-time subscription to payment_uploads changes for instant blocking
+  useEffect(() => {
+    if (!userId) return;
+
+    const channel = supabase
+      .channel(`payment_uploads_${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'payment_uploads',
+          filter: `user_id=eq.${userId}`
+        },
+        () => {
+          // Instantly refresh payment status when any change happens
+          checkPaymentStatus();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [userId]);
 
   const handleOnlineClick = () => {
