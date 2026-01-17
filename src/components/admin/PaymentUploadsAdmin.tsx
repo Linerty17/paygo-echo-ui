@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, CheckCircle, XCircle, Clock, Eye, RefreshCw, Image } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Clock, Eye, RefreshCw, Image, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -27,6 +27,7 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack }) => 
   const [loading, setLoading] = useState(true);
   const [selectedUpload, setSelectedUpload] = useState<PaymentUpload | null>(null);
   const [processing, setProcessing] = useState(false);
+  const [newPaymentCount, setNewPaymentCount] = useState(0);
 
   const fetchUploads = async () => {
     setLoading(true);
@@ -52,6 +53,63 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack }) => 
 
   useEffect(() => {
     fetchUploads();
+
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel('payment-uploads-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'payment_uploads'
+        },
+        (payload) => {
+          console.log('New payment received:', payload);
+          const newPayment = payload.new as PaymentUpload;
+          
+          // Add to uploads list
+          setUploads(prev => [newPayment, ...prev]);
+          setNewPaymentCount(prev => prev + 1);
+          
+          // Show toast notification
+          toast({
+            title: "🔔 New Payment Submitted!",
+            description: `${newPayment.user_name} submitted ₦${newPayment.amount.toLocaleString()}`,
+          });
+
+          // Play notification sound (optional browser notification)
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('New Payment Submitted', {
+              body: `${newPayment.user_name} - ₦${newPayment.amount.toLocaleString()}`,
+              icon: '/favicon.png'
+            });
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'payment_uploads'
+        },
+        (payload) => {
+          console.log('Payment updated:', payload);
+          const updatedPayment = payload.new as PaymentUpload;
+          setUploads(prev => prev.map(u => u.id === updatedPayment.id ? updatedPayment : u));
+        }
+      )
+      .subscribe();
+
+    // Request notification permission
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const handleApprove = async (upload: PaymentUpload) => {
@@ -134,6 +192,10 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack }) => 
     }
   };
 
+  const clearNewPaymentBadge = () => {
+    setNewPaymentCount(0);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -143,10 +205,21 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack }) => 
             <button onClick={onBack}>
               <ArrowLeft className="w-6 h-6 text-primary" />
             </button>
-            <h1 className="text-xl font-semibold">Payment Uploads</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-semibold">Payment Uploads</h1>
+              {newPaymentCount > 0 && (
+                <button 
+                  onClick={clearNewPaymentBadge}
+                  className="flex items-center gap-1 px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse"
+                >
+                  <Bell className="w-3 h-3" />
+                  {newPaymentCount} new
+                </button>
+              )}
+            </div>
           </div>
           <button 
-            onClick={fetchUploads}
+            onClick={() => { fetchUploads(); clearNewPaymentBadge(); }}
             className="glass w-10 h-10 rounded-xl flex items-center justify-center"
           >
             <RefreshCw className={`w-5 h-5 text-primary ${loading ? 'animate-spin' : ''}`} />
