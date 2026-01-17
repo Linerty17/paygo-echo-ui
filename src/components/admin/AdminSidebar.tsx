@@ -112,27 +112,27 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     onClick={() => handleMenuClick(item.id)}
                     isActive={currentView === item.id}
                     tooltip={item.title}
-                    className={currentView === item.id 
+                    className={`h-9 py-1 ${currentView === item.id 
                       ? 'bg-primary text-white hover:bg-primary/90 hover:text-white' 
                       : ''
-                    }
+                    }`}
                   >
-                    <div className={`relative w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                    <div className={`relative w-5 h-5 rounded flex items-center justify-center flex-shrink-0 ${
                       currentView === item.id ? 'bg-white/20' : 'bg-muted'
                     }`}>
-                      <span className={`text-xs font-bold ${currentView === item.id ? 'text-white' : 'text-primary'}`}>
+                      <span className={`text-[10px] font-bold ${currentView === item.id ? 'text-white' : 'text-primary'}`}>
                         {item.num}
                       </span>
                       {item.hasBadge && pendingCount > 0 && (
-                        <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">
+                        <span className="absolute -top-1 -right-1 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold">
                           {pendingCount > 99 ? '99+' : pendingCount}
                         </span>
                       )}
                     </div>
-                    <item.icon className="w-5 h-5" />
-                    <span className="font-medium flex-1">{item.title}</span>
+                    <item.icon className="w-4 h-4" />
+                    <span className="text-sm font-medium flex-1">{item.title}</span>
                     {!isCollapsed && item.hasBadge && pendingCount > 0 && (
-                      <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold">
+                      <span className="min-w-[18px] h-4 px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">
                         {pendingCount > 99 ? '99+' : pendingCount}
                       </span>
                     )}
