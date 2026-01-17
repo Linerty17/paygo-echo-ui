@@ -48,91 +48,91 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack, onTransferCompl
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-4">
+      <div className="glass-header p-4">
         <div className="flex items-center space-x-4">
           <button onClick={onBack}>
-            <ArrowLeft className="w-6 h-6 text-gray-900" />
+            <ArrowLeft className="w-6 h-6 text-primary" />
           </button>
-          <h1 className="text-xl font-semibold text-gray-900">Transfer to Bank</h1>
+          <h1 className="text-xl font-semibold text-foreground">Transfer to Bank</h1>
         </div>
       </div>
 
       <div className="p-6 space-y-6">
         {/* Balance Display */}
-        <div className="bg-purple-600 text-white p-6 rounded-2xl">
-          <p className="text-sm opacity-90">Available Balance</p>
-          <p className="text-3xl font-bold">{currentBalance}</p>
+        <div className="glass-card p-6 rounded-2xl lavender-glow">
+          <p className="text-sm text-muted-foreground">Available Balance</p>
+          <p className="text-3xl font-bold text-foreground">{currentBalance}</p>
         </div>
 
         {/* Bank Selection */}
         <div>
-          <label className="block text-gray-700 mb-2">Select Bank</label>
+          <label className="block text-muted-foreground mb-2">Select Bank</label>
           <select
             value={selectedBank}
             onChange={(e) => setSelectedBank(e.target.value)}
-            className="w-full h-14 px-4 bg-white border border-gray-300 rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+            className="w-full h-14 px-4 glass-input rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
           >
-            <option value="">Choose a bank</option>
+            <option value="" className="bg-background">Choose a bank</option>
             {banks.map((bank) => (
-              <option key={bank} value={bank}>{bank}</option>
+              <option key={bank} value={bank} className="bg-background">{bank}</option>
             ))}
           </select>
         </div>
 
         {/* Account Number */}
         <div>
-          <label className="block text-gray-700 mb-2">Account Number</label>
+          <label className="block text-muted-foreground mb-2">Account Number</label>
           <Input
             type="text"
             placeholder="Enter account number"
             value={accountNumber}
             onChange={(e) => setAccountNumber(e.target.value)}
-            className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm"
+            className="w-full h-14 text-lg glass-input rounded-xl"
           />
         </div>
 
         {/* Account Name */}
         <div>
-          <label className="block text-gray-700 mb-2">Account Name</label>
+          <label className="block text-muted-foreground mb-2">Account Name</label>
           <Input
             type="text"
             placeholder="Enter account name"
             value={accountName}
             onChange={(e) => setAccountName(e.target.value)}
-            className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm"
+            className="w-full h-14 text-lg glass-input rounded-xl"
           />
         </div>
 
         {/* Amount */}
         <div>
-          <label className="block text-gray-700 mb-2">Amount</label>
+          <label className="block text-muted-foreground mb-2">Amount</label>
           <Input
             type="text"
             placeholder="Enter amount"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm"
+            className="w-full h-14 text-lg glass-input rounded-xl"
           />
         </div>
 
         {/* PAY ID Code */}
         <div>
-          <label className="block text-gray-700 mb-2">PAY ID Code</label>
+          <label className="block text-muted-foreground mb-2">PAY ID Code</label>
           <Input
             type="text"
             placeholder="Enter PAY ID Code"
             value={payIdCode}
             onChange={(e) => setPayIdCode(e.target.value)}
-            className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm"
+            className="w-full h-14 text-lg glass-input rounded-xl"
           />
-          <p className="text-gray-500 text-sm mt-2">Enter your PAY ID code to authorize withdrawal</p>
+          <p className="text-muted-foreground text-sm mt-2">Enter your PAY ID code to authorize withdrawal</p>
         </div>
 
         <Button 
           onClick={handleTransfer}
-          className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8"
+          className="w-full h-14 bg-primary hover:bg-primary/80 text-primary-foreground text-lg font-medium rounded-xl mt-8 lavender-glow"
         >
           Transfer Money
         </Button>

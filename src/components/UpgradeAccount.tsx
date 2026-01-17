@@ -133,12 +133,12 @@ const UpgradeAccount: React.FC<UpgradeAccountProps> = ({ onBack, onProceedToPaym
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-purple-600 text-white p-4">
+      <div className="glass-header text-foreground p-4">
         <div className="flex items-center space-x-4">
           <button onClick={onBack}>
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-6 h-6 text-primary" />
           </button>
           <h1 className="text-xl font-semibold">Upgrade Account</h1>
         </div>
@@ -146,43 +146,43 @@ const UpgradeAccount: React.FC<UpgradeAccountProps> = ({ onBack, onProceedToPaym
 
       <div className="p-6 space-y-6">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Choose Your Level</h2>
-          <p className="text-gray-600">Select a level to view benefits and upgrade</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Choose Your Level</h2>
+          <p className="text-muted-foreground">Select a level to view benefits and upgrade</p>
         </div>
 
-        <div className="bg-white rounded-xl p-4 shadow-sm">
+        <div className="glass-card rounded-xl p-4">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-              <span className="text-purple-600">🏅</span>
+            <div className="w-8 h-8 glass rounded-full flex items-center justify-center">
+              <span className="text-primary">🏅</span>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Current Level</p>
-              <p className="text-lg font-semibold text-gray-900">Basic</p>
+              <p className="text-sm text-muted-foreground">Current Level</p>
+              <p className="text-lg font-semibold text-foreground">Basic</p>
             </div>
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Level to Upgrade</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">Select Level to Upgrade</h3>
           <div className="grid grid-cols-2 gap-3">
             {levels.map((level) => (
               <button
                 key={level.name}
                 onClick={() => handleLevelSelect(level)}
-                className={`bg-white rounded-xl p-4 shadow-sm text-center border-2 transition-colors ${
-                  selectedLevel === level.name ? 'border-purple-600' : 'border-transparent'
+                className={`glass-card rounded-xl p-4 text-center border-2 transition-all duration-300 ${
+                  selectedLevel === level.name ? 'border-primary lavender-glow' : 'border-transparent'
                 }`}
               >
                 <div className="text-2xl mb-2">{level.icon}</div>
-                <p className="font-semibold text-gray-900 text-sm">{level.name}</p>
-                <p className="text-lg font-bold text-purple-600">{level.price}</p>
-                <p className="text-xs text-gray-500 mt-1">Pay this amount</p>
+                <p className="font-semibold text-foreground text-sm">{level.name}</p>
+                <p className="text-lg font-bold text-primary">{level.price}</p>
+                <p className="text-xs text-muted-foreground mt-1">Pay this amount</p>
               </button>
             ))}
           </div>
         </div>
 
-        <p className="text-center text-gray-600 text-sm">
+        <p className="text-center text-muted-foreground text-sm">
           Each level has its own payment amount. Select to view benefits and proceed to payment.
         </p>
       </div>

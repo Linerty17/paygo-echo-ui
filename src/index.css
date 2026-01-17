@@ -5,89 +5,90 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Shiny Black & Lavender Theme */
+    --background: 270 15% 8%;
+    --foreground: 270 20% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 270 20% 12%;
+    --card-foreground: 270 20% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 270 20% 10%;
+    --popover-foreground: 270 20% 95%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 270 60% 70%;
+    --primary-foreground: 270 15% 8%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 270 30% 18%;
+    --secondary-foreground: 270 20% 95%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 270 20% 15%;
+    --muted-foreground: 270 15% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 280 70% 65%;
+    --accent-foreground: 270 15% 8%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 270 20% 20%;
+    --input: 270 20% 15%;
+    --ring: 270 60% 70%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 270 15% 6%;
+    --sidebar-foreground: 270 20% 95%;
+    --sidebar-primary: 270 60% 70%;
+    --sidebar-primary-foreground: 270 15% 8%;
+    --sidebar-accent: 270 30% 18%;
+    --sidebar-accent-foreground: 270 20% 95%;
+    --sidebar-border: 270 20% 20%;
+    --sidebar-ring: 270 60% 70%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Custom lavender colors */
+    --lavender: 270 60% 70%;
+    --lavender-light: 270 70% 85%;
+    --lavender-dark: 270 50% 50%;
+    --shiny-black: 270 15% 8%;
+    --shiny-black-light: 270 20% 15%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 270 15% 5%;
+    --foreground: 270 20% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 270 20% 10%;
+    --card-foreground: 270 20% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 270 20% 8%;
+    --popover-foreground: 270 20% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 270 60% 70%;
+    --primary-foreground: 270 15% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 270 30% 15%;
+    --secondary-foreground: 270 20% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 270 20% 12%;
+    --muted-foreground: 270 15% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 280 70% 65%;
+    --accent-foreground: 270 15% 8%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 270 20% 18%;
+    --input: 270 20% 12%;
+    --ring: 270 60% 70%;
+    --sidebar-background: 270 15% 4%;
+    --sidebar-foreground: 270 20% 95%;
+    --sidebar-primary: 270 60% 70%;
+    --sidebar-primary-foreground: 270 15% 8%;
+    --sidebar-accent: 270 30% 15%;
+    --sidebar-accent-foreground: 270 20% 95%;
+    --sidebar-border: 270 20% 18%;
+    --sidebar-ring: 270 60% 70%;
   }
 }
 
@@ -109,7 +110,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -136,9 +137,78 @@
   input[type="email"], 
   input[type="password"], 
   input[type="number"], 
+  input[type="tel"],
   textarea, 
   select {
     font-size: 16px;
+  }
+}
+
+/* iOS 26 Glassmorphism Effects */
+@layer components {
+  .glass {
+    @apply backdrop-blur-xl bg-white/5 border border-white/10;
+  }
+
+  .glass-card {
+    @apply backdrop-blur-2xl bg-white/8 border border-white/15 shadow-2xl;
+  }
+
+  .glass-strong {
+    @apply backdrop-blur-3xl bg-white/10 border border-white/20;
+  }
+
+  .glass-header {
+    @apply backdrop-blur-xl bg-background/80 border-b border-white/10;
+  }
+
+  .glass-input {
+    @apply backdrop-blur-xl bg-white/5 border border-white/15 text-foreground placeholder:text-muted-foreground;
+  }
+
+  .glass-button {
+    @apply backdrop-blur-xl bg-white/10 border border-white/20 hover:bg-white/15 transition-all duration-300;
+  }
+
+  .shiny-gradient {
+    background: linear-gradient(
+      135deg,
+      hsl(270 60% 70% / 0.3) 0%,
+      hsl(280 70% 65% / 0.2) 50%,
+      hsl(270 60% 70% / 0.3) 100%
+    );
+  }
+
+  .lavender-glow {
+    box-shadow: 0 0 40px hsl(270 60% 70% / 0.3),
+                0 0 80px hsl(270 60% 70% / 0.15),
+                inset 0 1px 0 hsl(270 70% 85% / 0.2);
+  }
+
+  .card-shine {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-shine::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(270 70% 85% / 0.1),
+      transparent
+    );
+    animation: shine 3s infinite;
+  }
+
+  @keyframes shine {
+    0% { left: -100%; }
+    50%, 100% { left: 100%; }
   }
 }
 

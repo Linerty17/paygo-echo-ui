@@ -63,11 +63,11 @@ const Dashboard: React.FC<DashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-gray-50 w-full overflow-x-hidden">
-      {/* Animated Header with moving text - Reduced padding */}
-      <div className="bg-red-500 text-white py-1.5 text-xs overflow-hidden relative w-full">
+    <div className="min-h-screen min-h-[100dvh] bg-background w-full overflow-x-hidden">
+      {/* Animated Header with moving text */}
+      <div className="glass-header text-foreground py-1.5 text-xs overflow-hidden relative w-full border-b border-red-500/30 bg-red-500/10">
         <div className="animate-marquee whitespace-nowrap">
-          Dear User, We're currently experiencing issues with <span className="text-red-200 font-semibold">Opay</span> bank transfers. Please use other banks for your payments.
+          Dear User, We're currently experiencing issues with <span className="text-red-400 font-semibold">Opay</span> bank transfers. Please use other banks for your payments.
         </div>
       </div>
 
@@ -82,76 +82,78 @@ const Dashboard: React.FC<DashboardProps> = ({
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 rounded-xl p-4 text-white shadow-xl">
+        {/* Main Balance Card with Glass Effect */}
+        <div className="glass-card card-shine rounded-2xl p-4 lavender-glow">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-2">
               {userProfileImage ? (
                 <img 
                   src={userProfileImage} 
                   alt="Profile" 
-                  className="w-8 h-8 rounded-full object-cover border-2 border-white border-opacity-30"
+                  className="w-8 h-8 rounded-full object-cover border-2 border-primary/30"
                 />
               ) : (
-                <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4" />
+                <div className="w-8 h-8 glass rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4 text-primary" />
                 </div>
               )}
               <div>
                 <div className="flex items-center space-x-1">
-                  <span className="text-sm font-medium">Hi, {userName}</span>
+                  <span className="text-sm font-medium text-foreground">Hi, {userName}</span>
                   <span className="text-lg">👋</span>
                 </div>
-                <p className="text-xs opacity-90">Welcome back!</p>
+                <p className="text-xs text-muted-foreground">Welcome back!</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Bell className="w-4 h-4 text-orange-400" />
-              <button onClick={onLogout} className="text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full">
+              <Bell className="w-4 h-4 text-primary" />
+              <button onClick={onLogout} className="text-xs glass-button px-2 py-1 rounded-full text-foreground">
                 Logout
               </button>
             </div>
           </div>
 
           <div className="mb-3">
-            <p className="text-xs opacity-90 mb-1">Your Balance</p>
+            <p className="text-xs text-muted-foreground mb-1">Your Balance</p>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <span className="text-xl font-bold">
+                <span className="text-xl font-bold text-foreground">
                   {balanceVisible ? currentBalance : "****"}
                 </span>
                 <button 
                   onClick={() => setBalanceVisible(!balanceVisible)}
-                  className="text-white hover:text-gray-200"
+                  className="text-primary hover:text-primary/80"
                 >
                   {balanceVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
-            <p className="text-xs opacity-75 mt-1">Weekly Rewards: {weeklyRewards}</p>
+            <p className="text-xs text-muted-foreground mt-1">Weekly Rewards: {weeklyRewards}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <Button 
               onClick={() => onNavigate('upgradeAccount')}
-              className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 rounded-full h-8 flex items-center justify-center space-x-2"
+              className="glass-button text-foreground border-0 rounded-full h-8 flex items-center justify-center space-x-2"
             >
-              <div className="w-4 h-4 bg-white bg-opacity-30 rounded-full flex items-center justify-center">
-                <Check className="w-2 h-2" />
+              <div className="w-4 h-4 glass rounded-full flex items-center justify-center">
+                <Check className="w-2 h-2 text-primary" />
               </div>
               <span className="text-sm">Upgrade</span>
             </Button>
             <Button 
               onClick={() => onNavigate('transferToBank')}
-              className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 rounded-full h-8 flex items-center justify-center space-x-2"
+              className="glass-button text-foreground border-0 rounded-full h-8 flex items-center justify-center space-x-2"
             >
-              <div className="w-4 h-4 bg-white bg-opacity-30 rounded-full flex items-center justify-center">
-                <ArrowUp className="w-2 h-2" />
+              <div className="w-4 h-4 glass rounded-full flex items-center justify-center">
+                <ArrowUp className="w-2 h-2 text-primary" />
               </div>
               <span className="text-sm">Transfer</span>
             </Button>
           </div>
         </div>
 
+        {/* Services Grid with Glass Effect */}
         <div className="grid grid-cols-4 gap-3">
           {services.map((service, index) => (
             <ServiceIcon
@@ -164,7 +166,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         <div>
-          <h2 className="text-base font-bold text-gray-900 mb-3">Current Promotions</h2>
+          <h2 className="text-base font-bold text-foreground mb-3">Current Promotions</h2>
           <PromotionsCarousel />
         </div>
       </div>

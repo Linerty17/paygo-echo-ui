@@ -62,11 +62,21 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				paygo: {
+			paygo: {
 					purple: '#8B5CF6',
 					pink: '#EC4899',
 					orange: '#F97316',
 					lavender: '#B794F6'
+				},
+				lavender: {
+					DEFAULT: 'hsl(270 60% 70%)',
+					light: 'hsl(270 70% 85%)',
+					dark: 'hsl(270 50% 50%)',
+					glow: 'hsl(280 70% 65%)'
+				},
+				shiny: {
+					black: 'hsl(270 15% 8%)',
+					'black-light': 'hsl(270 20% 15%)'
 				}
 			},
 			backgroundImage: {
