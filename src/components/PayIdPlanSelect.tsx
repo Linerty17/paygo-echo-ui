@@ -250,6 +250,18 @@ const PayIdPlanSelect: React.FC<PayIdPlanSelectProps> = ({
     );
   }
 
+  // Show loading state while checking
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // Check if user has any pending payment to block upload
+  const hasPendingPayment = paymentRecord?.status === 'pending';
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -347,15 +359,26 @@ const PayIdPlanSelect: React.FC<PayIdPlanSelectProps> = ({
           </div>
         </div>
 
-        {/* Upload Button for Online Purchases */}
+        {/* Upload Button for Online Purchases - Disabled if pending payment exists */}
         <button
-          onClick={onTapToUpload}
-          className="w-full glass-card rounded-2xl p-4 border border-primary/30 hover:border-primary/60 transition-all duration-300 flex items-center justify-center gap-3 group"
+          onClick={hasPendingPayment ? undefined : onTapToUpload}
+          disabled={hasPendingPayment}
+          className={`w-full glass-card rounded-2xl p-4 border transition-all duration-300 flex items-center justify-center gap-3 group ${
+            hasPendingPayment 
+              ? 'border-muted/30 opacity-50 cursor-not-allowed' 
+              : 'border-primary/30 hover:border-primary/60'
+          }`}
         >
-          <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
-            <Shield className="w-5 h-5 text-primary" />
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+            hasPendingPayment 
+              ? 'bg-muted/20' 
+              : 'bg-primary/20 group-hover:bg-primary/30'
+          }`}>
+            <Shield className={`w-5 h-5 ${hasPendingPayment ? 'text-muted-foreground' : 'text-primary'}`} />
           </div>
-          <span className="text-lg font-semibold text-primary">Tap to Upload</span>
+          <span className={`text-lg font-semibold ${hasPendingPayment ? 'text-muted-foreground' : 'text-primary'}`}>
+            {hasPendingPayment ? 'Upload Blocked - Pending Payment' : 'Tap to Upload'}
+          </span>
         </button>
 
         {/* Security Footer */}
