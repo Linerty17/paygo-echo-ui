@@ -45,13 +45,34 @@ const Index = () => {
   const [selectedUpgradePrice, setSelectedUpgradePrice] = useState('');
   const [isFirstLogin, setIsFirstLogin] = useState(false);
   const [referralCount, setReferralCount] = useState(0);
-  const [hasClaimedWeeklyReward, setHasClaimedWeeklyReward] = useState(false);
+  const [nextClaimTime, setNextClaimTime] = useState<Date | null>(null);
 
   // Get user data from profile
   const userName = profile?.name || '';
   const userEmail = profile?.email || user?.email || '';
   const currentBalance = profile?.balance || 0;
   const userLevel = profile?.level || 1;
+
+  // Check if user can claim weekly reward
+  const canClaimWeeklyReward = () => {
+    if (!profile?.last_weekly_claim) return true;
+    const lastClaim = new Date(profile.last_weekly_claim);
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    return lastClaim < oneWeekAgo;
+  };
+
+  // Calculate next claim time
+  useEffect(() => {
+    if (profile?.last_weekly_claim) {
+      const lastClaim = new Date(profile.last_weekly_claim);
+      const nextClaim = new Date(lastClaim);
+      nextClaim.setDate(nextClaim.getDate() + 7);
+      setNextClaimTime(nextClaim);
+    } else {
+      setNextClaimTime(null);
+    }
+  }, [profile?.last_weekly_claim]);
 
   // Fetch referral count on mount
   useEffect(() => {
@@ -63,8 +84,11 @@ const Index = () => {
   }, [profile]);
 
   const handleClaimRewards = async (amount: number) => {
-    await updateProfile({ balance: currentBalance + amount });
-    setHasClaimedWeeklyReward(true);
+    if (!canClaimWeeklyReward()) return;
+    await updateProfile({ 
+      balance: currentBalance + amount,
+      last_weekly_claim: new Date().toISOString()
+    });
   };
 
   // Handle browser back button and prevent app exit
@@ -577,7 +601,8 @@ const Index = () => {
         referralCount={referralCount}
         userLevel={userLevel}
         onClaimRewards={handleClaimRewards}
-        hasClaimedWeeklyReward={hasClaimedWeeklyReward}
+        canClaimWeeklyReward={canClaimWeeklyReward()}
+        nextClaimTime={nextClaimTime}
       />
       <LiveChat />
     </>

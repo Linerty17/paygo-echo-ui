@@ -21,6 +21,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          last_weekly_claim: string | null
           level: number
           name: string
           referral_code: string | null
@@ -34,6 +35,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          last_weekly_claim?: string | null
           level?: number
           name: string
           referral_code?: string | null
@@ -47,6 +49,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          last_weekly_claim?: string | null
           level?: number
           name?: string
           referral_code?: string | null
