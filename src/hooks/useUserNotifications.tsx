@@ -12,6 +12,77 @@ export interface UserNotification {
   metadata: Record<string, any> | null;
 }
 
+// Play a pleasant notification sound using Web Audio API
+const playNotificationSound = (type: UserNotification['type']) => {
+  try {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    
+    if (type === 'payment_approved') {
+      // Success sound: pleasant ascending chime
+      const playTone = (freq: number, startTime: number, duration: number) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = freq;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(0.3, startTime + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+        
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+      };
+      
+      const now = audioContext.currentTime;
+      playTone(523.25, now, 0.2);       // C5
+      playTone(659.25, now + 0.15, 0.2); // E5
+      playTone(783.99, now + 0.3, 0.3);  // G5
+    } else if (type === 'payment_declined' || type === 'payid_revoked' || type === 'banned') {
+      // Error/warning sound: lower tone
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = 300;
+      oscillator.type = 'sine';
+      
+      const now = audioContext.currentTime;
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(0.3, now + 0.05);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+      
+      oscillator.start(now);
+      oscillator.stop(now + 0.4);
+    } else {
+      // Neutral sound for unbanned
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = 440;
+      oscillator.type = 'sine';
+      
+      const now = audioContext.currentTime;
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(0.2, now + 0.05);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+      
+      oscillator.start(now);
+      oscillator.stop(now + 0.3);
+    }
+  } catch (error) {
+    console.log('Could not play notification sound:', error);
+  }
+};
+
 interface UseUserNotificationsResult {
   notifications: UserNotification[];
   latestNotification: UserNotification | null;
@@ -84,6 +155,9 @@ export const useUserNotifications = (userId: string | undefined): UseUserNotific
           
           setNotifications(prev => [newNotification, ...prev]);
           setLatestNotification(newNotification);
+          
+          // Play notification sound based on type
+          playNotificationSound(newNotification.type);
           
           // Show browser notification if permitted
           if (Notification.permission === 'granted') {
