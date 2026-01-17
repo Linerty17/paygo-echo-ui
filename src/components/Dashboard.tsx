@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import PromotionsCarousel from './PromotionsCarousel';
 import OnboardingModal from './OnboardingModal';
 import VideoPlayer from './VideoPlayer';
+import ImageCropper from './ImageCropper';
 import { toast } from 'sonner';
 
 interface DashboardProps {
@@ -48,6 +49,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   const [mounted, setMounted] = useState(false);
   const [claiming, setClaiming] = useState(false);
   const [timeLeft, setTimeLeft] = useState('');
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const weeklyRewardAmount = 180000;
@@ -122,13 +124,26 @@ const Dashboard: React.FC<DashboardProps> = ({
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string;
-        if (onProfileImageChange) {
-          onProfileImageChange(imageUrl);
-          toast.success('Profile image updated!');
-        }
+        setImageToCrop(imageUrl);
       };
       reader.readAsDataURL(file);
     }
+    // Reset input so same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleCropComplete = (croppedImage: string) => {
+    if (onProfileImageChange) {
+      onProfileImageChange(croppedImage);
+      toast.success('Profile image updated!');
+    }
+    setImageToCrop(null);
+  };
+
+  const handleCropCancel = () => {
+    setImageToCrop(null);
   };
 
   const handleProfileImageClick = () => {
@@ -398,6 +413,15 @@ const Dashboard: React.FC<DashboardProps> = ({
         <VideoPlayer
           videoUrl="https://vimeo.com/1092911696/799f03cd7d?share=copy"
           onClose={handleCloseVideo}
+        />
+      )}
+
+      {imageToCrop && (
+        <ImageCropper
+          imageSrc={imageToCrop}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+          aspectRatio={1}
         />
       )}
     </div>

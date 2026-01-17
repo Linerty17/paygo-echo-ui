@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ArrowLeft, ChevronRight, Camera, User, Info, HelpCircle, Bell, LogOut, Shield, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import ImageCropper from './ImageCropper';
+import { toast } from 'sonner';
 
 interface ProfileProps {
   onBack: () => void;
@@ -21,6 +23,8 @@ const Profile: React.FC<ProfileProps> = ({
   onProfileUpdate 
 }) => {
   const [editingProfile, setEditingProfile] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [profileData, setProfileData] = useState({
     fullName: userName,
     email: userEmail,
@@ -34,10 +38,24 @@ const Profile: React.FC<ProfileProps> = ({
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageUrl = e.target?.result as string;
-        onProfileImageChange(imageUrl);
+        setImageToCrop(imageUrl);
       };
       reader.readAsDataURL(file);
     }
+    // Reset input so same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleCropComplete = (croppedImage: string) => {
+    onProfileImageChange(croppedImage);
+    toast.success('Profile image updated!');
+    setImageToCrop(null);
+  };
+
+  const handleCropCancel = () => {
+    setImageToCrop(null);
   };
 
   const handleProfileUpdateSubmit = () => {
@@ -87,6 +105,7 @@ const Profile: React.FC<ProfileProps> = ({
                 <Camera className="w-4 h-4 text-white" />
               </label>
               <input 
+                ref={fileInputRef}
                 id="profile-upload" 
                 type="file" 
                 accept="image/*" 
@@ -249,6 +268,15 @@ const Profile: React.FC<ProfileProps> = ({
           <span className="text-red-400 font-semibold">Logout</span>
         </button>
       </div>
+
+      {imageToCrop && (
+        <ImageCropper
+          imageSrc={imageToCrop}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+          aspectRatio={1}
+        />
+      )}
     </div>
   );
 };
