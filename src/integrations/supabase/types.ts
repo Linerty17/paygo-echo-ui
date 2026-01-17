@@ -89,6 +89,8 @@ export type Database = {
           amount: number
           created_at: string
           id: string
+          payid_code: string | null
+          payid_status: string | null
           payment_type: string
           processed_at: string | null
           screenshot_url: string | null
@@ -103,6 +105,8 @@ export type Database = {
           amount?: number
           created_at?: string
           id?: string
+          payid_code?: string | null
+          payid_status?: string | null
           payment_type?: string
           processed_at?: string | null
           screenshot_url?: string | null
@@ -117,6 +121,8 @@ export type Database = {
           amount?: number
           created_at?: string
           id?: string
+          payid_code?: string | null
+          payid_status?: string | null
           payment_type?: string
           processed_at?: string | null
           screenshot_url?: string | null
@@ -130,6 +136,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_status: string
           avatar_url: string | null
           balance: number
           country: string
@@ -147,6 +154,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          account_status?: string
           avatar_url?: string | null
           balance?: number
           country: string
@@ -164,6 +172,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          account_status?: string
           avatar_url?: string | null
           balance?: number
           country?: string
@@ -226,6 +235,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          metadata: Json | null
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          metadata?: Json | null
+          read?: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          metadata?: Json | null
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {

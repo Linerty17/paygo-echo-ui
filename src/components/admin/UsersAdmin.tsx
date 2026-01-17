@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Search, RefreshCw, Users, Edit, Save, X, Wallet, Download, Filter, Trash2, CheckSquare, Square } from 'lucide-react';
+import { ArrowLeft, Search, RefreshCw, Users, Edit, Save, X, Wallet, Download, Filter, CheckSquare, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import UserActionsAdmin from './UserActionsAdmin';
 import {
   Select,
   SelectContent,
@@ -24,6 +25,7 @@ interface UserProfile {
   referral_code: string | null;
   referred_by: string | null;
   created_at: string;
+  account_status?: string;
 }
 
 interface UsersAdminProps {

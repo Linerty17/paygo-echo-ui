@@ -28,12 +28,33 @@ import PayIdPlanSelect from '@/components/PayIdPlanSelect';
 import OnlinePaymentUpload from '@/components/OnlinePaymentUpload';
 import PaymentUploadsAdmin from '@/components/admin/PaymentUploadsAdmin';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserNotifications } from '@/hooks/useUserNotifications';
+import { useAccountStatus } from '@/hooks/useAccountStatus';
 import { Loader2 } from 'lucide-react';
+
+// Full-screen notification screens
+import PaymentApprovedScreen from '@/components/screens/PaymentApprovedScreen';
+import PaymentDeclinedScreen from '@/components/screens/PaymentDeclinedScreen';
+import PayIdRevokedScreen from '@/components/screens/PayIdRevokedScreen';
+import BannedScreen from '@/components/screens/BannedScreen';
+import UnbannedScreen from '@/components/screens/UnbannedScreen';
 
 type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'upgradeProcessing' | 'upgradePayment' | 'payIdPayment' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'paymentPending' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess' | 'onlinePaymentUpload' | 'paymentUploadsAdmin';
 
 const Index = () => {
   const { user, profile, loading, signUp, signIn, signOut, updateProfile, fetchReferrals, claimWeeklyReward, isAuthenticated } = useAuth();
+  
+  // Real-time notifications and account status
+  const { latestNotification, clearLatest } = useUserNotifications(user?.id);
+  const { status: accountStatus } = useAccountStatus(user?.id);
+  
+  // Full-screen notification states
+  const [showPaymentApproved, setShowPaymentApproved] = useState(false);
+  const [showPaymentDeclined, setShowPaymentDeclined] = useState(false);
+  const [showPayIdRevoked, setShowPayIdRevoked] = useState(false);
+  const [showUnbanned, setShowUnbanned] = useState(false);
+  const [approvedPayIdCode, setApprovedPayIdCode] = useState('');
+  const [declineReason, setDeclineReason] = useState('');
   
   const [appState, setAppState] = useState<AppState>('registration');
   const [userProfileImage, setUserProfileImage] = useState<string | null>(profile?.avatar_url || null);
@@ -55,6 +76,29 @@ const Index = () => {
   const userEmail = profile?.email || user?.email || '';
   const currentBalance = profile?.balance || 0;
   const userLevel = profile?.level || 1;
+
+  // Handle real-time notifications
+  useEffect(() => {
+    if (latestNotification) {
+      switch (latestNotification.type) {
+        case 'payment_approved':
+          setApprovedPayIdCode(latestNotification.metadata?.payid_code || 'PAY-25353531');
+          setShowPaymentApproved(true);
+          break;
+        case 'payment_declined':
+          setDeclineReason(latestNotification.message);
+          setShowPaymentDeclined(true);
+          break;
+        case 'payid_revoked':
+          setShowPayIdRevoked(true);
+          break;
+        case 'unbanned':
+          setShowUnbanned(true);
+          break;
+      }
+      clearLatest();
+    }
+  }, [latestNotification, clearLatest]);
 
   // Check if user can claim weekly reward
   const canClaimWeeklyReward = () => {
@@ -300,8 +344,72 @@ const Index = () => {
     return `₦${balance.toLocaleString()}.00`;
   };
 
+  // Show banned screen if user is banned
+  if (accountStatus === 'banned' && isAuthenticated) {
+    return (
+      <BannedScreen 
+        onContactSupport={() => window.open('https://wa.me/message/your-support-link', '_blank')}
+      />
+    );
+  }
+
+  // Show full-screen notification overlays
+  if (showPaymentApproved) {
+    return (
+      <PaymentApprovedScreen 
+        payIdCode={approvedPayIdCode}
+        onContinue={() => {
+          setShowPaymentApproved(false);
+          setAppState('dashboard');
+        }}
+      />
+    );
+  }
+
+  if (showPaymentDeclined) {
+    return (
+      <PaymentDeclinedScreen 
+        reason={declineReason}
+        onRetry={() => {
+          setShowPaymentDeclined(false);
+          navigateToPage('buyPayId');
+        }}
+        onContactSupport={() => {
+          setShowPaymentDeclined(false);
+          navigateToPage('support');
+        }}
+      />
+    );
+  }
+
+  if (showPayIdRevoked) {
+    return (
+      <PayIdRevokedScreen 
+        onBuyNewPayId={() => {
+          setShowPayIdRevoked(false);
+          navigateToPage('buyPayId');
+        }}
+        onContactSupport={() => {
+          setShowPayIdRevoked(false);
+          navigateToPage('support');
+        }}
+      />
+    );
+  }
+
+  if (showUnbanned) {
+    return (
+      <UnbannedScreen 
+        onContinue={() => {
+          setShowUnbanned(false);
+          setAppState('dashboard');
+        }}
+      />
+    );
+  }
+
   // Show loading state while checking auth
-  if (loading) {
+  if (loading || accountStatus === 'loading') {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
