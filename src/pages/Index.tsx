@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from '@/hooks/use-toast';
 import RegistrationForm from '@/components/RegistrationForm';
 import Login from '@/components/Login';
 import WelcomeMessage from '@/components/WelcomeMessage';
@@ -88,6 +89,10 @@ const Index = () => {
     await updateProfile({ 
       balance: currentBalance + amount,
       last_weekly_claim: new Date().toISOString()
+    });
+    toast({
+      title: "🎉 Reward Claimed!",
+      description: `You've successfully claimed ₦${amount.toLocaleString()}. Next claim available in 7 days.`,
     });
   };
 
