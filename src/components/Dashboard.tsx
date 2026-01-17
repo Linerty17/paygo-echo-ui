@@ -20,7 +20,8 @@ interface DashboardProps {
   referralCount?: number;
   userLevel?: number;
   onClaimRewards?: (amount: number) => Promise<void>;
-  hasClaimedWeeklyReward?: boolean;
+  canClaimWeeklyReward?: boolean;
+  nextClaimTime?: Date | null;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({
@@ -37,24 +38,56 @@ const Dashboard: React.FC<DashboardProps> = ({
   referralCount = 0,
   userLevel = 1,
   onClaimRewards,
-  hasClaimedWeeklyReward = false
+  canClaimWeeklyReward = true,
+  nextClaimTime = null
 }) => {
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [showVideo, setShowVideo] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [claiming, setClaiming] = useState(false);
-  const [claimed, setClaimed] = useState(hasClaimedWeeklyReward);
+  const [timeLeft, setTimeLeft] = useState('');
   
   const weeklyRewardAmount = 180000;
-  const weeklyRewards = claimed ? "₦0.00" : `₦${weeklyRewardAmount.toLocaleString()}.00`;
+  const weeklyRewards = canClaimWeeklyReward ? `₦${weeklyRewardAmount.toLocaleString()}.00` : "₦0.00";
+
+  // Timer countdown
+  useEffect(() => {
+    if (!nextClaimTime || canClaimWeeklyReward) {
+      setTimeLeft('');
+      return;
+    }
+
+    const updateTimer = () => {
+      const now = new Date();
+      const diff = nextClaimTime.getTime() - now.getTime();
+      
+      if (diff <= 0) {
+        setTimeLeft('');
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      if (days > 0) {
+        setTimeLeft(`${days}d ${hours}h`);
+      } else if (hours > 0) {
+        setTimeLeft(`${hours}h ${minutes}m`);
+      } else {
+        setTimeLeft(`${minutes}m`);
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, [nextClaimTime, canClaimWeeklyReward]);
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  useEffect(() => {
-    setClaimed(hasClaimedWeeklyReward);
-  }, [hasClaimedWeeklyReward]);
 
   const handleWatchVideo = () => {
     setShowVideo(true);
@@ -64,15 +97,14 @@ const Dashboard: React.FC<DashboardProps> = ({
     setShowVideo(false);
   };
 
-  const handleClaimRewards = async () => {
-    if (claimed || claiming) return;
+  const handleClaimRewardsClick = async () => {
+    if (!canClaimWeeklyReward || claiming) return;
     
     setClaiming(true);
     try {
       if (onClaimRewards) {
         await onClaimRewards(weeklyRewardAmount);
       }
-      setClaimed(true);
       toast.success(`₦${weeklyRewardAmount.toLocaleString()} added to your balance!`);
     } catch (error) {
       toast.error('Failed to claim rewards');
@@ -218,19 +250,19 @@ const Dashboard: React.FC<DashboardProps> = ({
                     </div>
                   </div>
                   <button 
-                    onClick={handleClaimRewards}
-                    disabled={claimed || claiming}
+                    onClick={handleClaimRewardsClick}
+                    disabled={!canClaimWeeklyReward || claiming}
                     className={`glass px-2 py-1 rounded-lg border transition-all ${
-                      claimed 
+                      !canClaimWeeklyReward 
                         ? 'border-emerald-500/20 bg-emerald-500/10' 
                         : 'border-amber-500/20 hover:bg-amber-500/10'
                     }`}
                   >
                     {claiming ? (
                       <span className="text-[10px] font-semibold text-amber-400">...</span>
-                    ) : claimed ? (
-                      <span className="text-[10px] font-semibold text-emerald-400 flex items-center gap-1">
-                        <Check className="w-3 h-3" /> Claimed
+                    ) : !canClaimWeeklyReward ? (
+                      <span className="text-[10px] font-semibold text-muted-foreground flex items-center gap-1">
+                        {timeLeft || <><Check className="w-3 h-3 text-emerald-400" /> Claimed</>}
                       </span>
                     ) : (
                       <span className="text-[10px] font-semibold text-amber-400">Claim</span>
