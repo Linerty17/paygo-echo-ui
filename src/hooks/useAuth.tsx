@@ -39,6 +39,8 @@ export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -64,10 +66,12 @@ export const useAuth = () => {
       if (session?.user) {
         // Defer profile fetch with setTimeout to avoid deadlock
         setTimeout(() => {
-          if (isMounted) fetchProfile(session.user.id);
+          if (isMounted) fetchProfile(session.user.id, session.user);
         }, 0);
       } else {
         setProfile(null);
+        setProfileError(null);
+        setProfileLoading(false);
       }
     });
 
@@ -83,9 +87,11 @@ export const useAuth = () => {
 
         if (session?.user) {
           // Fetch profile in background; do not block rendering.
-          fetchProfile(session.user.id);
+          fetchProfile(session.user.id, session.user);
         } else {
           setProfile(null);
+          setProfileError(null);
+          setProfileLoading(false);
         }
       })
       .catch(() => {
@@ -99,7 +105,10 @@ export const useAuth = () => {
     };
   }, []);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string, userForCreate?: User) => {
+    setProfileLoading(true);
+    setProfileError(null);
+
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
@@ -107,13 +116,57 @@ export const useAuth = () => {
       .maybeSingle();
 
     if (error) {
-      console.error('Error fetching profile:', error);
+      setProfile(null);
+      setProfileLoading(false);
+      setProfileError('Unable to load your profile. Tap Retry, or log out and sign in again.');
       return;
     }
 
     if (data) {
       setProfile(data as Profile);
+      setProfileLoading(false);
+      return;
     }
+
+    // No profile row yet (legacy accounts / first login on a new device).
+    // Try to create a minimal profile using auth data.
+    const meta = (userForCreate?.user_metadata ?? {}) as Record<string, unknown>;
+    const email = userForCreate?.email ?? null;
+    const nameFromMeta = typeof meta.name === 'string' ? meta.name : undefined;
+    const countryFromMeta = typeof meta.country === 'string' ? meta.country : undefined;
+    const phoneFromMeta = typeof meta.phone === 'string' ? meta.phone : undefined;
+
+    const fallbackName = nameFromMeta || (email ? email.split('@')[0] : 'User');
+    const fallbackCountry = countryFromMeta || 'NG';
+
+    if (!email) {
+      setProfile(null);
+      setProfileLoading(false);
+      setProfileError('Profile missing email. Please log out and sign in again.');
+      return;
+    }
+
+    const { data: inserted, error: insertError } = await supabase
+      .from('profiles')
+      .insert({
+        user_id: userId,
+        email,
+        name: fallbackName,
+        country: fallbackCountry,
+        phone: phoneFromMeta || null,
+      })
+      .select('*')
+      .single();
+
+    if (insertError) {
+      setProfile(null);
+      setProfileLoading(false);
+      setProfileError('Unable to create your profile. Tap Retry or contact support.');
+      return;
+    }
+
+    setProfile(inserted as Profile);
+    setProfileLoading(false);
   };
 
   const signUp = async (email: string, password: string, name: string, country: string, phone: string, referredBy?: string) => {
@@ -253,23 +306,31 @@ export const useAuth = () => {
 
     if (result.success) {
       // Refresh profile to get updated balance
-      await fetchProfile(user.id);
+      await fetchProfile(user.id, user);
       return { success: true, new_balance: result.new_balance, claimed_amount: result.claimed_amount };
     } else {
       return { success: false, error: result.error, next_claim: result.next_claim };
     }
   };
 
+  const refreshProfile = async () => {
+    if (!user) return;
+    await fetchProfile(user.id, user);
+  };
+
   return {
     user,
     session,
     profile,
+    profileLoading,
+    profileError,
     loading,
     signUp,
     signIn,
     signOut,
     updateProfile,
     fetchProfile,
+    refreshProfile,
     fetchReferrals,
     claimWeeklyReward,
     isAuthenticated: !!session
