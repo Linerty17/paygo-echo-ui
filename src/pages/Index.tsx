@@ -409,7 +409,8 @@ const Index = () => {
   }
 
   // Show loading state while checking auth
-  if (loading || accountStatus === 'loading') {
+  // Important: don't block logged-out users with account-status loading.
+  if (loading || (isAuthenticated && accountStatus === 'loading')) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />

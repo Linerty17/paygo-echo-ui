@@ -43,48 +43,58 @@ export const useAuth = () => {
 
   useEffect(() => {
     let isMounted = true;
-    
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (!isMounted) return;
-        
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Defer profile fetch with setTimeout to avoid deadlock
-        if (session?.user) {
-          setTimeout(() => {
-            if (isMounted) {
-              fetchProfile(session.user.id);
-            }
-          }, 0);
-        } else {
-          setProfile(null);
-          setLoading(false);
-        }
-      }
-    );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Safety: never allow a permanent spinner if the auth SDK/network hangs.
+    const loadingTimeout = window.setTimeout(() => {
+      if (isMounted) setLoading(false);
+    }, 8000);
+
+    // Set up auth state listener FIRST
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (!isMounted) return;
-      
+
       setSession(session);
       setUser(session?.user ?? null);
+
+      // Never block the UI here; profile loads in the background.
+      setLoading(false);
+
       if (session?.user) {
-        fetchProfile(session.user.id).finally(() => {
-          if (isMounted) setLoading(false);
-        });
+        // Defer profile fetch with setTimeout to avoid deadlock
+        setTimeout(() => {
+          if (isMounted) fetchProfile(session.user.id);
+        }, 0);
       } else {
-        setLoading(false);
+        setProfile(null);
       }
-    }).catch(() => {
-      if (isMounted) setLoading(false);
     });
+
+    // THEN check for existing session
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        if (!isMounted) return;
+
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+
+        if (session?.user) {
+          // Fetch profile in background; do not block rendering.
+          fetchProfile(session.user.id);
+        } else {
+          setProfile(null);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setLoading(false);
+      });
 
     return () => {
       isMounted = false;
+      window.clearTimeout(loadingTimeout);
       subscription.unsubscribe();
     };
   }, []);
