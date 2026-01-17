@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Globe, MapPin, Sparkles, Shield, Zap, CreditCard, Clock, AlertCircle, CheckCircle, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Globe, MapPin, Sparkles, Shield, Zap, CreditCard, Clock, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/hooks/use-toast';
+import PaymentApprovedScreen from '@/components/screens/PaymentApprovedScreen';
 
 interface PayIdPlanSelectProps {
   onBack: () => void;
@@ -31,7 +31,6 @@ const PayIdPlanSelect: React.FC<PayIdPlanSelectProps> = ({
 }) => {
   const [paymentRecord, setPaymentRecord] = useState<PaymentRecord | null>(null);
   const [loading, setLoading] = useState(true);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const checkPaymentStatus = async () => {
@@ -88,17 +87,6 @@ const PayIdPlanSelect: React.FC<PayIdPlanSelectProps> = ({
     onSelectOnline();
   };
 
-  const handleCopyPayId = () => {
-    if (paymentRecord?.payid_code) {
-      navigator.clipboard.writeText(paymentRecord.payid_code);
-      setCopied(true);
-      toast({
-        title: "Copied!",
-        description: "PAY ID copied to clipboard",
-      });
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-NG', {
@@ -110,130 +98,13 @@ const PayIdPlanSelect: React.FC<PayIdPlanSelectProps> = ({
     });
   };
 
-  // Show approved PAY ID screen
+  // Show approved PAY ID screen with full-screen animation
   if (!loading && paymentRecord?.status === 'approved' && paymentRecord.payid_status !== 'revoked') {
     return (
-      <div className="min-h-screen bg-background relative overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-32 -right-32 w-64 h-64 bg-green-500/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute top-1/2 -left-32 w-48 h-48 bg-primary/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-        </div>
-
-        {/* Header */}
-        <div className="relative px-4 pt-4 pb-3">
-          <div className="flex items-center justify-between">
-            <button 
-              onClick={onBack}
-              className="glass w-10 h-10 rounded-2xl flex items-center justify-center border border-border/50 hover:border-primary/30 hover:scale-105 transition-all duration-300"
-            >
-              <ArrowLeft className="w-5 h-5 text-foreground" />
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-sm text-muted-foreground">Your PAY ID</span>
-            </div>
-            <div className="w-10" />
-          </div>
-        </div>
-
-        <div className="relative px-4 pb-8 space-y-6">
-          {/* Title Section */}
-          <div className="text-center space-y-2">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <CheckCircle className="w-6 h-6 text-green-500" />
-              <h1 className="text-2xl font-bold text-foreground">PAY ID Active</h1>
-            </div>
-            <p className="text-muted-foreground">Your payment has been verified</p>
-          </div>
-
-          {/* PAY ID Card */}
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-green-500/40 via-emerald-500/40 to-green-500/40 rounded-[28px] blur-xl opacity-50 animate-pulse" />
-            
-            <div className="relative glass-card rounded-3xl overflow-hidden">
-              <div className="relative bg-gradient-to-br from-green-500 via-emerald-500 to-green-600 p-6">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.2),transparent_50%)]" />
-                
-                <div className="relative text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center">
-                    <Shield className="w-8 h-8 text-white" />
-                  </div>
-                  <p className="text-white/80 text-sm mb-2">Your PAY ID</p>
-                  <h2 className="text-3xl font-bold text-white font-mono tracking-wider">
-                    {paymentRecord.payid_code || 'PAY-XXXXXXXX'}
-                  </h2>
-                </div>
-              </div>
-
-              <div className="p-6 space-y-4">
-                <button
-                  onClick={handleCopyPayId}
-                  className="w-full glass rounded-xl p-4 flex items-center justify-center gap-2 border border-primary/30 hover:border-primary/60 transition-colors"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="w-5 h-5 text-green-500" />
-                      <span className="text-green-500 font-medium">Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-5 h-5 text-primary" />
-                      <span className="text-primary font-medium">Copy PAY ID</span>
-                    </>
-                  )}
-                </button>
-
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Status</span>
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/20 text-green-500 font-medium">
-                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                      Active
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Payment</span>
-                    <span className="text-foreground font-medium">₦{paymentRecord.amount.toLocaleString()}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Activated</span>
-                    <span className="text-foreground">{formatDate(paymentRecord.created_at)}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Info Card */}
-          <div className="glass-card rounded-2xl p-4 border border-green-500/30 bg-green-500/5">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-5 h-5 text-green-500" />
-              </div>
-              <div>
-                <p className="text-foreground font-medium text-sm">You're all set!</p>
-                <p className="text-muted-foreground text-xs mt-1">
-                  Your PAY ID is active. Use it to access exclusive rewards and features.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Back Button */}
-          <Button 
-            onClick={onBack}
-            className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground text-lg font-semibold shadow-lg border-0"
-          >
-            Back to Dashboard
-          </Button>
-
-          {/* Footer */}
-          <div className="text-center pt-2">
-            <p className="text-foreground font-semibold text-sm">PayGo Financial Services</p>
-          </div>
-        </div>
-      </div>
+      <PaymentApprovedScreen 
+        payIdCode={paymentRecord.payid_code || 'PAY-XXXXXXXX'}
+        onContinue={onBack}
+      />
     );
   }
 
