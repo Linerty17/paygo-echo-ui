@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Eye, EyeOff, ArrowUpRight, Sparkles, User, CreditCard, Play, Phone, Database, Headphones, Globe, Gift, UserCircle, LogOut, TrendingUp, Zap, Star, ChevronRight } from 'lucide-react';
+import { Bell, Eye, EyeOff, ArrowUpRight, Sparkles, User, CreditCard, Play, Phone, Database, Headphones, Globe, Gift, UserCircle, LogOut, TrendingUp, Zap, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PromotionsCarousel from './PromotionsCarousel';
 import OnboardingModal from './OnboardingModal';
@@ -20,7 +20,7 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({
   userName,
-  userEmail,
+  userEmail: _userEmail,
   userProfileImage,
   showOnboarding,
   onboardingStep,
