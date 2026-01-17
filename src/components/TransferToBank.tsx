@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Building2, ArrowUpRight, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { supabase } from '@/integrations/supabase/client';
 
 interface TransferToBankProps {
   onBack: () => void;
@@ -15,6 +16,29 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack, onTransferCompl
   const [amount, setAmount] = useState('');
   const [accountName, setAccountName] = useState('');
   const [payIdCode, setPayIdCode] = useState('');
+  const [userPayId, setUserPayId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserPayId = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from('payment_uploads')
+          .select('payid_code')
+          .eq('user_id', user.id)
+          .eq('status', 'approved')
+          .neq('payid_status', 'revoked')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        
+        if (data?.payid_code) {
+          setUserPayId(data.payid_code);
+        }
+      }
+    };
+    fetchUserPayId();
+  }, []);
 
   const banks = [
     'Access Bank', 'Zenith Bank', 'GTBank', 'First Bank', 'UBA', 'Ecobank',
@@ -30,7 +54,7 @@ const TransferToBank: React.FC<TransferToBankProps> = ({ onBack, onTransferCompl
       return;
     }
 
-    if (payIdCode !== 'PAY-25353531') {
+    if (!userPayId || payIdCode !== userPayId) {
       alert('Invalid PAY ID Code. Please enter a valid PAY ID to proceed with withdrawal.');
       return;
     }

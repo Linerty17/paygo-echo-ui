@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 
 interface PayIdSuccessProps {
   onBack: () => void;
+  payIdCode?: string;
 }
 
-const PayIdSuccess: React.FC<PayIdSuccessProps> = ({ onBack }) => {
-  const payId = 'PAY-25353531';
+const PayIdSuccess: React.FC<PayIdSuccessProps> = ({ onBack, payIdCode }) => {
+  const payId = payIdCode || 'PAY-00000000';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(payId);

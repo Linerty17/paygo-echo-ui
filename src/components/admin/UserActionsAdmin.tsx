@@ -37,7 +37,10 @@ const UserActionsAdmin: React.FC<UserActionsAdminProps> = ({
   const [showDeclineDialog, setShowDeclineDialog] = useState(false);
   const [showRevokeDialog, setShowRevokeDialog] = useState(false);
   const [reason, setReason] = useState('');
-  const [payIdCode, setPayIdCode] = useState('PAY-25353531');
+  const [payIdCode, setPayIdCode] = useState(() => {
+    const randomNum = Math.floor(10000000 + Math.random() * 90000000);
+    return `PAY-${randomNum}`;
+  });
   const [processing, setProcessing] = useState(false);
 
   const sendNotification = async (type: string, title: string, message: string, metadata?: Record<string, any>) => {
