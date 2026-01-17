@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Upload, AlertCircle, CheckCircle2, Shield, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import PaymentApprovedScreen from '@/components/screens/PaymentApprovedScreen';
+import { useGlobalPayId } from '@/hooks/useGlobalPayId';
 
 interface OnlinePaymentUploadProps {
   onBack: () => void;
@@ -22,6 +24,73 @@ const OnlinePaymentUpload: React.FC<OnlinePaymentUploadProps> = ({
   const [uploading, setUploading] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isApproved, setIsApproved] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(true);
+  const { globalPayId } = useGlobalPayId();
+
+  // Check if user already has approved payment - instant check
+  const checkApprovalStatus = async () => {
+    try {
+      const { data } = await supabase
+        .from('payment_uploads')
+        .select('status, payid_status')
+        .eq('user_id', userId)
+        .eq('status', 'approved')
+        .in('payment_type', ['payid_online', 'payid_offline'])
+        .neq('payid_status', 'revoked')
+        .limit(1)
+        .maybeSingle();
+
+      if (data) {
+        setIsApproved(true);
+      }
+    } catch (error) {
+      console.error('Error checking approval status:', error);
+    } finally {
+      setCheckingStatus(false);
+    }
+  };
+
+  useEffect(() => {
+    checkApprovalStatus();
+  }, [userId]);
+
+  // Real-time subscription for instant blocking when approved
+  useEffect(() => {
+    const channel = supabase
+      .channel(`upload_approval_${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'payment_uploads',
+          filter: `user_id=eq.${userId}`
+        },
+        () => {
+          // Instantly re-check status
+          checkApprovalStatus();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId]);
+
+  // If already approved, show approval screen instantly
+  if (isApproved) {
+    return <PaymentApprovedScreen payIdCode={globalPayId} onContinue={onBack} />;
+  }
+
+  if (checkingStatus) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
