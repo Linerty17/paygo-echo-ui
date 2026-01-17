@@ -4,7 +4,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Lock, Mail, Eye, EyeOff, Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings, Menu, X, ChevronLeft, Search, Clock, Trash2 } from 'lucide-react';
+import { Loader2, Lock, Mail, Eye, EyeOff, Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings, Menu, X, ChevronLeft, Search, Clock } from 'lucide-react';
 import PaymentUploadsAdmin from '@/components/admin/PaymentUploadsAdmin';
 import UsersAdmin from '@/components/admin/UsersAdmin';
 import ReferralsAdmin from '@/components/admin/ReferralsAdmin';
@@ -267,6 +267,7 @@ const AdminPanel = () => {
   };
 
   const handleRecentClick = (result: SearchResult) => {
+    saveRecentSearch(result);
     setShowSearchResults(false);
     setSearchQuery('');
     setSearchFocused(false);
@@ -393,10 +394,10 @@ const AdminPanel = () => {
       {/* Sidebar */}
       <div 
         className={`fixed lg:relative z-40 h-screen transition-all duration-300 ${
-          sidebarOpen ? 'w-64' : 'w-0 lg:w-16'
+          sidebarOpen ? 'w-64' : 'w-14'
         }`}
       >
-        {/* Sidebar Overlay for mobile */}
+        {/* Sidebar Overlay for mobile (only when expanded) */}
         {sidebarOpen && (
           <div 
             className="fixed inset-0 bg-black/50 lg:hidden z-30"
@@ -407,12 +408,12 @@ const AdminPanel = () => {
         {/* Sidebar Content */}
         <div 
           className={`fixed lg:relative h-full bg-card border-r border-border/50 transition-all duration-300 z-40 ${
-            sidebarOpen ? 'w-64 translate-x-0' : 'w-16 -translate-x-full lg:translate-x-0'
+            sidebarOpen ? 'w-64 translate-x-0' : 'w-14 translate-x-0'
           }`}
         >
           {/* Sidebar Header */}
           <div className="h-16 flex items-center justify-between px-4 border-b border-border/50">
-            <div className={`flex items-center gap-3 ${!sidebarOpen && 'lg:hidden'}`}>
+            <div className={`flex items-center gap-3 ${!sidebarOpen ? 'hidden' : ''}`}>
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center flex-shrink-0">
                 <Shield className="w-5 h-5 text-white" />
               </div>
@@ -422,7 +423,11 @@ const AdminPanel = () => {
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center lg:hidden"
             >
-              <X className="w-5 h-5 text-muted-foreground" />
+              {sidebarOpen ? (
+                <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+              ) : (
+                <Menu className="w-5 h-5 text-muted-foreground" />
+              )}
             </button>
           </div>
 
@@ -435,7 +440,9 @@ const AdminPanel = () => {
                   setCurrentView(item.id);
                   if (window.innerWidth < 1024) setSidebarOpen(false);
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${
+                className={`w-full flex items-center rounded-xl transition-all ${
+                  sidebarOpen ? 'gap-3 px-3 py-3' : 'justify-center px-0 py-3'
+                } ${
                   currentView === item.id
                     ? 'bg-primary text-white'
                     : 'hover:bg-muted text-muted-foreground hover:text-foreground'
@@ -448,23 +455,31 @@ const AdminPanel = () => {
                     {item.num}
                   </span>
                 </div>
-                <item.icon className={`w-5 h-5 flex-shrink-0 ${sidebarOpen ? '' : 'lg:mx-auto'}`} />
-                <span className={`font-medium ${!sidebarOpen && 'lg:hidden'}`}>{item.title}</span>
+                {sidebarOpen && (
+                  <>
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
+                    <span className="font-medium">{item.title}</span>
+                  </>
+                )}
               </button>
             ))}
           </nav>
 
           {/* Sidebar Footer */}
           <div className="absolute bottom-0 left-0 right-0 p-3 border-t border-border/50">
-            <div className={`mb-3 px-3 py-2 ${!sidebarOpen && 'lg:hidden'}`}>
-              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-            </div>
+            {sidebarOpen && (
+              <div className="mb-3 px-3 py-2">
+                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+              </div>
+            )}
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-red-500 hover:bg-red-500/10 transition-all"
+              className={`w-full flex items-center rounded-xl text-red-500 hover:bg-red-500/10 transition-all ${
+                sidebarOpen ? 'gap-3 px-3 py-3' : 'justify-center px-0 py-3'
+              }`}
             >
-              <LogOut className={`w-5 h-5 flex-shrink-0 ${sidebarOpen ? '' : 'lg:mx-auto'}`} />
-              <span className={`font-medium ${!sidebarOpen && 'lg:hidden'}`}>Logout</span>
+              <LogOut className="w-5 h-5 flex-shrink-0" />
+              {sidebarOpen && <span className="font-medium">Logout</span>}
             </button>
           </div>
         </div>
@@ -527,10 +542,15 @@ const AdminPanel = () => {
                     </div>
                     <div className="max-h-60 overflow-y-auto">
                       {recentSearches.map((result) => (
-                        <button
+                        <div
                           key={`recent-${result.type}-${result.id}`}
+                          role="button"
+                          tabIndex={0}
                           onClick={() => handleRecentClick(result)}
-                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors border-b border-border/50 last:border-b-0 group"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleRecentClick(result);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors border-b border-border/50 last:border-b-0 group cursor-pointer"
                         >
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                             result.type === 'user' ? 'bg-blue-500/10 text-blue-500' :
@@ -546,12 +566,14 @@ const AdminPanel = () => {
                             <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>
                           </div>
                           <button
+                            type="button"
                             onClick={(e) => removeRecentSearch(result.id, e)}
                             className="p-1 rounded hover:bg-muted-foreground/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                            aria-label="Remove from recent"
                           >
                             <X className="w-3 h-3 text-muted-foreground" />
                           </button>
-                        </button>
+                        </div>
                       ))}
                     </div>
                   </div>
