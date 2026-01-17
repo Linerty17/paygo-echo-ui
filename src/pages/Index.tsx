@@ -22,6 +22,7 @@ import TransferSuccess from '@/components/TransferSuccess';
 import AirtimeSuccess from '@/components/AirtimeSuccess';
 import PaymentPending from '@/components/PaymentPending';
 import LiveChat from '@/components/LiveChat';
+import FloatingTelegramButton from '@/components/FloatingTelegramButton';
 import PayIdPaymentPage from '@/components/PayIdPaymentPage';
 import UpgradePaymentPage from '@/components/UpgradePaymentPage';
 import PayIdPlanSelect from '@/components/PayIdPlanSelect';
@@ -802,6 +803,7 @@ const Index = () => {
         onMarkNotificationAsRead={markAsRead}
         onMarkAllNotificationsAsRead={markAllAsRead}
       />
+      <FloatingTelegramButton />
       <LiveChat />
     </>
   );
