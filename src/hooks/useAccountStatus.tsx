@@ -11,7 +11,8 @@ export const useAccountStatus = (userId: string | undefined): AccountStatusResul
 
   const checkStatus = useCallback(async () => {
     if (!userId) {
-      setStatus('loading');
+      // No user = not authenticated, set to active to allow login/registration screens
+      setStatus('active');
       return;
     }
 
@@ -20,10 +21,11 @@ export const useAccountStatus = (userId: string | undefined): AccountStatusResul
         .from('profiles')
         .select('account_status')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       
+      // If no profile found yet, default to active
       setStatus(data?.account_status === 'banned' ? 'banned' : 'active');
     } catch (error) {
       console.error('Error checking account status:', error);
