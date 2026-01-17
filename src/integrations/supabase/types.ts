@@ -115,6 +115,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_weekly_reward: { Args: { user_uuid: string }; Returns: Json }
       generate_referral_code: { Args: never; Returns: string }
     }
     Enums: {
