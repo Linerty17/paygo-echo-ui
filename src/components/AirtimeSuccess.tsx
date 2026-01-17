@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Check, ArrowRight, Sparkles, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Confetti from '@/components/Confetti';
 
 interface AirtimeSuccessProps {
   onBack: () => void;
@@ -33,6 +34,9 @@ const AirtimeSuccess: React.FC<AirtimeSuccessProps> = ({ onBack, phoneNumber, am
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      {/* Confetti Animation */}
+      <Confetti />
+      
       {/* Animated Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-emerald-500/10 rounded-full blur-[100px] animate-pulse" />
