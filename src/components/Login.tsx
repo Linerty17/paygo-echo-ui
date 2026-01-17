@@ -71,9 +71,14 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister, isLoading })
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
       {/* Help Button */}
-      <button className="absolute top-6 right-6 glass w-10 h-10 rounded-2xl flex items-center justify-center border border-white/10 hover:border-primary/30 transition-all">
+      <a 
+        href="https://t.me/officialbluepay" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="absolute top-6 right-6 glass w-10 h-10 rounded-2xl flex items-center justify-center border border-white/10 hover:border-primary/30 transition-all"
+      >
         <HelpCircle className="w-5 h-5 text-primary" />
-      </button>
+      </a>
       
       <div className="w-full max-w-sm space-y-8">
         {/* Animated Logo */}
