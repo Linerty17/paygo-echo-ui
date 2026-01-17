@@ -31,6 +31,22 @@ const PayIdPlanSelect: React.FC<PayIdPlanSelectProps> = ({
 }) => {
   const [paymentRecord, setPaymentRecord] = useState<PaymentRecord | null>(null);
   const [loading, setLoading] = useState(true);
+  const [globalPayId, setGlobalPayId] = useState<string>('PAY-4277151111');
+
+  useEffect(() => {
+    const fetchGlobalPayId = async () => {
+      const { data } = await supabase
+        .from('app_settings')
+        .select('value')
+        .eq('key', 'global_payid')
+        .maybeSingle();
+      
+      if (data?.value) {
+        setGlobalPayId(data.value);
+      }
+    };
+    fetchGlobalPayId();
+  }, []);
 
   useEffect(() => {
     const checkPaymentStatus = async () => {
@@ -98,11 +114,11 @@ const PayIdPlanSelect: React.FC<PayIdPlanSelectProps> = ({
     });
   };
 
-  // Show approved PAY ID screen with full-screen animation
+  // Show approved PAY ID screen with full-screen animation (use global PAY ID)
   if (!loading && paymentRecord?.status === 'approved' && paymentRecord.payid_status !== 'revoked') {
     return (
       <PaymentApprovedScreen 
-        payIdCode={paymentRecord.payid_code || 'PAY-XXXXXXXX'}
+        payIdCode={globalPayId}
         onContinue={onBack}
       />
     );

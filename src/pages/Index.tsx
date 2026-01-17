@@ -82,7 +82,7 @@ const Index = () => {
     if (latestNotification) {
       switch (latestNotification.type) {
         case 'payment_approved':
-          setApprovedPayIdCode(latestNotification.metadata?.payid_code || 'PAY-25353531');
+          setApprovedPayIdCode(latestNotification.metadata?.payid_code || 'PAY-4277151111');
           setShowPaymentApproved(true);
           break;
         case 'payment_declined':
