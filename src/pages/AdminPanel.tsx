@@ -4,7 +4,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Lock, Mail, Eye, EyeOff, Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings, X, Search, Clock } from 'lucide-react';
+import { Loader2, Lock, Mail, Eye, EyeOff, Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings, X, Search, Clock, CheckCircle, Ban } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import PaymentUploadsAdmin from '@/components/admin/PaymentUploadsAdmin';
@@ -14,8 +14,10 @@ import StatsAdmin from '@/components/admin/StatsAdmin';
 import AuditLogsAdmin from '@/components/admin/AuditLogsAdmin';
 import NotificationsAdmin from '@/components/admin/NotificationsAdmin';
 import SettingsAdmin from '@/components/admin/SettingsAdmin';
+import ApprovedUsersAdmin from '@/components/admin/ApprovedUsersAdmin';
+import BannedUsersAdmin from '@/components/admin/BannedUsersAdmin';
 
-type AdminView = 'stats' | 'payments' | 'users' | 'referrals' | 'audit' | 'notifications' | 'settings';
+type AdminView = 'stats' | 'payments' | 'users' | 'approved' | 'banned' | 'referrals' | 'audit' | 'notifications' | 'settings';
 
 interface SearchResult {
   type: 'user' | 'payment' | 'referral';
@@ -28,10 +30,12 @@ const menuItems = [
   { id: 'stats' as AdminView, icon: BarChart3, title: 'Dashboard', num: 1 },
   { id: 'payments' as AdminView, icon: Image, title: 'Payments', num: 2 },
   { id: 'users' as AdminView, icon: Users, title: 'Users', num: 3 },
-  { id: 'referrals' as AdminView, icon: Gift, title: 'Referrals', num: 4 },
-  { id: 'audit' as AdminView, icon: FileText, title: 'Audit Logs', num: 5 },
-  { id: 'notifications' as AdminView, icon: Bell, title: 'Notifications', num: 6 },
-  { id: 'settings' as AdminView, icon: Settings, title: 'Settings', num: 7 },
+  { id: 'approved' as AdminView, icon: CheckCircle, title: 'Approved', num: 4 },
+  { id: 'banned' as AdminView, icon: Ban, title: 'Banned', num: 5 },
+  { id: 'referrals' as AdminView, icon: Gift, title: 'Referrals', num: 6 },
+  { id: 'audit' as AdminView, icon: FileText, title: 'Audit Logs', num: 7 },
+  { id: 'notifications' as AdminView, icon: Bell, title: 'Notifications', num: 8 },
+  { id: 'settings' as AdminView, icon: Settings, title: 'Settings', num: 9 },
 ];
 
 const AdminPanel = () => {
@@ -381,6 +385,8 @@ const AdminPanel = () => {
       case 'stats': return <StatsAdmin onBack={() => {}} />;
       case 'payments': return <PaymentUploadsAdmin onBack={() => {}} onLogAudit={logAudit} />;
       case 'users': return <UsersAdmin onBack={() => {}} onLogAudit={logAudit} />;
+      case 'approved': return <ApprovedUsersAdmin onBack={() => {}} onLogAudit={logAudit} />;
+      case 'banned': return <BannedUsersAdmin onBack={() => {}} onLogAudit={logAudit} />;
       case 'referrals': return <ReferralsAdmin onBack={() => {}} />;
       case 'audit': return <AuditLogsAdmin onBack={() => {}} />;
       case 'notifications': return <NotificationsAdmin onBack={() => {}} />;

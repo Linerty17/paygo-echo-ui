@@ -1,5 +1,6 @@
-import React from 'react';
-import { Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings, CheckCircle, Ban } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Sidebar,
   SidebarContent,
@@ -13,7 +14,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 
-type AdminView = 'stats' | 'payments' | 'users' | 'referrals' | 'audit' | 'notifications' | 'settings';
+type AdminView = 'stats' | 'payments' | 'users' | 'approved' | 'banned' | 'referrals' | 'audit' | 'notifications' | 'settings';
 
 interface AdminSidebarProps {
   currentView: AdminView;
@@ -24,12 +25,14 @@ interface AdminSidebarProps {
 
 const menuItems = [
   { id: 'stats' as AdminView, icon: BarChart3, title: 'Dashboard', num: 1 },
-  { id: 'payments' as AdminView, icon: Image, title: 'Payments', num: 2 },
+  { id: 'payments' as AdminView, icon: Image, title: 'Payments', num: 2, hasBadge: true },
   { id: 'users' as AdminView, icon: Users, title: 'Users', num: 3 },
-  { id: 'referrals' as AdminView, icon: Gift, title: 'Referrals', num: 4 },
-  { id: 'audit' as AdminView, icon: FileText, title: 'Audit Logs', num: 5 },
-  { id: 'notifications' as AdminView, icon: Bell, title: 'Notifications', num: 6 },
-  { id: 'settings' as AdminView, icon: Settings, title: 'Settings', num: 7 },
+  { id: 'approved' as AdminView, icon: CheckCircle, title: 'Approved', num: 4 },
+  { id: 'banned' as AdminView, icon: Ban, title: 'Banned', num: 5 },
+  { id: 'referrals' as AdminView, icon: Gift, title: 'Referrals', num: 6 },
+  { id: 'audit' as AdminView, icon: FileText, title: 'Audit Logs', num: 7 },
+  { id: 'notifications' as AdminView, icon: Bell, title: 'Notifications', num: 8 },
+  { id: 'settings' as AdminView, icon: Settings, title: 'Settings', num: 9 },
 ];
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ 
@@ -40,6 +43,46 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
 }) => {
   const { state, setOpenMobile, isMobile } = useSidebar();
   const isCollapsed = state === 'collapsed';
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    const fetchPendingCount = async () => {
+      try {
+        const { count, error } = await supabase
+          .from('payment_uploads')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pending');
+
+        if (!error && count !== null) {
+          setPendingCount(count);
+        }
+      } catch (error) {
+        console.error('Error fetching pending count:', error);
+      }
+    };
+
+    fetchPendingCount();
+
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel('pending-count-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'payment_uploads'
+        },
+        () => {
+          fetchPendingCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const handleMenuClick = (view: AdminView) => {
     onViewChange(view);
@@ -74,15 +117,25 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                       : ''
                     }
                   >
-                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                    <div className={`relative w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
                       currentView === item.id ? 'bg-white/20' : 'bg-muted'
                     }`}>
                       <span className={`text-xs font-bold ${currentView === item.id ? 'text-white' : 'text-primary'}`}>
                         {item.num}
                       </span>
+                      {item.hasBadge && pendingCount > 0 && (
+                        <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">
+                          {pendingCount > 99 ? '99+' : pendingCount}
+                        </span>
+                      )}
                     </div>
                     <item.icon className="w-5 h-5" />
-                    <span className="font-medium">{item.title}</span>
+                    <span className="font-medium flex-1">{item.title}</span>
+                    {!isCollapsed && item.hasBadge && pendingCount > 0 && (
+                      <span className="min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold">
+                        {pendingCount > 99 ? '99+' : pendingCount}
+                      </span>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

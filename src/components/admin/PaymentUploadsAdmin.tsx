@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, CheckCircle, XCircle, Clock, Eye, RefreshCw, Image, Bell, Download, Search, Filter, CheckSquare, Square } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, Clock, Eye, RefreshCw, Image, Bell, Download, Search, Filter, CheckSquare, Square, Ban, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
@@ -220,6 +220,61 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack, onLog
       toast({
         title: "Error",
         description: "Could not decline payment",
+        variant: "destructive"
+      });
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleBanFromPayment = async (upload: PaymentUpload) => {
+    setProcessing(true);
+    try {
+      // Decline the payment
+      await supabase
+        .from('payment_uploads')
+        .update({ 
+          status: 'declined',
+          processed_at: new Date().toISOString()
+        })
+        .eq('id', upload.id);
+
+      // Ban the user
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ account_status: 'banned' })
+        .eq('user_id', upload.user_id);
+
+      if (profileError) throw profileError;
+
+      // Notify user
+      await supabase.from('user_notifications').insert({
+        user_id: upload.user_id,
+        type: 'banned',
+        title: 'Account Suspended',
+        message: 'Your account has been suspended due to payment issues. Contact support for more information.',
+        metadata: { payment_id: upload.id }
+      });
+
+      toast({
+        title: "User Banned",
+        description: `${upload.user_name} has been banned and payment declined`,
+      });
+
+      onLogAudit('ban_user_from_payment', 'profiles', upload.user_id, {
+        user_name: upload.user_name,
+        user_email: upload.user_email,
+        payment_id: upload.id,
+        amount: upload.amount
+      });
+
+      fetchUploads();
+      setSelectedUpload(null);
+    } catch (error) {
+      console.error('Error banning user:', error);
+      toast({
+        title: "Error",
+        description: "Could not ban user",
         variant: "destructive"
       });
     } finally {
@@ -524,23 +579,34 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack, onLog
               )}
 
               {upload.status === 'pending' && (
-                <div className="flex gap-3">
+                <div className="space-y-2">
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => handleApprove(upload)}
+                      disabled={processing}
+                      className="flex-1 h-12 bg-green-500 hover:bg-green-600 text-white rounded-xl"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Approve
+                    </Button>
+                    <Button
+                      onClick={() => handleDecline(upload)}
+                      disabled={processing}
+                      variant="outline"
+                      className="flex-1 h-12 border-red-500/50 text-red-500 hover:bg-red-500/10 rounded-xl"
+                    >
+                      <XCircle className="w-4 h-4 mr-2" />
+                      Decline
+                    </Button>
+                  </div>
                   <Button
-                    onClick={() => handleApprove(upload)}
-                    disabled={processing}
-                    className="flex-1 h-12 bg-green-500 hover:bg-green-600 text-white rounded-xl"
-                  >
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Approve
-                  </Button>
-                  <Button
-                    onClick={() => handleDecline(upload)}
+                    onClick={() => handleBanFromPayment(upload)}
                     disabled={processing}
                     variant="outline"
-                    className="flex-1 h-12 border-red-500/50 text-red-500 hover:bg-red-500/10 rounded-xl"
+                    className="w-full h-10 border-red-500/30 text-red-500 hover:bg-red-500/10 rounded-xl text-sm"
                   >
-                    <XCircle className="w-4 h-4 mr-2" />
-                    Decline
+                    <Ban className="w-4 h-4 mr-2" />
+                    Decline & Ban User
                   </Button>
                 </div>
               )}
@@ -583,23 +649,34 @@ const PaymentUploadsAdmin: React.FC<PaymentUploadsAdminProps> = ({ onBack, onLog
             )}
 
             {selectedUpload.status === 'pending' && (
-              <div className="flex gap-3 mt-4">
+              <div className="space-y-2 mt-4">
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => handleApprove(selectedUpload)}
+                    disabled={processing}
+                    className="flex-1 h-12 bg-green-500 hover:bg-green-600 text-white rounded-xl"
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Approve
+                  </Button>
+                  <Button
+                    onClick={() => handleDecline(selectedUpload)}
+                    disabled={processing}
+                    variant="outline"
+                    className="flex-1 h-12 border-red-500/50 text-red-500 hover:bg-red-500/10 rounded-xl"
+                  >
+                    <XCircle className="w-4 h-4 mr-2" />
+                    Decline
+                  </Button>
+                </div>
                 <Button
-                  onClick={() => handleApprove(selectedUpload)}
-                  disabled={processing}
-                  className="flex-1 h-12 bg-green-500 hover:bg-green-600 text-white rounded-xl"
-                >
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Approve
-                </Button>
-                <Button
-                  onClick={() => handleDecline(selectedUpload)}
+                  onClick={() => handleBanFromPayment(selectedUpload)}
                   disabled={processing}
                   variant="outline"
-                  className="flex-1 h-12 border-red-500/50 text-red-500 hover:bg-red-500/10 rounded-xl"
+                  className="w-full h-10 border-red-500/30 text-red-500 hover:bg-red-500/10 rounded-xl text-sm"
                 >
-                  <XCircle className="w-4 h-4 mr-2" />
-                  Decline
+                  <Ban className="w-4 h-4 mr-2" />
+                  Decline & Ban User
                 </Button>
               </div>
             )}
