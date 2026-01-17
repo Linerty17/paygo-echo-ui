@@ -131,19 +131,23 @@ const SettingsAdmin: React.FC<SettingsAdminProps> = ({ onBack }) => {
     },
   ];
 
+  const showHeader = onBack && typeof onBack === 'function' && onBack.toString() !== '() => {}';
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="glass-header text-foreground p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={onBack}>
-              <ArrowLeft className="w-6 h-6 text-primary" />
-            </button>
-            <h1 className="text-xl font-semibold">Settings</h1>
+      {/* Header - only show if onBack is a real function */}
+      {showHeader && (
+        <div className="glass-header text-foreground p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <button onClick={onBack}>
+                <ArrowLeft className="w-6 h-6 text-primary" />
+              </button>
+              <h1 className="text-xl font-semibold">Settings</h1>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="p-4 space-y-6">
         {settingsSections.map((section, sectionIndex) => (
