@@ -22,14 +22,14 @@ const LevelBenefits: React.FC<LevelBenefitsProps> = ({
 }) => {
   const getLevelBackgroundColor = (level: string) => {
     switch (level.toLowerCase()) {
-      case 'silver': return 'bg-gradient-to-br from-gray-200/80 to-gray-300/60';
-      case 'gold': return 'bg-gradient-to-br from-yellow-200/80 to-yellow-300/60';
-      case 'platinum': return 'bg-gradient-to-br from-blue-200/80 to-blue-300/60';
-      case 'emerald': return 'bg-gradient-to-br from-green-200/80 to-green-300/60';
-      case 'ruby': return 'bg-gradient-to-br from-red-200/80 to-red-300/60';
-      case 'diamond': return 'bg-gradient-to-br from-purple-200/80 to-purple-300/60';
-      case 'black': return 'bg-gradient-to-br from-gray-700/80 to-gray-800/60';
-      default: return 'bg-gradient-to-br from-gray-200/80 to-gray-300/60';
+      case 'silver': return 'bg-gray-200';
+      case 'gold': return 'bg-yellow-200';
+      case 'platinum': return 'bg-blue-200';
+      case 'emerald': return 'bg-green-200';
+      case 'ruby': return 'bg-red-200';
+      case 'diamond': return 'bg-purple-200';
+      case 'black': return 'bg-gray-800';
+      default: return 'bg-gray-200';
     }
   };
 
@@ -47,9 +47,9 @@ const LevelBenefits: React.FC<LevelBenefitsProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-paygo-lavender">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="glass-header text-white p-4">
+      <div className="bg-purple-600 text-white p-4">
         <div className="flex items-center space-x-4">
           <button onClick={onBack}>
             <ArrowLeft className="w-6 h-6" />
@@ -60,28 +60,26 @@ const LevelBenefits: React.FC<LevelBenefitsProps> = ({
 
       <div className="p-6 space-y-6">
         {/* Level Card */}
-        <div className={`${getLevelBackgroundColor(levelName)} backdrop-blur-sm rounded-2xl p-6 border border-white/30`}>
+        <div className={`${getLevelBackgroundColor(levelName)} rounded-2xl p-6`}>
           <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 glass-card rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
               <span className="text-2xl">{getLevelIcon(levelName)}</span>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-foreground">{levelName} Level</h2>
-              <p className="text-xl font-semibold text-foreground">{price}</p>
+              <h2 className="text-2xl font-bold text-gray-900">{levelName} Level</h2>
+              <p className="text-xl font-semibold text-gray-900">{price}</p>
             </div>
           </div>
         </div>
 
         {/* Benefits Section */}
-        <div className="glass-card rounded-2xl p-6">
-          <h3 className="text-xl font-bold text-primary mb-6">Benefits & Features</h3>
+        <div className="bg-white rounded-2xl p-6 shadow-sm">
+          <h3 className="text-xl font-bold text-purple-600 mb-6">Benefits & Features</h3>
           <div className="space-y-4">
             {benefits.map((benefit, index) => (
               <div key={index} className="flex items-center space-x-3">
-                <div className="w-6 h-6 rounded-full gradient-purple flex items-center justify-center">
-                  <Check className="w-4 h-4 text-white" />
-                </div>
-                <span className="text-muted-foreground">{benefit}</span>
+                <Check className="w-5 h-5 text-purple-600" />
+                <span className="text-gray-700">{benefit}</span>
               </div>
             ))}
           </div>
@@ -89,12 +87,12 @@ const LevelBenefits: React.FC<LevelBenefitsProps> = ({
 
         <Button 
           onClick={onProceedToPayment}
-          className="w-full h-14 gradient-purple hover:opacity-90 text-white text-lg font-medium rounded-xl"
+          className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl"
         >
           Proceed to Payment
         </Button>
 
-        <p className="text-center text-muted-foreground text-sm">
+        <p className="text-center text-gray-600 text-sm">
           Your upgrade will be activated immediately after payment is confirmed
         </p>
       </div>

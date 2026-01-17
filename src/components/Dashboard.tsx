@@ -63,11 +63,11 @@ const Dashboard: React.FC<DashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-paygo-lavender w-full overflow-x-hidden">
-      {/* Animated Header with moving text */}
-      <div className="glass-header text-white py-1.5 text-xs overflow-hidden relative w-full">
+    <div className="min-h-screen min-h-[100dvh] bg-gray-50 w-full overflow-x-hidden">
+      {/* Animated Header with moving text - Reduced padding */}
+      <div className="bg-red-500 text-white py-1.5 text-xs overflow-hidden relative w-full">
         <div className="animate-marquee whitespace-nowrap">
-          Dear User, We're currently experiencing issues with <span className="text-purple-200 font-semibold">Opay</span> bank transfers. Please use other banks for your payments.
+          Dear User, We're currently experiencing issues with <span className="text-red-200 font-semibold">Opay</span> bank transfers. Please use other banks for your payments.
         </div>
       </div>
 
@@ -82,83 +82,76 @@ const Dashboard: React.FC<DashboardProps> = ({
           </div>
         </div>
 
-        {/* Main Card with Glassmorphism */}
-        <div className="gradient-purple rounded-2xl p-4 text-white shadow-xl relative overflow-hidden">
-          {/* Glass overlay effect */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
-          
-          <div className="relative z-10">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center space-x-2">
-                {userProfileImage ? (
-                  <img 
-                    src={userProfileImage} 
-                    alt="Profile" 
-                    className="w-8 h-8 rounded-full object-cover border-2 border-white/30"
-                  />
-                ) : (
-                  <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4" />
-                  </div>
-                )}
-                <div>
-                  <div className="flex items-center space-x-1">
-                    <span className="text-sm font-medium">Hi, {userName}</span>
-                    <span className="text-lg">👋</span>
-                  </div>
-                  <p className="text-xs opacity-90">Welcome back!</p>
+        <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 rounded-xl p-4 text-white shadow-xl">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center space-x-2">
+              {userProfileImage ? (
+                <img 
+                  src={userProfileImage} 
+                  alt="Profile" 
+                  className="w-8 h-8 rounded-full object-cover border-2 border-white border-opacity-30"
+                />
+              ) : (
+                <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4" />
                 </div>
+              )}
+              <div>
+                <div className="flex items-center space-x-1">
+                  <span className="text-sm font-medium">Hi, {userName}</span>
+                  <span className="text-lg">👋</span>
+                </div>
+                <p className="text-xs opacity-90">Welcome back!</p>
               </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Bell className="w-4 h-4 text-orange-400" />
+              <button onClick={onLogout} className="text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full">
+                Logout
+              </button>
+            </div>
+          </div>
+
+          <div className="mb-3">
+            <p className="text-xs opacity-90 mb-1">Your Balance</p>
+            <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <Bell className="w-4 h-4 text-purple-200" />
-                <button onClick={onLogout} className="text-xs glass-button px-2 py-1 rounded-full text-white">
-                  Logout
+                <span className="text-xl font-bold">
+                  {balanceVisible ? currentBalance : "****"}
+                </span>
+                <button 
+                  onClick={() => setBalanceVisible(!balanceVisible)}
+                  className="text-white hover:text-gray-200"
+                >
+                  {balanceVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
+            <p className="text-xs opacity-75 mt-1">Weekly Rewards: {weeklyRewards}</p>
+          </div>
 
-            <div className="mb-3">
-              <p className="text-xs opacity-90 mb-1">Your Balance</p>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xl font-bold">
-                    {balanceVisible ? currentBalance : "****"}
-                  </span>
-                  <button 
-                    onClick={() => setBalanceVisible(!balanceVisible)}
-                    className="text-white hover:text-purple-200"
-                  >
-                    {balanceVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
+          <div className="grid grid-cols-2 gap-2">
+            <Button 
+              onClick={() => onNavigate('upgradeAccount')}
+              className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 rounded-full h-8 flex items-center justify-center space-x-2"
+            >
+              <div className="w-4 h-4 bg-white bg-opacity-30 rounded-full flex items-center justify-center">
+                <Check className="w-2 h-2" />
               </div>
-              <p className="text-xs opacity-75 mt-1">Weekly Rewards: {weeklyRewards}</p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <Button 
-                onClick={() => onNavigate('upgradeAccount')}
-                className="glass-button hover:bg-white/30 text-white border-0 rounded-full h-8 flex items-center justify-center space-x-2"
-              >
-                <div className="w-4 h-4 bg-white/30 rounded-full flex items-center justify-center">
-                  <Check className="w-2 h-2" />
-                </div>
-                <span className="text-sm">Upgrade</span>
-              </Button>
-              <Button 
-                onClick={() => onNavigate('transferToBank')}
-                className="glass-button hover:bg-white/30 text-white border-0 rounded-full h-8 flex items-center justify-center space-x-2"
-              >
-                <div className="w-4 h-4 bg-white/30 rounded-full flex items-center justify-center">
-                  <ArrowUp className="w-2 h-2" />
-                </div>
-                <span className="text-sm">Transfer</span>
-              </Button>
-            </div>
+              <span className="text-sm">Upgrade</span>
+            </Button>
+            <Button 
+              onClick={() => onNavigate('transferToBank')}
+              className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white border-0 rounded-full h-8 flex items-center justify-center space-x-2"
+            >
+              <div className="w-4 h-4 bg-white bg-opacity-30 rounded-full flex items-center justify-center">
+                <ArrowUp className="w-2 h-2" />
+              </div>
+              <span className="text-sm">Transfer</span>
+            </Button>
           </div>
         </div>
 
-        {/* Services Grid with Glass Cards */}
         <div className="grid grid-cols-4 gap-3">
           {services.map((service, index) => (
             <ServiceIcon
@@ -171,7 +164,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         <div>
-          <h2 className="text-base font-bold text-foreground mb-3">Current Promotions</h2>
+          <h2 className="text-base font-bold text-gray-900 mb-3">Current Promotions</h2>
           <PromotionsCarousel />
         </div>
       </div>
