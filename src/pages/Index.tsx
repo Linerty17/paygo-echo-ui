@@ -43,6 +43,7 @@ const Index = () => {
   const [navigationHistory, setNavigationHistory] = useState<AppState[]>([]);
   const [selectedUpgradeLevel, setSelectedUpgradeLevel] = useState('');
   const [selectedUpgradePrice, setSelectedUpgradePrice] = useState('');
+  const [isFirstLogin, setIsFirstLogin] = useState(false);
 
   // Get user data from profile
   const userName = profile?.name || '';
@@ -78,12 +79,19 @@ const Index = () => {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [isAuthenticated, navigationHistory, appState]);
 
-  // Update app state when authentication changes
+  // Update app state when authentication changes - go to dashboard on refresh, welcome only on first login
   useEffect(() => {
     if (!loading && isAuthenticated && (appState === 'registration' || appState === 'login')) {
-      setAppState('welcome');
+      // Check if this is a page refresh (session was restored) or a fresh login
+      if (isFirstLogin) {
+        setAppState('welcome');
+        setIsFirstLogin(false);
+      } else {
+        // Session was restored from refresh - go directly to dashboard
+        setAppState('dashboard');
+      }
     }
-  }, [isAuthenticated, loading, appState]);
+  }, [isAuthenticated, loading, appState, isFirstLogin]);
 
   const navigateToPage = (newState: AppState) => {
     if (isAuthenticated && appState !== newState) {
@@ -96,6 +104,7 @@ const Index = () => {
   const handleRegister = async (name: string, email: string, password: string, country: string, referralCode?: string) => {
     const result = await signUp(email, password, name, country, referralCode);
     if (!result.error) {
+      setIsFirstLogin(true);
       setAppState('welcome');
       setNavigationHistory([]);
     }
@@ -104,6 +113,7 @@ const Index = () => {
   const handleLogin = async (email: string, password: string) => {
     const result = await signIn(email, password);
     if (!result.error) {
+      setIsFirstLogin(true);
       setAppState('welcome');
       setNavigationHistory([]);
     }
