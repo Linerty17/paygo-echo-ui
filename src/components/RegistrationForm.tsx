@@ -6,7 +6,7 @@ import { Loader2, Gift } from 'lucide-react';
 import { z } from 'zod';
 
 interface RegistrationFormProps {
-  onRegister: (name: string, email: string, password: string, country: string, referralCode?: string) => Promise<void>;
+  onRegister: (name: string, email: string, password: string, country: string, phone: string, referralCode?: string) => Promise<void>;
   onSwitchToLogin: () => void;
   isLoading?: boolean;
 }
@@ -20,6 +20,11 @@ const registrationSchema = z.object({
     .trim()
     .email({ message: "Please enter a valid email address" })
     .max(255, { message: "Email must be less than 255 characters" }),
+  phone: z.string()
+    .trim()
+    .min(10, { message: "Phone number must be at least 10 digits" })
+    .max(20, { message: "Phone number must be less than 20 digits" })
+    .regex(/^[+]?[\d\s-]+$/, { message: "Please enter a valid phone number" }),
   password: z.string()
     .min(6, { message: "Password must be at least 6 characters" })
     .max(72, { message: "Password must be less than 72 characters" }),
@@ -34,6 +39,7 @@ const registrationSchema = z.object({
 type FormErrors = {
   name?: string;
   email?: string;
+  phone?: string;
   password?: string;
   country?: string;
   referralCode?: string;
@@ -235,6 +241,7 @@ const countries = [
 const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitchToLogin, isLoading }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [country, setCountry] = useState('');
   const [referralCode, setReferralCode] = useState('');
@@ -253,7 +260,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
   }, []);
 
   const validateForm = (): boolean => {
-    const result = registrationSchema.safeParse({ name, email, password, country, referralCode });
+    const result = registrationSchema.safeParse({ name, email, phone, password, country, referralCode });
     
     if (!result.success) {
       const fieldErrors: FormErrors = {};
@@ -279,7 +286,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
     }
 
     setIsSubmitting(true);
-    await onRegister(name.trim(), email.trim(), password, country, referralCode.trim().toUpperCase() || undefined);
+    await onRegister(name.trim(), email.trim(), password, country, phone.trim(), referralCode.trim().toUpperCase() || undefined);
     setIsSubmitting(false);
   };
 
@@ -343,6 +350,22 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
             />
             {errors.email && (
               <p className="text-red-400 text-sm mt-1">{errors.email}</p>
+            )}
+          </div>
+
+          <div>
+            <Input
+              type="tel"
+              placeholder="Enter Phone Number"
+              value={phone}
+              onChange={(e) => {
+                setPhone(e.target.value);
+                clearError('phone');
+              }}
+              className={`w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground ${errors.phone ? 'border-red-500' : ''}`}
+            />
+            {errors.phone && (
+              <p className="text-red-400 text-sm mt-1">{errors.phone}</p>
             )}
           </div>
 

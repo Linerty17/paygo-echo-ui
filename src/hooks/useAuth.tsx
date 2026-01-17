@@ -88,7 +88,7 @@ export const useAuth = () => {
     }
   };
 
-  const signUp = async (email: string, password: string, name: string, country: string, referredBy?: string) => {
+  const signUp = async (email: string, password: string, name: string, country: string, phone: string, referredBy?: string) => {
     setLoading(true);
     
     const redirectUrl = `${window.location.origin}/`;
@@ -101,6 +101,7 @@ export const useAuth = () => {
         data: {
           name,
           country,
+          phone,
           referred_by: referredBy || null
         }
       }

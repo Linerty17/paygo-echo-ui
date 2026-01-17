@@ -151,8 +151,8 @@ const Index = () => {
     window.history.pushState({ page: newState }, '', window.location.href);
   };
 
-  const handleRegister = async (name: string, email: string, password: string, country: string, referralCode?: string) => {
-    const result = await signUp(email, password, name, country, referralCode);
+  const handleRegister = async (name: string, email: string, password: string, country: string, phone: string, referralCode?: string) => {
+    const result = await signUp(email, password, name, country, phone, referralCode);
     if (!result.error) {
       setIsFirstLogin(true);
       setAppState('welcome');
