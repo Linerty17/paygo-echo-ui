@@ -744,6 +744,9 @@ const Index = () => {
     );
   }
 
+  // Get notifications for dashboard
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useUserNotifications(user?.id);
+
   return (
     <>
       <Dashboard
@@ -764,6 +767,10 @@ const Index = () => {
         nextClaimTime={nextClaimTime}
         onProfileImageChange={handleProfileImageChange}
         isAdmin={profile?.is_admin || false}
+        notifications={notifications}
+        unreadNotificationCount={unreadCount}
+        onMarkNotificationAsRead={markAsRead}
+        onMarkAllNotificationsAsRead={markAllAsRead}
       />
       <LiveChat />
     </>

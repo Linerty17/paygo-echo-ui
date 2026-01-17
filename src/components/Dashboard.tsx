@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, Eye, EyeOff, ArrowUpRight, Sparkles, User, CreditCard, Play, Phone, Database, Headphones, Globe, Gift, UserCircle, LogOut, TrendingUp, Zap, ChevronRight, Check, Camera, Shield } from 'lucide-react';
+import { Eye, EyeOff, ArrowUpRight, Sparkles, User, CreditCard, Play, Phone, Database, Headphones, Globe, Gift, UserCircle, LogOut, TrendingUp, Zap, ChevronRight, Check, Camera, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PromotionsCarousel from './PromotionsCarousel';
 import OnboardingModal from './OnboardingModal';
 import VideoPlayer from './VideoPlayer';
 import ImageCropper from './ImageCropper';
+import NotificationDropdown from './NotificationDropdown';
 import { toast } from 'sonner';
+import { UserNotification } from '@/hooks/useUserNotifications';
 
 interface DashboardProps {
   userName: string;
@@ -25,6 +27,10 @@ interface DashboardProps {
   nextClaimTime?: Date | null;
   onProfileImageChange?: (image: string) => void;
   isAdmin?: boolean;
+  notifications?: UserNotification[];
+  unreadNotificationCount?: number;
+  onMarkNotificationAsRead?: (id: string) => void;
+  onMarkAllNotificationsAsRead?: () => void;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({
@@ -44,7 +50,11 @@ const Dashboard: React.FC<DashboardProps> = ({
   canClaimWeeklyReward = true,
   nextClaimTime = null,
   onProfileImageChange,
-  isAdmin = false
+  isAdmin = false,
+  notifications = [],
+  unreadNotificationCount = 0,
+  onMarkNotificationAsRead,
+  onMarkAllNotificationsAsRead
 }) => {
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [showVideo, setShowVideo] = useState(false);
@@ -205,10 +215,12 @@ const Dashboard: React.FC<DashboardProps> = ({
             className="h-8 object-contain drop-shadow-lg"
           />
           <div className="flex items-center gap-1.5">
-            <button className="relative glass w-9 h-9 rounded-xl flex items-center justify-center border border-white/10 hover:border-primary/40 transition-all">
-              <Bell className="w-4 h-4 text-foreground/70" />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
-            </button>
+            <NotificationDropdown
+              notifications={notifications}
+              unreadCount={unreadNotificationCount}
+              onMarkAsRead={onMarkNotificationAsRead || (() => {})}
+              onMarkAllAsRead={onMarkAllNotificationsAsRead || (() => {})}
+            />
             <button 
               onClick={onLogout}
               className="glass w-9 h-9 rounded-xl flex items-center justify-center border border-white/10 hover:border-red-500/40 transition-all"
