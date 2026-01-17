@@ -34,7 +34,7 @@ const Index = () => {
   const { user, profile, loading, signUp, signIn, signOut, updateProfile, fetchReferrals, isAuthenticated } = useAuth();
   
   const [appState, setAppState] = useState<AppState>('registration');
-  const [userProfileImage, setUserProfileImage] = useState<string | null>(null);
+  const [userProfileImage, setUserProfileImage] = useState<string | null>(profile?.avatar_url || null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingStep, setOnboardingStep] = useState(1);
   const [purchaseType, setPurchaseType] = useState<'airtime' | 'data'>('airtime');
@@ -75,12 +75,16 @@ const Index = () => {
     }
   }, [profile?.last_weekly_claim]);
 
-  // Fetch referral count on mount
+  // Fetch referral count on mount and load avatar
   useEffect(() => {
     if (profile) {
       fetchReferrals().then(referrals => {
         setReferralCount(referrals.length);
       });
+      // Load avatar from profile
+      if (profile.avatar_url) {
+        setUserProfileImage(profile.avatar_url);
+      }
     }
   }, [profile]);
 
@@ -272,12 +276,13 @@ const Index = () => {
     navigateToPage('airtimeSuccess');
   };
 
-  const handleProfileImageChange = (image: string) => {
+  const handleProfileImageChange = async (image: string) => {
     setUserProfileImage(image);
+    await updateProfile({ avatar_url: image });
   };
 
-  const handleProfileUpdate = async (newName: string) => {
-    await updateProfile({ name: newName });
+  const handleProfileUpdate = async (newName: string, newPhone: string) => {
+    await updateProfile({ name: newName, phone: newPhone });
   };
 
   const formatBalance = (balance: number) => {
@@ -451,6 +456,7 @@ const Index = () => {
           onBack={handleBackToDashboard} 
           userEmail={userEmail}
           userName={userName}
+          userPhone={profile?.phone || null}
           profileImage={userProfileImage}
           onProfileImageChange={handleProfileImageChange}
           onProfileUpdate={handleProfileUpdate}

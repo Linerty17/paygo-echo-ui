@@ -16,6 +16,8 @@ interface Profile {
   created_at: string;
   updated_at: string;
   last_weekly_claim: string | null;
+  phone: string | null;
+  avatar_url: string | null;
 }
 
 interface Referral {
@@ -186,7 +188,7 @@ export const useAuth = () => {
     return { error: null };
   };
 
-  const updateProfile = async (updates: Partial<Pick<Profile, 'name' | 'level' | 'balance' | 'last_weekly_claim'>>) => {
+  const updateProfile = async (updates: Partial<Pick<Profile, 'name' | 'level' | 'balance' | 'last_weekly_claim' | 'phone' | 'avatar_url'>>) => {
     if (!user) return { error: new Error('No user logged in') };
 
     const { data, error } = await supabase
