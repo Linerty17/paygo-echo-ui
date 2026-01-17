@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { ArrowLeft, ChevronRight, Camera, User, Info, HelpCircle, Bell, LogOut, Shield, Sparkles } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Camera, User, Info, HelpCircle, Bell, LogOut, Shield, Sparkles, Sun, Moon, Monitor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import ImageCropper from './ImageCropper';
 import { toast } from 'sonner';
+import { useTheme } from 'next-themes';
 
 interface ProfileProps {
   onBack: () => void;
@@ -24,6 +25,7 @@ const Profile: React.FC<ProfileProps> = ({
   onProfileImageChange,
   onProfileUpdate 
 }) => {
+  const { theme, setTheme } = useTheme();
   const [editingProfile, setEditingProfile] = useState(false);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -247,6 +249,47 @@ const Profile: React.FC<ProfileProps> = ({
             </div>
             <div className="w-12 h-7 glass rounded-full relative border border-primary/30 bg-primary/20">
               <div className="w-5 h-5 bg-primary rounded-full absolute top-1 right-1 shadow-lg"></div>
+            </div>
+          </div>
+
+          <div className="p-4 flex items-center justify-between border-b border-white/5">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg">
+                {theme === 'dark' ? (
+                  <Moon className="w-5 h-5 text-white" />
+                ) : theme === 'light' ? (
+                  <Sun className="w-5 h-5 text-white" />
+                ) : (
+                  <Monitor className="w-5 h-5 text-white" />
+                )}
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground">Appearance</h4>
+                <p className="text-muted-foreground text-sm">Choose your theme</p>
+              </div>
+            </div>
+            <div className="flex gap-1 glass rounded-2xl p-1 border border-white/10">
+              <button
+                onClick={() => setTheme('light')}
+                className={`p-2 rounded-xl transition-all ${theme === 'light' ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}
+                title="Light mode"
+              >
+                <Sun className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setTheme('dark')}
+                className={`p-2 rounded-xl transition-all ${theme === 'dark' ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}
+                title="Dark mode"
+              >
+                <Moon className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setTheme('system')}
+                className={`p-2 rounded-xl transition-all ${theme === 'system' ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}
+                title="System"
+              >
+                <Monitor className="w-4 h-4" />
+              </button>
             </div>
           </div>
 
