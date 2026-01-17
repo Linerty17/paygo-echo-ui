@@ -31,7 +31,7 @@ import { Loader2 } from 'lucide-react';
 type AppState = 'registration' | 'login' | 'welcome' | 'earnMore' | 'dashboard' | 'transferToBank' | 'upgradeAccount' | 'upgradeProcessing' | 'upgradePayment' | 'payIdPayment' | 'joinCommunities' | 'support' | 'profile' | 'buyPayId' | 'airtime' | 'data' | 'preparingPayment' | 'bankTransfer' | 'paymentConfirmation' | 'paymentPending' | 'payIdSuccess' | 'purchaseSuccess' | 'transferSuccess' | 'airtimeSuccess';
 
 const Index = () => {
-  const { user, profile, loading, signUp, signIn, signOut, updateProfile, fetchReferrals, isAuthenticated } = useAuth();
+  const { user, profile, loading, signUp, signIn, signOut, updateProfile, fetchReferrals, claimWeeklyReward, isAuthenticated } = useAuth();
   
   const [appState, setAppState] = useState<AppState>('registration');
   const [userProfileImage, setUserProfileImage] = useState<string | null>(profile?.avatar_url || null);
@@ -90,14 +90,22 @@ const Index = () => {
 
   const handleClaimRewards = async (amount: number) => {
     if (!canClaimWeeklyReward()) return;
-    await updateProfile({ 
-      balance: currentBalance + amount,
-      last_weekly_claim: new Date().toISOString()
-    });
-    toast({
-      title: "🎉 Reward Claimed!",
-      description: `You've successfully claimed ₦${amount.toLocaleString()}. Next claim available in 7 days.`,
-    });
+    
+    // Use secure server-side claim function
+    const result = await claimWeeklyReward();
+    
+    if (result.success) {
+      toast({
+        title: "🎉 Reward Claimed!",
+        description: `You've successfully claimed ₦${result.claimed_amount?.toLocaleString()}. Next claim available in 7 days.`,
+      });
+    } else {
+      toast({
+        title: "Claim Failed",
+        description: result.error || "Unable to claim reward at this time.",
+        variant: "destructive"
+      });
+    }
   };
 
   // Handle browser back button and prevent app exit

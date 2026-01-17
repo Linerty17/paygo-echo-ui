@@ -208,6 +208,30 @@ export const useAuth = () => {
     return { data, error: null };
   };
 
+  // Secure server-side claim function to prevent double claims
+  const claimWeeklyReward = async () => {
+    if (!user) return { success: false, error: 'No user logged in' };
+
+    const { data, error } = await supabase.rpc('claim_weekly_reward', {
+      user_uuid: user.id
+    });
+
+    if (error) {
+      console.error('Claim error:', error);
+      return { success: false, error: error.message };
+    }
+
+    const result = data as { success: boolean; new_balance?: number; claimed_amount?: number; error?: string; next_claim?: string };
+
+    if (result.success) {
+      // Refresh profile to get updated balance
+      await fetchProfile(user.id);
+      return { success: true, new_balance: result.new_balance, claimed_amount: result.claimed_amount };
+    } else {
+      return { success: false, error: result.error, next_claim: result.next_claim };
+    }
+  };
+
   return {
     user,
     session,
@@ -219,6 +243,7 @@ export const useAuth = () => {
     updateProfile,
     fetchProfile,
     fetchReferrals,
+    claimWeeklyReward,
     isAuthenticated: !!session
   };
 };
