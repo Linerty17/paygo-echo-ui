@@ -2,9 +2,9 @@
 // Update these values to change payment account across the entire app
 
 export const ACCOUNT_DETAILS = {
-  accountNumber: '5569742889',
+  accountNumber: '6563311334',
   bankName: 'Moniepoint MFB',
-  accountName: 'SUNDAY LIBERTY'
+  accountName: 'Ifechukwu Destiny Sunday'
 } as const;
 
 export type AccountDetails = typeof ACCOUNT_DETAILS;
