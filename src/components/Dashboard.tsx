@@ -362,7 +362,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             <h3 className="text-[10px] font-bold text-foreground uppercase tracking-wider">Quick Actions</h3>
             <div className="h-px flex-1 mx-3 bg-gradient-to-r from-white/10 to-transparent" />
           </div>
-          <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             {services.map((service, index) => {
               const IconComponent = service.icon;
               return (
