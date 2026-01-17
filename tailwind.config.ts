@@ -62,17 +62,19 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				paygo: {
-					purple: '#8B5CF6',
-					pink: '#EC4899',
-					orange: '#F97316',
-					lavender: '#B794F6'
+			paygo: {
+					purple: 'hsl(270, 70%, 55%)',
+					'purple-deep': 'hsl(270, 80%, 45%)',
+					'purple-soft': 'hsl(270, 60%, 70%)',
+					lavender: 'hsl(270, 50%, 80%)',
+					'lavender-light': 'hsl(270, 60%, 92%)',
+					'lavender-dark': 'hsl(270, 50%, 65%)'
 				}
 			},
 			backgroundImage: {
-				'paygo-gradient': 'linear-gradient(135deg, #9333EA 0%, #EC4899 50%, #F97316 100%)',
-				'paygo-card': 'linear-gradient(135deg, #9333EA 0%, #EC4899 100%)',
-				'paygo-main': 'linear-gradient(135deg, #9333EA 0%, #EC4899 50%, #F97316 100%)'
+				'paygo-gradient': 'linear-gradient(135deg, hsl(270, 70%, 55%) 0%, hsl(270, 50%, 75%) 100%)',
+				'paygo-card': 'linear-gradient(135deg, hsl(270, 80%, 50%) 0%, hsl(270, 50%, 75%) 100%)',
+				'paygo-lavender': 'linear-gradient(180deg, hsl(270, 60%, 95%) 0%, hsl(270, 50%, 98%) 50%, hsl(270, 40%, 96%) 100%)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
