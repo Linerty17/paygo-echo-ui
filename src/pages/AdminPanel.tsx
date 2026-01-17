@@ -4,7 +4,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Lock, Mail, Eye, EyeOff, Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings, Menu, X, ChevronLeft, Search } from 'lucide-react';
+import { Loader2, Lock, Mail, Eye, EyeOff, Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings, Menu, X, ChevronLeft, Search, Clock, Trash2 } from 'lucide-react';
 import PaymentUploadsAdmin from '@/components/admin/PaymentUploadsAdmin';
 import UsersAdmin from '@/components/admin/UsersAdmin';
 import ReferralsAdmin from '@/components/admin/ReferralsAdmin';
@@ -37,7 +37,45 @@ const AdminPanel = () => {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<SearchResult[]>([]);
+  const [searchFocused, setSearchFocused] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  const RECENT_SEARCHES_KEY = 'admin_recent_searches';
+  const MAX_RECENT_SEARCHES = 5;
+
+  // Load recent searches from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+    if (stored) {
+      try {
+        setRecentSearches(JSON.parse(stored));
+      } catch {
+        setRecentSearches([]);
+      }
+    }
+  }, []);
+
+  // Save recent search
+  const saveRecentSearch = (result: SearchResult) => {
+    const updated = [result, ...recentSearches.filter(r => r.id !== result.id)].slice(0, MAX_RECENT_SEARCHES);
+    setRecentSearches(updated);
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+  };
+
+  // Clear all recent searches
+  const clearRecentSearches = () => {
+    setRecentSearches([]);
+    localStorage.removeItem(RECENT_SEARCHES_KEY);
+  };
+
+  // Remove single recent search
+  const removeRecentSearch = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updated = recentSearches.filter(r => r.id !== id);
+    setRecentSearches(updated);
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -210,8 +248,28 @@ const AdminPanel = () => {
   };
 
   const handleResultClick = (result: SearchResult) => {
+    saveRecentSearch(result);
     setShowSearchResults(false);
     setSearchQuery('');
+    setSearchFocused(false);
+    
+    switch (result.type) {
+      case 'user':
+        setCurrentView('users');
+        break;
+      case 'payment':
+        setCurrentView('payments');
+        break;
+      case 'referral':
+        setCurrentView('referrals');
+        break;
+    }
+  };
+
+  const handleRecentClick = (result: SearchResult) => {
+    setShowSearchResults(false);
+    setSearchQuery('');
+    setSearchFocused(false);
     
     switch (result.type) {
       case 'user':
@@ -231,11 +289,20 @@ const AdminPanel = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setShowSearchResults(false);
+        setSearchFocused(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Show dropdown on focus (for recent searches)
+  const handleSearchFocus = () => {
+    setSearchFocused(true);
+    if (searchQuery.length >= 2) {
+      setShowSearchResults(true);
+    }
+  };
 
   if (loading) {
     return (
@@ -432,7 +499,7 @@ const AdminPanel = () => {
                 placeholder="Search users, payments, referrals..."
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
-                onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
+                onFocus={handleSearchFocus}
                 className="pl-10 h-10 bg-muted/50 border-border/50 rounded-xl text-sm"
               />
               {searchLoading && (
@@ -441,39 +508,91 @@ const AdminPanel = () => {
             </div>
 
             {/* Search Results Dropdown */}
-            {showSearchResults && (
+            {(showSearchResults || (searchFocused && recentSearches.length > 0 && searchQuery.length < 2)) && (
               <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50">
-                {searchResults.length === 0 ? (
-                  <div className="p-4 text-center text-muted-foreground text-sm">
-                    {searchLoading ? 'Searching...' : 'No results found'}
-                  </div>
-                ) : (
-                  <div className="max-h-80 overflow-y-auto">
-                    {searchResults.map((result) => (
+                {/* Recent Searches - show when no query */}
+                {searchQuery.length < 2 && recentSearches.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Clock className="w-3 h-3" />
+                        <span>Recent Searches</span>
+                      </div>
                       <button
-                        key={`${result.type}-${result.id}`}
-                        onClick={() => handleResultClick(result)}
-                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors border-b border-border/50 last:border-b-0"
+                        onClick={clearRecentSearches}
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                       >
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                          result.type === 'user' ? 'bg-blue-500/10 text-blue-500' :
-                          result.type === 'payment' ? 'bg-green-500/10 text-green-500' :
-                          'bg-purple-500/10 text-purple-500'
-                        }`}>
-                          {result.type === 'user' && <Users className="w-4 h-4" />}
-                          {result.type === 'payment' && <Image className="w-4 h-4" />}
-                          {result.type === 'referral' && <Gift className="w-4 h-4" />}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">{result.title}</p>
-                          <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>
-                        </div>
-                        <span className="text-xs text-muted-foreground capitalize px-2 py-1 bg-muted rounded-md">
-                          {result.type}
-                        </span>
+                        Clear all
                       </button>
-                    ))}
+                    </div>
+                    <div className="max-h-60 overflow-y-auto">
+                      {recentSearches.map((result) => (
+                        <button
+                          key={`recent-${result.type}-${result.id}`}
+                          onClick={() => handleRecentClick(result)}
+                          className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors border-b border-border/50 last:border-b-0 group"
+                        >
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            result.type === 'user' ? 'bg-blue-500/10 text-blue-500' :
+                            result.type === 'payment' ? 'bg-green-500/10 text-green-500' :
+                            'bg-purple-500/10 text-purple-500'
+                          }`}>
+                            {result.type === 'user' && <Users className="w-4 h-4" />}
+                            {result.type === 'payment' && <Image className="w-4 h-4" />}
+                            {result.type === 'referral' && <Gift className="w-4 h-4" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground truncate">{result.title}</p>
+                            <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>
+                          </div>
+                          <button
+                            onClick={(e) => removeRecentSearch(result.id, e)}
+                            className="p-1 rounded hover:bg-muted-foreground/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-3 h-3 text-muted-foreground" />
+                          </button>
+                        </button>
+                      ))}
+                    </div>
                   </div>
+                )}
+
+                {/* Search Results - show when query exists */}
+                {searchQuery.length >= 2 && (
+                  <>
+                    {searchResults.length === 0 ? (
+                      <div className="p-4 text-center text-muted-foreground text-sm">
+                        {searchLoading ? 'Searching...' : 'No results found'}
+                      </div>
+                    ) : (
+                      <div className="max-h-80 overflow-y-auto">
+                        {searchResults.map((result) => (
+                          <button
+                            key={`${result.type}-${result.id}`}
+                            onClick={() => handleResultClick(result)}
+                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors border-b border-border/50 last:border-b-0"
+                          >
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                              result.type === 'user' ? 'bg-blue-500/10 text-blue-500' :
+                              result.type === 'payment' ? 'bg-green-500/10 text-green-500' :
+                              'bg-purple-500/10 text-purple-500'
+                            }`}>
+                              {result.type === 'user' && <Users className="w-4 h-4" />}
+                              {result.type === 'payment' && <Image className="w-4 h-4" />}
+                              {result.type === 'referral' && <Gift className="w-4 h-4" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{result.title}</p>
+                              <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>
+                            </div>
+                            <span className="text-xs text-muted-foreground capitalize px-2 py-1 bg-muted rounded-md">
+                              {result.type}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}
