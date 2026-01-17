@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      payment_uploads: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          created_at: string
+          id: string
+          payment_type: string
+          processed_at: string | null
+          screenshot_url: string | null
+          status: string
+          updated_at: string
+          user_email: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount?: number
+          created_at?: string
+          id?: string
+          payment_type?: string
+          processed_at?: string | null
+          screenshot_url?: string | null
+          status?: string
+          updated_at?: string
+          user_email: string
+          user_id: string
+          user_name: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          created_at?: string
+          id?: string
+          payment_type?: string
+          processed_at?: string | null
+          screenshot_url?: string | null
+          status?: string
+          updated_at?: string
+          user_email?: string
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -22,6 +67,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          is_admin: boolean | null
           last_weekly_claim: string | null
           level: number
           name: string
@@ -38,6 +84,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          is_admin?: boolean | null
           last_weekly_claim?: string | null
           level?: number
           name: string
@@ -54,6 +101,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          is_admin?: boolean | null
           last_weekly_claim?: string | null
           level?: number
           name?: string

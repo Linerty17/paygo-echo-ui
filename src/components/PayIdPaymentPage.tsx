@@ -19,7 +19,7 @@ const PayIdPaymentPage: React.FC<PayIdPaymentPageProps> = ({
 }) => {
   const [email, setEmail] = useState(userEmail);
   const [receiptUploaded, setReceiptUploaded] = useState(false);
-  const amount = '₦6,500';
+  const amount = '₦7,700';
 
   const handleCopyAccount = () => {
     navigator.clipboard.writeText(ACCOUNT_DETAILS.accountNumber);
