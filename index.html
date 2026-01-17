@@ -52,14 +52,24 @@
 
   <body>
     <script>
-      // Prevent FOUC - apply saved theme before React loads
+      // Prevent FOUC and disable transitions on initial load
       (function() {
         try {
+          // Add no-transitions class to prevent transition flash on load
+          document.documentElement.classList.add('no-transitions');
+          
           const theme = localStorage.getItem('theme');
           const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
           const isDark = theme === 'dark' || (theme === 'system' && systemDark) || (!theme && systemDark);
           document.documentElement.classList.toggle('dark', isDark);
           document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+          
+          // Re-enable transitions after a brief delay
+          window.addEventListener('load', function() {
+            setTimeout(function() {
+              document.documentElement.classList.remove('no-transitions');
+            }, 100);
+          });
         } catch (e) {}
       })();
     </script>
