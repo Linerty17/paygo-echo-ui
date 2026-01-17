@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Bell, Eye, EyeOff, ArrowUpRight, Sparkles, User, CreditCard, Play, Phone, Database, Headphones, Globe, Gift, UserCircle, LogOut, TrendingUp, Zap, ChevronRight, Check } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Bell, Eye, EyeOff, ArrowUpRight, Sparkles, User, CreditCard, Play, Phone, Database, Headphones, Globe, Gift, UserCircle, LogOut, TrendingUp, Zap, ChevronRight, Check, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PromotionsCarousel from './PromotionsCarousel';
 import OnboardingModal from './OnboardingModal';
@@ -22,6 +22,7 @@ interface DashboardProps {
   onClaimRewards?: (amount: number) => Promise<void>;
   canClaimWeeklyReward?: boolean;
   nextClaimTime?: Date | null;
+  onProfileImageChange?: (image: string) => void;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({
@@ -39,13 +40,15 @@ const Dashboard: React.FC<DashboardProps> = ({
   userLevel = 1,
   onClaimRewards,
   canClaimWeeklyReward = true,
-  nextClaimTime = null
+  nextClaimTime = null,
+  onProfileImageChange
 }) => {
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [showVideo, setShowVideo] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [claiming, setClaiming] = useState(false);
   const [timeLeft, setTimeLeft] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const weeklyRewardAmount = 180000;
   const weeklyRewards = canClaimWeeklyReward ? `₦${weeklyRewardAmount.toLocaleString()}.00` : "₦0.00";
@@ -111,6 +114,25 @@ const Dashboard: React.FC<DashboardProps> = ({
     } finally {
       setClaiming(false);
     }
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imageUrl = e.target?.result as string;
+        if (onProfileImageChange) {
+          onProfileImageChange(imageUrl);
+          toast.success('Profile image updated!');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleProfileImageClick = () => {
+    fileInputRef.current?.click();
   };
 
   const services = [
@@ -182,14 +204,26 @@ const Dashboard: React.FC<DashboardProps> = ({
         <div className={`transition-all duration-700 delay-200 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
           <div className="flex items-center gap-3">
             <div className="relative">
-              {userProfileImage ? (
-                <img src={userProfileImage} alt="Profile" className="w-11 h-11 rounded-xl object-cover border border-white/20" />
-              ) : (
-                <div className="w-11 h-11 glass-strong rounded-xl flex items-center justify-center border border-white/20">
-                  <User className="w-5 h-5 text-primary" />
+              <input 
+                ref={fileInputRef}
+                type="file" 
+                accept="image/*" 
+                onChange={handleImageUpload}
+                className="hidden" 
+              />
+              <button onClick={handleProfileImageClick} className="relative group">
+                {userProfileImage ? (
+                  <img src={userProfileImage} alt="Profile" className="w-11 h-11 rounded-xl object-cover border border-white/20 group-hover:opacity-80 transition-opacity" />
+                ) : (
+                  <div className="w-11 h-11 glass-strong rounded-xl flex items-center justify-center border border-white/20 group-hover:border-primary/40 transition-all">
+                    <User className="w-5 h-5 text-primary" />
+                  </div>
+                )}
+                <div className="absolute inset-0 rounded-xl bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <Camera className="w-4 h-4 text-white" />
                 </div>
-              )}
-              <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 rounded-lg flex items-center justify-center">
+              </button>
+              <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 rounded-lg flex items-center justify-center pointer-events-none">
                 <Zap className="w-2.5 h-2.5 text-white" />
               </div>
             </div>
