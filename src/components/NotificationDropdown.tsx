@@ -65,12 +65,12 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative z-[100]" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className="relative glass w-9 h-9 rounded-xl flex items-center justify-center border border-white/10 hover:border-primary/40 transition-all"
       >
-        <Bell className="w-4 h-4 text-foreground/70" />
+        <span className="text-base">🔔</span>
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-red-500 rounded-full flex items-center justify-center">
             <span className="text-[10px] font-bold text-white">{unreadCount > 9 ? '9+' : unreadCount}</span>
@@ -79,7 +79,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-12 w-80 max-h-96 overflow-hidden bg-background/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-50 animate-scale-in">
+        <div className="absolute right-0 top-12 w-80 max-h-96 overflow-hidden bg-card border border-white/10 rounded-2xl shadow-2xl z-[200] animate-scale-in">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
             <h3 className="font-semibold text-foreground">Notifications</h3>
