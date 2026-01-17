@@ -1,24 +1,192 @@
-import React from 'react';
-import { ArrowLeft, Globe, MapPin, Sparkles, Shield, Zap, CreditCard } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Globe, MapPin, Sparkles, Shield, Zap, CreditCard, Clock, AlertCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
 
 interface PayIdPlanSelectProps {
   onBack: () => void;
   onSelectOnline: () => void;
   onSelectOffline: () => void;
   onTapToUpload: () => void;
+  userId?: string;
+}
+
+interface PendingPayment {
+  id: string;
+  payment_type: string;
+  amount: number;
+  status: string;
+  created_at: string;
 }
 
 const PayIdPlanSelect: React.FC<PayIdPlanSelectProps> = ({ 
   onBack, 
   onSelectOnline, 
   onSelectOffline,
-  onTapToUpload 
+  onTapToUpload,
+  userId
 }) => {
+  const [pendingPayment, setPendingPayment] = useState<PendingPayment | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkPendingPayment = async () => {
+      if (!userId) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('payment_uploads')
+          .select('id, payment_type, amount, status, created_at')
+          .eq('user_id', userId)
+          .eq('status', 'pending')
+          .in('payment_type', ['payid_online', 'payid_offline'])
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (data && !error) {
+          setPendingPayment(data);
+        }
+      } catch (error) {
+        // No pending payment found - this is fine
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkPendingPayment();
+  }, [userId]);
+
   const handleOnlineClick = () => {
     // Open payment link in new tab immediately
     window.open('https://checkout.nomba.com/payment-link/5947052450', '_blank');
     onSelectOnline();
   };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-NG', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  // Show pending payment screen if exists
+  if (!loading && pendingPayment) {
+    return (
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-32 -right-32 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute top-1/2 -left-32 w-48 h-48 bg-primary/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+
+        {/* Header */}
+        <div className="relative px-4 pt-4 pb-3">
+          <div className="flex items-center justify-between">
+            <button 
+              onClick={onBack}
+              className="glass w-10 h-10 rounded-2xl flex items-center justify-center border border-border/50 hover:border-primary/30 hover:scale-105 transition-all duration-300"
+            >
+              <ArrowLeft className="w-5 h-5 text-foreground" />
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-sm text-muted-foreground">Pending Payment</span>
+            </div>
+            <div className="w-10" />
+          </div>
+        </div>
+
+        <div className="relative px-4 pb-8 space-y-6">
+          {/* Title Section */}
+          <div className="text-center space-y-2">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Clock className="w-6 h-6 text-amber-500 animate-pulse" />
+              <h1 className="text-2xl font-bold text-foreground">Payment Pending</h1>
+            </div>
+            <p className="text-muted-foreground">You already have a pending payment</p>
+          </div>
+
+          {/* Pending Payment Card */}
+          <div className="relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/40 via-orange-500/40 to-amber-500/40 rounded-[28px] blur-xl opacity-50 animate-pulse" />
+            
+            <div className="relative glass-card rounded-3xl overflow-hidden">
+              <div className="relative bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 p-6">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.2),transparent_50%)]" />
+                
+                <div className="relative text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center">
+                    <Clock className="w-8 h-8 text-white" />
+                  </div>
+                  <h2 className="text-xl font-bold text-white">Awaiting Verification</h2>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Payment Type</span>
+                  <span className="text-foreground font-medium">
+                    {pendingPayment.payment_type === 'payid_online' ? 'Online Purchase' : 'Offline Purchase'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Amount</span>
+                  <span className="text-foreground font-medium">₦{pendingPayment.amount.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Submitted</span>
+                  <span className="text-foreground font-medium">{formatDate(pendingPayment.created_at)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Status</span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-amber-500 text-sm font-medium">
+                    <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                    Pending
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Info Alert */}
+          <div className="glass-card rounded-2xl p-4 border border-amber-500/30 bg-amber-500/5">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-5 h-5 text-amber-500" />
+              </div>
+              <div>
+                <p className="text-foreground font-medium text-sm">Payment Under Review</p>
+                <p className="text-muted-foreground text-xs mt-1">
+                  Your payment is being reviewed by our team. You cannot submit a new payment until this one is processed.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Back Button */}
+          <Button 
+            onClick={onBack}
+            className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground text-lg font-semibold shadow-lg border-0"
+          >
+            Back to Dashboard
+          </Button>
+
+          {/* Footer */}
+          <div className="text-center pt-2">
+            <p className="text-muted-foreground text-sm">You'll be notified when your payment is processed</p>
+            <p className="text-foreground font-semibold text-sm mt-2">PayGo Financial Services</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
