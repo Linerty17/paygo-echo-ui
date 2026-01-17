@@ -46,60 +46,60 @@ type FormErrors = {
 };
 
 const countries = [
-  { code: 'DZ', name: 'Algeria', flag: '🇩🇿' },
-  { code: 'AO', name: 'Angola', flag: '🇦🇴' },
-  { code: 'BJ', name: 'Benin', flag: '🇧🇯' },
-  { code: 'BW', name: 'Botswana', flag: '🇧🇼' },
-  { code: 'BF', name: 'Burkina Faso', flag: '🇧🇫' },
-  { code: 'BI', name: 'Burundi', flag: '🇧🇮' },
-  { code: 'CV', name: 'Cabo Verde', flag: '🇨🇻' },
-  { code: 'CM', name: 'Cameroon', flag: '🇨🇲' },
-  { code: 'CF', name: 'Central African Republic', flag: '🇨🇫' },
-  { code: 'TD', name: 'Chad', flag: '🇹🇩' },
-  { code: 'KM', name: 'Comoros', flag: '🇰🇲' },
-  { code: 'CG', name: 'Congo', flag: '🇨🇬' },
-  { code: 'CD', name: 'Congo (DRC)', flag: '🇨🇩' },
-  { code: 'CI', name: "Côte d'Ivoire", flag: '🇨🇮' },
-  { code: 'DJ', name: 'Djibouti', flag: '🇩🇯' },
-  { code: 'EG', name: 'Egypt', flag: '🇪🇬' },
-  { code: 'GQ', name: 'Equatorial Guinea', flag: '🇬🇶' },
-  { code: 'ER', name: 'Eritrea', flag: '🇪🇷' },
-  { code: 'SZ', name: 'Eswatini', flag: '🇸🇿' },
-  { code: 'ET', name: 'Ethiopia', flag: '🇪🇹' },
-  { code: 'GA', name: 'Gabon', flag: '🇬🇦' },
-  { code: 'GM', name: 'Gambia', flag: '🇬🇲' },
-  { code: 'GH', name: 'Ghana', flag: '🇬🇭' },
-  { code: 'GN', name: 'Guinea', flag: '🇬🇳' },
-  { code: 'GW', name: 'Guinea-Bissau', flag: '🇬🇼' },
-  { code: 'KE', name: 'Kenya', flag: '🇰🇪' },
-  { code: 'LS', name: 'Lesotho', flag: '🇱🇸' },
-  { code: 'LR', name: 'Liberia', flag: '🇱🇷' },
-  { code: 'LY', name: 'Libya', flag: '🇱🇾' },
-  { code: 'MG', name: 'Madagascar', flag: '🇲🇬' },
-  { code: 'MW', name: 'Malawi', flag: '🇲🇼' },
-  { code: 'ML', name: 'Mali', flag: '🇲🇱' },
-  { code: 'MR', name: 'Mauritania', flag: '🇲🇷' },
-  { code: 'MU', name: 'Mauritius', flag: '🇲🇺' },
-  { code: 'MA', name: 'Morocco', flag: '🇲🇦' },
-  { code: 'MZ', name: 'Mozambique', flag: '🇲🇿' },
-  { code: 'NA', name: 'Namibia', flag: '🇳🇦' },
-  { code: 'NE', name: 'Niger', flag: '🇳🇪' },
-  { code: 'NG', name: 'Nigeria', flag: '🇳🇬' },
-  { code: 'RW', name: 'Rwanda', flag: '🇷🇼' },
-  { code: 'ST', name: 'São Tomé and Príncipe', flag: '🇸🇹' },
-  { code: 'SN', name: 'Senegal', flag: '🇸🇳' },
-  { code: 'SC', name: 'Seychelles', flag: '🇸🇨' },
-  { code: 'SL', name: 'Sierra Leone', flag: '🇸🇱' },
-  { code: 'SO', name: 'Somalia', flag: '🇸🇴' },
-  { code: 'ZA', name: 'South Africa', flag: '🇿🇦' },
-  { code: 'SS', name: 'South Sudan', flag: '🇸🇸' },
-  { code: 'SD', name: 'Sudan', flag: '🇸🇩' },
-  { code: 'TZ', name: 'Tanzania', flag: '🇹🇿' },
-  { code: 'TG', name: 'Togo', flag: '🇹🇬' },
-  { code: 'TN', name: 'Tunisia', flag: '🇹🇳' },
-  { code: 'UG', name: 'Uganda', flag: '🇺🇬' },
-  { code: 'ZM', name: 'Zambia', flag: '🇿🇲' },
-  { code: 'ZW', name: 'Zimbabwe', flag: '🇿🇼' }
+  { code: 'DZ', name: 'Algeria', flag: '🇩🇿', dialCode: '+213' },
+  { code: 'AO', name: 'Angola', flag: '🇦🇴', dialCode: '+244' },
+  { code: 'BJ', name: 'Benin', flag: '🇧🇯', dialCode: '+229' },
+  { code: 'BW', name: 'Botswana', flag: '🇧🇼', dialCode: '+267' },
+  { code: 'BF', name: 'Burkina Faso', flag: '🇧🇫', dialCode: '+226' },
+  { code: 'BI', name: 'Burundi', flag: '🇧🇮', dialCode: '+257' },
+  { code: 'CV', name: 'Cabo Verde', flag: '🇨🇻', dialCode: '+238' },
+  { code: 'CM', name: 'Cameroon', flag: '🇨🇲', dialCode: '+237' },
+  { code: 'CF', name: 'Central African Republic', flag: '🇨🇫', dialCode: '+236' },
+  { code: 'TD', name: 'Chad', flag: '🇹🇩', dialCode: '+235' },
+  { code: 'KM', name: 'Comoros', flag: '🇰🇲', dialCode: '+269' },
+  { code: 'CG', name: 'Congo', flag: '🇨🇬', dialCode: '+242' },
+  { code: 'CD', name: 'Congo (DRC)', flag: '🇨🇩', dialCode: '+243' },
+  { code: 'CI', name: "Côte d'Ivoire", flag: '🇨🇮', dialCode: '+225' },
+  { code: 'DJ', name: 'Djibouti', flag: '🇩🇯', dialCode: '+253' },
+  { code: 'EG', name: 'Egypt', flag: '🇪🇬', dialCode: '+20' },
+  { code: 'GQ', name: 'Equatorial Guinea', flag: '🇬🇶', dialCode: '+240' },
+  { code: 'ER', name: 'Eritrea', flag: '🇪🇷', dialCode: '+291' },
+  { code: 'SZ', name: 'Eswatini', flag: '🇸🇿', dialCode: '+268' },
+  { code: 'ET', name: 'Ethiopia', flag: '🇪🇹', dialCode: '+251' },
+  { code: 'GA', name: 'Gabon', flag: '🇬🇦', dialCode: '+241' },
+  { code: 'GM', name: 'Gambia', flag: '🇬🇲', dialCode: '+220' },
+  { code: 'GH', name: 'Ghana', flag: '🇬🇭', dialCode: '+233' },
+  { code: 'GN', name: 'Guinea', flag: '🇬🇳', dialCode: '+224' },
+  { code: 'GW', name: 'Guinea-Bissau', flag: '🇬🇼', dialCode: '+245' },
+  { code: 'KE', name: 'Kenya', flag: '🇰🇪', dialCode: '+254' },
+  { code: 'LS', name: 'Lesotho', flag: '🇱🇸', dialCode: '+266' },
+  { code: 'LR', name: 'Liberia', flag: '🇱🇷', dialCode: '+231' },
+  { code: 'LY', name: 'Libya', flag: '🇱🇾', dialCode: '+218' },
+  { code: 'MG', name: 'Madagascar', flag: '🇲🇬', dialCode: '+261' },
+  { code: 'MW', name: 'Malawi', flag: '🇲🇼', dialCode: '+265' },
+  { code: 'ML', name: 'Mali', flag: '🇲🇱', dialCode: '+223' },
+  { code: 'MR', name: 'Mauritania', flag: '🇲🇷', dialCode: '+222' },
+  { code: 'MU', name: 'Mauritius', flag: '🇲🇺', dialCode: '+230' },
+  { code: 'MA', name: 'Morocco', flag: '🇲🇦', dialCode: '+212' },
+  { code: 'MZ', name: 'Mozambique', flag: '🇲🇿', dialCode: '+258' },
+  { code: 'NA', name: 'Namibia', flag: '🇳🇦', dialCode: '+264' },
+  { code: 'NE', name: 'Niger', flag: '🇳🇪', dialCode: '+227' },
+  { code: 'NG', name: 'Nigeria', flag: '🇳🇬', dialCode: '+234' },
+  { code: 'RW', name: 'Rwanda', flag: '🇷🇼', dialCode: '+250' },
+  { code: 'ST', name: 'São Tomé and Príncipe', flag: '🇸🇹', dialCode: '+239' },
+  { code: 'SN', name: 'Senegal', flag: '🇸🇳', dialCode: '+221' },
+  { code: 'SC', name: 'Seychelles', flag: '🇸🇨', dialCode: '+248' },
+  { code: 'SL', name: 'Sierra Leone', flag: '🇸🇱', dialCode: '+232' },
+  { code: 'SO', name: 'Somalia', flag: '🇸🇴', dialCode: '+252' },
+  { code: 'ZA', name: 'South Africa', flag: '🇿🇦', dialCode: '+27' },
+  { code: 'SS', name: 'South Sudan', flag: '🇸🇸', dialCode: '+211' },
+  { code: 'SD', name: 'Sudan', flag: '🇸🇩', dialCode: '+249' },
+  { code: 'TZ', name: 'Tanzania', flag: '🇹🇿', dialCode: '+255' },
+  { code: 'TG', name: 'Togo', flag: '🇹🇬', dialCode: '+228' },
+  { code: 'TN', name: 'Tunisia', flag: '🇹🇳', dialCode: '+216' },
+  { code: 'UG', name: 'Uganda', flag: '🇺🇬', dialCode: '+256' },
+  { code: 'ZM', name: 'Zambia', flag: '🇿🇲', dialCode: '+260' },
+  { code: 'ZW', name: 'Zimbabwe', flag: '🇿🇼', dialCode: '+263' }
 ];
 
 const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitchToLogin, isLoading }) => {
@@ -218,44 +218,55 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onRegister, onSwitc
           </div>
 
           <div>
-            <Input
-              type="tel"
-              placeholder="Enter Phone Number"
-              value={phone}
-              onChange={(e) => {
-                setPhone(e.target.value);
-                clearError('phone');
-              }}
-              className={`w-full h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground ${errors.phone ? 'border-red-500' : ''}`}
-            />
+            <div className="flex gap-2">
+              <Select 
+                value={country} 
+                onValueChange={(value) => {
+                  setCountry(value);
+                  clearError('country');
+                }}
+              >
+                <SelectTrigger className={`w-28 h-14 text-lg glass-input rounded-xl ${errors.country ? 'border-red-500' : ''}`}>
+                  <SelectValue placeholder="🌍">
+                    {country && (
+                      <span className="flex items-center gap-1">
+                        <span>{countries.find(c => c.code === country)?.flag}</span>
+                        <span className="text-sm">{countries.find(c => c.code === country)?.dialCode}</span>
+                      </span>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="max-h-60 glass-card border-white/20">
+                  {countries.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg">{c.flag}</span>
+                        <span>{c.name}</span>
+                        <span className="text-muted-foreground text-sm">{c.dialCode}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input
+                type="tel"
+                placeholder="Phone Number"
+                value={phone}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  clearError('phone');
+                }}
+                className={`flex-1 h-14 text-lg glass-input rounded-xl placeholder:text-muted-foreground ${errors.phone ? 'border-red-500' : ''}`}
+              />
+            </div>
+            {errors.country && (
+              <p className="text-red-400 text-sm mt-1">{errors.country}</p>
+            )}
             {errors.phone && (
               <p className="text-red-400 text-sm mt-1">{errors.phone}</p>
             )}
           </div>
 
-          <div>
-            <Select value={country} onValueChange={(value) => {
-              setCountry(value);
-              clearError('country');
-            }}>
-              <SelectTrigger className={`w-full h-14 text-lg glass-input rounded-xl ${errors.country ? 'border-red-500' : ''}`}>
-                <SelectValue placeholder="Select Country" />
-              </SelectTrigger>
-              <SelectContent className="max-h-60 glass-card border-white/20">
-                {countries.map((country) => (
-                  <SelectItem key={country.code} value={country.code}>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg">{country.flag}</span>
-                      <span>{country.name}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.country && (
-              <p className="text-red-400 text-sm mt-1">{errors.country}</p>
-            )}
-          </div>
 
           <div>
             <Input
