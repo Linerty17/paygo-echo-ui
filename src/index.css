@@ -5,55 +5,56 @@
 
 @layer base {
   :root {
-    /* Shiny Black & Lavender Theme */
-    --background: 270 15% 8%;
-    --foreground: 270 20% 95%;
+    /* Light Theme - Clean & Modern */
+    --background: 0 0% 100%;
+    --foreground: 270 20% 15%;
 
-    --card: 270 20% 12%;
-    --card-foreground: 270 20% 95%;
+    --card: 0 0% 98%;
+    --card-foreground: 270 20% 15%;
 
-    --popover: 270 20% 10%;
-    --popover-foreground: 270 20% 95%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 270 20% 15%;
 
-    --primary: 270 60% 70%;
-    --primary-foreground: 270 15% 8%;
+    --primary: 270 60% 55%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 270 30% 18%;
-    --secondary-foreground: 270 20% 95%;
+    --secondary: 270 20% 94%;
+    --secondary-foreground: 270 20% 25%;
 
-    --muted: 270 20% 15%;
-    --muted-foreground: 270 15% 65%;
+    --muted: 270 10% 92%;
+    --muted-foreground: 270 10% 45%;
 
-    --accent: 280 70% 65%;
-    --accent-foreground: 270 15% 8%;
+    --accent: 280 70% 60%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 270 20% 20%;
-    --input: 270 20% 15%;
-    --ring: 270 60% 70%;
+    --border: 270 15% 88%;
+    --input: 270 15% 92%;
+    --ring: 270 60% 55%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 270 15% 6%;
-    --sidebar-foreground: 270 20% 95%;
-    --sidebar-primary: 270 60% 70%;
-    --sidebar-primary-foreground: 270 15% 8%;
-    --sidebar-accent: 270 30% 18%;
-    --sidebar-accent-foreground: 270 20% 95%;
-    --sidebar-border: 270 20% 20%;
-    --sidebar-ring: 270 60% 70%;
+    --sidebar-background: 270 10% 97%;
+    --sidebar-foreground: 270 20% 15%;
+    --sidebar-primary: 270 60% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 270 20% 92%;
+    --sidebar-accent-foreground: 270 20% 25%;
+    --sidebar-border: 270 15% 88%;
+    --sidebar-ring: 270 60% 55%;
 
     /* Custom lavender colors */
-    --lavender: 270 60% 70%;
-    --lavender-light: 270 70% 85%;
-    --lavender-dark: 270 50% 50%;
+    --lavender: 270 60% 55%;
+    --lavender-light: 270 70% 75%;
+    --lavender-dark: 270 50% 45%;
     --shiny-black: 270 15% 8%;
     --shiny-black-light: 270 20% 15%;
   }
 
   .dark {
+    /* Shiny Black & Lavender Dark Theme */
     --background: 270 15% 5%;
     --foreground: 270 20% 95%;
 
@@ -75,12 +76,13 @@
     --accent: 280 70% 65%;
     --accent-foreground: 270 15% 8%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
 
     --border: 270 20% 18%;
     --input: 270 20% 12%;
     --ring: 270 60% 70%;
+
     --sidebar-background: 270 15% 4%;
     --sidebar-foreground: 270 20% 95%;
     --sidebar-primary: 270 60% 70%;
@@ -89,6 +91,13 @@
     --sidebar-accent-foreground: 270 20% 95%;
     --sidebar-border: 270 20% 18%;
     --sidebar-ring: 270 60% 70%;
+
+    /* Custom lavender colors */
+    --lavender: 270 60% 70%;
+    --lavender-light: 270 70% 85%;
+    --lavender-dark: 270 50% 50%;
+    --shiny-black: 270 15% 8%;
+    --shiny-black-light: 270 20% 15%;
   }
 }
 
@@ -149,6 +158,11 @@
   .glass {
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
+    background: hsl(var(--muted) / 0.3);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  .dark .glass {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
@@ -156,6 +170,12 @@
   .glass-card {
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
+    background: hsl(var(--card) / 0.8);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: 0 25px 50px -12px hsl(var(--foreground) / 0.1);
+  }
+
+  .dark .glass-card {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -164,6 +184,11 @@
   .glass-strong {
     backdrop-filter: blur(64px);
     -webkit-backdrop-filter: blur(64px);
+    background: hsl(var(--muted) / 0.5);
+    border: 1px solid hsl(var(--border) / 0.6);
+  }
+
+  .dark .glass-strong {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
@@ -171,13 +196,18 @@
   .glass-header {
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    background: hsla(270, 15%, 8%, 0.8);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: hsl(var(--background) / 0.8);
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
   }
 
   .glass-input {
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
+    background: hsl(var(--input) / 0.5);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  .dark .glass-input {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.15);
   }
@@ -185,12 +215,21 @@
   .glass-button {
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: hsl(var(--muted) / 0.5);
+    border: 1px solid hsl(var(--border) / 0.5);
     transition: all 0.3s ease;
   }
 
+  .dark .glass-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
   .glass-button:hover {
+    background: hsl(var(--muted) / 0.7);
+  }
+
+  .dark .glass-button:hover {
     background: rgba(255, 255, 255, 0.15);
   }
 
