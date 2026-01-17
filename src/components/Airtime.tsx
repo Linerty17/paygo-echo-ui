@@ -45,24 +45,24 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack, onPurchaseSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paygo-lavender">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-4">
+      <div className="glass-header text-white p-4">
         <div className="flex items-center space-x-4">
           <button onClick={onBack}>
-            <ArrowLeft className="w-6 h-6 text-gray-900" />
+            <ArrowLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-semibold text-gray-900">Airtime</h1>
+          <h1 className="text-xl font-semibold">Airtime</h1>
         </div>
       </div>
 
       {/* Airtime Bonuses Banner */}
-      <div className="bg-purple-600 text-white p-4 flex items-center justify-between">
+      <div className="gradient-purple text-white p-4 flex items-center justify-between">
         <div>
           <span className="text-lg">Enjoy </span>
-          <span className="text-yellow-300 font-bold">Airtime Bonuses!</span>
+          <span className="text-purple-200 font-bold">Airtime Bonuses!</span>
         </div>
-        <Button className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold px-6 py-2 rounded-full">
+        <Button className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white font-bold px-6 py-2 rounded-full">
           GO
         </Button>
       </div>
@@ -74,8 +74,8 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack, onPurchaseSuccess }) => {
             <button
               key={network}
               onClick={() => setSelectedNetwork(network)}
-              className={`h-16 bg-white rounded-xl shadow-sm border-2 flex items-center justify-center text-lg font-medium transition-colors ${
-                selectedNetwork === network ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-900'
+              className={`h-16 glass-card rounded-xl border-2 flex items-center justify-center text-lg font-medium transition-all ${
+                selectedNetwork === network ? 'border-primary text-primary' : 'border-transparent text-foreground'
               }`}
             >
               {network}
@@ -90,24 +90,24 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack, onPurchaseSuccess }) => {
             placeholder="Enter mobile number"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
-            className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm placeholder:text-gray-400"
+            className="w-full h-14 text-lg border-0 glass-input rounded-xl placeholder:text-muted-foreground"
           />
         </div>
 
         {/* Amount Selection */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Amount</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">Select Amount</h3>
           <div className="grid grid-cols-3 gap-3">
             {amounts.map((item, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedAmount(item.amount)}
-                className={`bg-white rounded-xl p-3 shadow-sm border-2 text-center transition-colors ${
-                  selectedAmount === item.amount ? 'border-purple-600' : 'border-transparent'
+                className={`glass-card rounded-xl p-3 border-2 text-center transition-all ${
+                  selectedAmount === item.amount ? 'border-primary' : 'border-transparent'
                 }`}
               >
-                <div className="font-bold text-lg text-gray-900">{item.amount}</div>
-                <div className="text-xs text-gray-600">{item.cashback}</div>
+                <div className="font-bold text-lg text-foreground">{item.amount}</div>
+                <div className="text-xs text-muted-foreground">{item.cashback}</div>
               </button>
             ))}
           </div>
@@ -120,14 +120,14 @@ const Airtime: React.FC<AirtimeProps> = ({ onBack, onPurchaseSuccess }) => {
             placeholder="Enter PAY ID Code"
             value={payIdCode}
             onChange={(e) => setPayIdCode(e.target.value)}
-            className="w-full h-14 text-lg border-0 bg-white rounded-xl shadow-sm placeholder:text-gray-400"
+            className="w-full h-14 text-lg border-0 glass-input rounded-xl placeholder:text-muted-foreground"
           />
-          <p className="text-gray-500 text-sm mt-2">Enter your PAY ID code to purchase airtime</p>
+          <p className="text-muted-foreground text-sm mt-2">Enter your PAY ID code to purchase airtime</p>
         </div>
 
         <Button 
           onClick={handleBuyAirtime}
-          className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white text-lg font-medium rounded-xl mt-8"
+          className="w-full h-14 gradient-purple hover:opacity-90 text-white text-lg font-medium rounded-xl mt-8"
         >
           Buy Airtime
         </Button>
