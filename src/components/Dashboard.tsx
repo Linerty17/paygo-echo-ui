@@ -164,7 +164,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   const services = [
     { icon: CreditCard, label: "Buy PAY ID", page: "buyPayId", gradient: "from-violet-500 via-purple-500 to-fuchsia-500", glow: "shadow-violet-500/40" },
-    { icon: Play, label: "Watch", action: handleWatchVideo, gradient: "from-rose-500 via-pink-500 to-red-500", glow: "shadow-rose-500/40" },
+    { icon: Play, label: "Watch", action: handleWatchVideo, gradient: "from-rose-500 via-pink-500 to-red-500", glow: "shadow-rose-500/40", comingSoon: true },
     { icon: Phone, label: "Airtime", page: "airtime", gradient: "from-emerald-500 via-green-500 to-teal-500", glow: "shadow-emerald-500/40" },
     { icon: Database, label: "Data", page: "data", gradient: "from-cyan-500 via-blue-500 to-indigo-500", glow: "shadow-cyan-500/40" },
     { icon: Headphones, label: "Support", page: "support", gradient: "from-amber-500 via-orange-500 to-yellow-500", glow: "shadow-amber-500/40" },
@@ -365,14 +365,27 @@ const Dashboard: React.FC<DashboardProps> = ({
           <div className="grid grid-cols-4 gap-2">
             {services.map((service, index) => {
               const IconComponent = service.icon;
+              const isComingSoon = 'comingSoon' in service && service.comingSoon;
               return (
                 <button
                   key={index}
-                  onClick={() => handleServiceClick(service)}
-                  className="group flex flex-col items-center gap-1.5 p-2.5 glass rounded-xl border border-white/5 hover:border-white/20 transition-all active:scale-95"
+                  onClick={() => !isComingSoon && handleServiceClick(service)}
+                  className={`group flex flex-col items-center gap-1.5 p-2.5 glass rounded-xl border border-white/5 transition-all ${
+                    isComingSoon 
+                      ? 'opacity-50 cursor-not-allowed' 
+                      : 'hover:border-white/20 active:scale-95'
+                  }`}
+                  disabled={isComingSoon}
                 >
-                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-md ${service.glow}`}>
-                    <IconComponent className="w-4 h-4 text-white" />
+                  <div className="relative">
+                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-md ${service.glow}`}>
+                      <IconComponent className="w-4 h-4 text-white" />
+                    </div>
+                    {isComingSoon && (
+                      <div className="absolute -top-1 -right-1 px-1 py-0.5 rounded bg-amber-500 text-[6px] font-bold text-white">
+                        SOON
+                      </div>
+                    )}
                   </div>
                   <span className="text-[9px] font-semibold text-foreground/80 text-center leading-tight">{service.label}</span>
                 </button>
