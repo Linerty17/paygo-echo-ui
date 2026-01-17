@@ -45,7 +45,7 @@ const Index = () => {
   const { user, profile, loading, signUp, signIn, signOut, updateProfile, fetchReferrals, claimWeeklyReward, isAuthenticated } = useAuth();
   
   // Real-time notifications and account status
-  const { latestNotification, clearLatest } = useUserNotifications(user?.id);
+  const { notifications, latestNotification, unreadCount, markAsRead, markAllAsRead, clearLatest } = useUserNotifications(user?.id);
   const { status: accountStatus } = useAccountStatus(user?.id);
   
   // Full-screen notification states
@@ -745,8 +745,7 @@ const Index = () => {
     );
   }
 
-  // Get notifications for dashboard
-  const { notifications, unreadCount, markAsRead, markAllAsRead } = useUserNotifications(user?.id);
+  // Dashboard uses notifications from the hook called at the top of the component
 
   return (
     <>
