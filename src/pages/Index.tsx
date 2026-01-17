@@ -293,7 +293,31 @@ const Index = () => {
 
   const handleTransferComplete = async (amount: string) => {
     const transferValue = parseFloat(amount.replace(/[₦,]/g, ''));
-    await updateProfile({ balance: currentBalance - transferValue });
+    const newBalance = currentBalance - transferValue;
+    
+    if (newBalance < 0) {
+      toast({
+        title: "Insufficient Balance",
+        description: "You don't have enough funds for this transfer.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    const { error } = await updateProfile({ balance: newBalance });
+    
+    if (error) {
+      toast({
+        title: "Transfer Failed",
+        description: "Could not process your transfer. Please try again.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Refresh profile to ensure UI shows updated balance
+    await refreshProfile();
+    
     setTransferAmount(amount);
     navigateToPage('transferSuccess');
   };
@@ -326,14 +350,58 @@ const Index = () => {
 
   const handleDataPurchaseSuccess = async () => {
     const purchaseValue = parseFloat(purchaseAmount.replace(/[₦,]/g, ''));
-    await updateProfile({ balance: currentBalance - purchaseValue });
+    const newBalance = currentBalance - purchaseValue;
+    
+    if (newBalance < 0) {
+      toast({
+        title: "Insufficient Balance",
+        description: "You don't have enough funds for this purchase.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    const { error } = await updateProfile({ balance: newBalance });
+    
+    if (error) {
+      toast({
+        title: "Purchase Failed",
+        description: "Could not process your data purchase. Please try again.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    await refreshProfile();
     setPurchaseType('data');
     navigateToPage('purchaseSuccess');
   };
 
   const handleAirtimePurchaseSuccess = async (amount: string, phone: string) => {
     const purchaseValue = parseFloat(amount.replace(/[₦,]/g, ''));
-    await updateProfile({ balance: currentBalance - purchaseValue });
+    const newBalance = currentBalance - purchaseValue;
+    
+    if (newBalance < 0) {
+      toast({
+        title: "Insufficient Balance",
+        description: "You don't have enough funds for this purchase.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    const { error } = await updateProfile({ balance: newBalance });
+    
+    if (error) {
+      toast({
+        title: "Purchase Failed",
+        description: "Could not process your airtime purchase. Please try again.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    await refreshProfile();
     setPurchaseType('airtime');
     setPurchaseAmount(amount);
     setPurchasePhone(phone);
