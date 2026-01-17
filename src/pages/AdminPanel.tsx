@@ -407,34 +407,34 @@ const AdminPanel = () => {
         
         <SidebarInset className="flex-1">
           {/* Top Header */}
-          <header className="h-16 flex items-center justify-between px-4 border-b border-border/50 bg-card/50 backdrop-blur sticky top-0 z-30">
-            <div className="flex items-center gap-3">
-              <SidebarTrigger className="w-10 h-10 rounded-xl hover:bg-muted" />
-              <h1 className="text-lg font-semibold text-foreground hidden sm:block">
+          <header className="h-12 sm:h-14 flex items-center justify-between px-2 sm:px-4 border-b border-border/50 bg-card/50 backdrop-blur sticky top-0 z-30">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl hover:bg-muted" />
+              <h1 className="text-sm sm:text-lg font-semibold text-foreground hidden sm:block">
                 {menuItems.find(m => m.id === currentView)?.title || 'Dashboard'}
               </h1>
             </div>
 
             {/* Global Search */}
-            <div ref={searchRef} className="relative flex-1 max-w-md mx-4">
+            <div ref={searchRef} className="relative flex-1 max-w-md mx-2 sm:mx-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 sm:w-4 h-3.5 sm:h-4 text-muted-foreground" />
                 <Input
                   type="text"
-                  placeholder="Search users, payments, referrals..."
+                  placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                   onFocus={handleSearchFocus}
-                  className="pl-10 h-10 bg-muted/50 border-border/50 rounded-xl text-sm"
+                  className="pl-8 sm:pl-10 h-8 sm:h-10 bg-muted/50 border-border/50 rounded-lg sm:rounded-xl text-xs sm:text-sm"
                 />
                 {searchLoading && (
-                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-muted-foreground" />
+                  <Loader2 className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-3.5 sm:w-4 h-3.5 sm:h-4 animate-spin text-muted-foreground" />
                 )}
               </div>
 
               {/* Search Results Dropdown */}
               {(showSearchResults || (searchFocused && recentSearches.length > 0 && searchQuery.length < 2)) && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-lg overflow-hidden z-50">
+                <div className="absolute top-full left-0 right-0 mt-1 sm:mt-2 bg-card border border-border rounded-lg sm:rounded-xl shadow-lg overflow-hidden z-50">
                   {/* Recent Searches - show when no query */}
                   {searchQuery.length < 2 && recentSearches.length > 0 && (
                     <div>
@@ -530,10 +530,10 @@ const AdminPanel = () => {
               )}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <span className="text-xs text-muted-foreground hidden md:block">{user?.email}</span>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
-                <span className="text-white text-sm font-bold">{user?.email?.charAt(0).toUpperCase()}</span>
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
+                <span className="text-white text-xs sm:text-sm font-bold">{user?.email?.charAt(0).toUpperCase()}</span>
               </div>
             </div>
           </header>
