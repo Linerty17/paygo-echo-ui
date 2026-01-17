@@ -139,11 +139,14 @@ export const useAuth = () => {
         .from('profiles')
         .select('name, email')
         .eq('id', r.referred_id)
-        .single();
+        .maybeSingle();
       
       referrals.push({
         ...r,
-        referred_profile: profileData || undefined
+        referred_profile: profileData ? {
+          name: profileData.name || profileData.email?.split('@')[0] || 'User',
+          email: profileData.email
+        } : { name: 'User', email: '' }
       });
     }
 
