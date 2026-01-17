@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Gift, ArrowRight, Star } from 'lucide-react';
+import paygoLogo from '@/assets/paygo-logo.png';
 
 interface WelcomeMessageProps {
   onContinue: () => void;
@@ -29,7 +29,7 @@ const WelcomeMessage: React.FC<WelcomeMessageProps> = ({ onContinue }) => {
           <div className="absolute inset-0 w-full">
             <div className="animate-slide-logo-lr">
               <img 
-                src="/lovable-uploads/b28d1274-d692-42c9-81b7-61ae377c5939.png" 
+                src={paygoLogo}
                 alt="PayGo Digital Logo" 
                 className="w-48 h-24 object-contain drop-shadow-2xl"
               />

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Mail, Lock, HelpCircle } from 'lucide-react';
 import { z } from 'zod';
+import paygoLogo from '@/assets/paygo-logo.png';
 
 interface LoginProps {
   onLogin: (email: string, password: string) => Promise<void>;
@@ -81,7 +82,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister, isLoading })
           <div className="absolute inset-0 w-full">
             <div className="animate-slide-logo-lr">
               <img 
-                src="/lovable-uploads/a3ef4c06-bb4a-4f2b-86aa-ca0eb1b2d464.png" 
+                src={paygoLogo}
                 alt="PayGo Logo"
                 className="h-16 object-contain"
               />
