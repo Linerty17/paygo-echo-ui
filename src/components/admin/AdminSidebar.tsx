@@ -93,7 +93,11 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border/50">
-      <SidebarHeader className="border-b border-border/50 py-2">
+      <SidebarHeader
+        className={`border-b border-border/50 sticky top-0 z-20 bg-sidebar ${
+          isMobile ? 'pt-[max(env(safe-area-inset-top),24px)] pb-2' : 'py-2'
+        }`}
+      >
         <div className="flex items-center gap-2 px-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center flex-shrink-0">
             <Shield className="w-4 h-4 text-white" />
@@ -102,7 +106,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         </div>
       </SidebarHeader>
 
-      <SidebarContent className="py-1">
+      <SidebarContent className="py-1 overscroll-contain [-webkit-overflow-scrolling:touch]">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -144,7 +148,11 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-border/50 py-1">
+      <SidebarFooter
+        className={`border-t border-border/50 sticky bottom-0 z-20 bg-sidebar ${
+          isMobile ? 'pb-[max(env(safe-area-inset-bottom),16px)]' : 'py-1'
+        }`}
+      >
         {!isCollapsed && userEmail && (
           <div className="px-2 py-1">
             <p className="text-[10px] text-muted-foreground truncate">{userEmail}</p>
