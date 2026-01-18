@@ -396,8 +396,8 @@ const AdminPanel = () => {
   };
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen flex w-full">
+    <SidebarProvider defaultOpen={false}>
+      <div className="h-screen h-[100dvh] flex w-full overflow-hidden">
         <AdminSidebar 
           currentView={currentView}
           onViewChange={setCurrentView}
@@ -405,52 +405,52 @@ const AdminPanel = () => {
           userEmail={user?.email}
         />
         
-        <SidebarInset className="flex-1">
+        <SidebarInset className="flex-1 flex flex-col h-full overflow-hidden">
           {/* Top Header */}
-          <header className="h-12 sm:h-14 flex items-center justify-between px-2 sm:px-4 border-b border-border/50 bg-card/50 backdrop-blur sticky top-0 z-30">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl hover:bg-muted" />
-              <h1 className="text-sm sm:text-lg font-semibold text-foreground hidden sm:block">
+          <header className="h-11 flex items-center justify-between px-2 border-b border-border/50 bg-card/50 backdrop-blur sticky top-0 z-30 flex-shrink-0">
+            <div className="flex items-center gap-1.5">
+              <SidebarTrigger className="w-8 h-8 rounded-lg hover:bg-muted" />
+              <h1 className="text-xs font-semibold text-foreground truncate max-w-[80px] sm:max-w-none sm:text-sm">
                 {menuItems.find(m => m.id === currentView)?.title || 'Dashboard'}
               </h1>
             </div>
 
             {/* Global Search */}
-            <div ref={searchRef} className="relative flex-1 max-w-md mx-2 sm:mx-4">
+            <div ref={searchRef} className="relative flex-1 max-w-[140px] sm:max-w-md mx-1.5 sm:mx-4">
               <div className="relative">
-                <Search className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-3.5 sm:w-4 h-3.5 sm:h-4 text-muted-foreground" />
+                <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                   onFocus={handleSearchFocus}
-                  className="pl-8 sm:pl-10 h-8 sm:h-10 bg-muted/50 border-border/50 rounded-lg sm:rounded-xl text-xs sm:text-sm"
+                  className="pl-7 sm:pl-10 h-7 sm:h-9 bg-muted/50 border-border/50 rounded-lg text-xs"
                 />
                 {searchLoading && (
-                  <Loader2 className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-3.5 sm:w-4 h-3.5 sm:h-4 animate-spin text-muted-foreground" />
+                  <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 animate-spin text-muted-foreground" />
                 )}
               </div>
 
               {/* Search Results Dropdown */}
               {(showSearchResults || (searchFocused && recentSearches.length > 0 && searchQuery.length < 2)) && (
-                <div className="absolute top-full left-0 right-0 mt-1 sm:mt-2 bg-card border border-border rounded-lg sm:rounded-xl shadow-lg overflow-hidden z-50">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg overflow-hidden z-50">
                   {/* Recent Searches - show when no query */}
                   {searchQuery.length < 2 && recentSearches.length > 0 && (
                     <div>
-                      <div className="flex items-center justify-between px-4 py-2 border-b border-border/50">
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <Clock className="w-3 h-3" />
-                          <span>Recent Searches</span>
+                      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/50">
+                        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                          <Clock className="w-2.5 h-2.5" />
+                          <span>Recent</span>
                         </div>
                         <button
                           onClick={clearRecentSearches}
-                          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                          className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          Clear all
+                          Clear
                         </button>
                       </div>
-                      <div className="max-h-60 overflow-y-auto">
+                      <div className="max-h-48 overflow-y-auto">
                         {recentSearches.map((result) => (
                           <div
                             key={`recent-${result.type}-${result.id}`}
@@ -460,28 +460,28 @@ const AdminPanel = () => {
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') handleRecentClick(result);
                             }}
-                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors border-b border-border/50 last:border-b-0 group cursor-pointer"
+                            className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted text-left transition-colors border-b border-border/50 last:border-b-0 group cursor-pointer"
                           >
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            <div className={`w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 ${
                               result.type === 'user' ? 'bg-blue-500/10 text-blue-500' :
                               result.type === 'payment' ? 'bg-green-500/10 text-green-500' :
                               'bg-purple-500/10 text-purple-500'
                             }`}>
-                              {result.type === 'user' && <Users className="w-4 h-4" />}
-                              {result.type === 'payment' && <Image className="w-4 h-4" />}
-                              {result.type === 'referral' && <Gift className="w-4 h-4" />}
+                              {result.type === 'user' && <Users className="w-3 h-3" />}
+                              {result.type === 'payment' && <Image className="w-3 h-3" />}
+                              {result.type === 'referral' && <Gift className="w-3 h-3" />}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-foreground truncate">{result.title}</p>
-                              <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>
+                              <p className="text-xs font-medium text-foreground truncate">{result.title}</p>
+                              <p className="text-[10px] text-muted-foreground truncate">{result.subtitle}</p>
                             </div>
                             <button
                               type="button"
                               onClick={(e) => removeRecentSearch(result.id, e)}
-                              className="p-1 rounded hover:bg-muted-foreground/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="p-0.5 rounded hover:bg-muted-foreground/20 opacity-0 group-hover:opacity-100 transition-opacity"
                               aria-label="Remove from recent"
                             >
-                              <X className="w-3 h-3 text-muted-foreground" />
+                              <X className="w-2.5 h-2.5 text-muted-foreground" />
                             </button>
                           </div>
                         ))}
@@ -493,31 +493,31 @@ const AdminPanel = () => {
                   {searchQuery.length >= 2 && (
                     <>
                       {searchResults.length === 0 ? (
-                        <div className="p-4 text-center text-muted-foreground text-sm">
+                        <div className="p-3 text-center text-muted-foreground text-xs">
                           {searchLoading ? 'Searching...' : 'No results found'}
                         </div>
                       ) : (
-                        <div className="max-h-80 overflow-y-auto">
+                        <div className="max-h-60 overflow-y-auto">
                           {searchResults.map((result) => (
                             <button
                               key={`${result.type}-${result.id}`}
                               onClick={() => handleResultClick(result)}
-                              className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted text-left transition-colors border-b border-border/50 last:border-b-0"
+                              className="w-full flex items-center gap-2 px-3 py-2 hover:bg-muted text-left transition-colors border-b border-border/50 last:border-b-0"
                             >
-                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                              <div className={`w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 ${
                                 result.type === 'user' ? 'bg-blue-500/10 text-blue-500' :
                                 result.type === 'payment' ? 'bg-green-500/10 text-green-500' :
                                 'bg-purple-500/10 text-purple-500'
                               }`}>
-                                {result.type === 'user' && <Users className="w-4 h-4" />}
-                                {result.type === 'payment' && <Image className="w-4 h-4" />}
-                                {result.type === 'referral' && <Gift className="w-4 h-4" />}
+                                {result.type === 'user' && <Users className="w-3 h-3" />}
+                                {result.type === 'payment' && <Image className="w-3 h-3" />}
+                                {result.type === 'referral' && <Gift className="w-3 h-3" />}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-foreground truncate">{result.title}</p>
-                                <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>
+                                <p className="text-xs font-medium text-foreground truncate">{result.title}</p>
+                                <p className="text-[10px] text-muted-foreground truncate">{result.subtitle}</p>
                               </div>
-                              <span className="text-xs text-muted-foreground capitalize px-2 py-1 bg-muted rounded-md">
+                              <span className="text-[10px] text-muted-foreground capitalize px-1.5 py-0.5 bg-muted rounded">
                                 {result.type}
                               </span>
                             </button>
@@ -530,16 +530,16 @@ const AdminPanel = () => {
               )}
             </div>
 
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="text-xs text-muted-foreground hidden md:block">{user?.email}</span>
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center">
-                <span className="text-white text-xs sm:text-sm font-bold">{user?.email?.charAt(0).toUpperCase()}</span>
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] text-muted-foreground hidden md:block truncate max-w-[100px]">{user?.email}</span>
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center flex-shrink-0">
+                <span className="text-white text-[10px] font-bold">{user?.email?.charAt(0).toUpperCase()}</span>
               </div>
             </div>
           </header>
 
           {/* Page Content */}
-          <div className="admin-content-area p-4">
+          <div className="admin-content-area flex-1 overflow-y-auto p-2 sm:p-4">
             {renderContent()}
           </div>
         </SidebarInset>
