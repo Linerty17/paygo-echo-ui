@@ -4,7 +4,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { toast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Lock, Mail, Eye, EyeOff, Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings, X, Search, Clock, CheckCircle, Ban } from 'lucide-react';
+import { Loader2, Lock, Mail, Eye, EyeOff, Shield, LogOut, Users, Image, Gift, BarChart3, FileText, Bell, Settings, X, Search, Clock, CheckCircle, Ban, CreditCard } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import PaymentUploadsAdmin from '@/components/admin/PaymentUploadsAdmin';
@@ -54,10 +54,51 @@ const AdminPanel = () => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [recentSearches, setRecentSearches] = useState<SearchResult[]>([]);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
   const searchRef = useRef<HTMLDivElement>(null);
 
   const RECENT_SEARCHES_KEY = 'admin_recent_searches';
   const MAX_RECENT_SEARCHES = 5;
+
+  // Fetch pending payments count
+  useEffect(() => {
+    const fetchPendingCount = async () => {
+      try {
+        const { count, error } = await supabase
+          .from('payment_uploads')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pending');
+
+        if (!error && count !== null) {
+          setPendingCount(count);
+        }
+      } catch (error) {
+        console.error('Error fetching pending count:', error);
+      }
+    };
+
+    fetchPendingCount();
+
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel('admin-pending-count')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'payment_uploads'
+        },
+        () => {
+          fetchPendingCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -531,7 +572,23 @@ const AdminPanel = () => {
             </div>
 
             <div className="flex items-center gap-1">
-              <span className="text-[10px] text-muted-foreground hidden md:block truncate max-w-[100px]">{user?.email}</span>
+              {/* Pending Payments Shortcut */}
+              <button
+                onClick={() => setCurrentView('payments')}
+                className={`relative flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors ${
+                  currentView === 'payments' 
+                    ? 'bg-primary text-white' 
+                    : 'bg-orange-500/10 text-orange-600 hover:bg-orange-500/20'
+                }`}
+              >
+                <CreditCard className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Pending</span>
+                {pendingCount > 0 && (
+                  <span className="min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold animate-pulse">
+                    {pendingCount > 99 ? '99+' : pendingCount}
+                  </span>
+                )}
+              </button>
               <div className="w-6 h-6 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center flex-shrink-0">
                 <span className="text-white text-[10px] font-bold">{user?.email?.charAt(0).toUpperCase()}</span>
               </div>
