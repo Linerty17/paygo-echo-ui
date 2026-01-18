@@ -93,16 +93,16 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border/50">
-      <SidebarHeader className="border-b border-border/50">
-        <div className="flex items-center gap-3 px-2 py-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center flex-shrink-0">
-            <Shield className="w-5 h-5 text-white" />
+      <SidebarHeader className="border-b border-border/50 py-2">
+        <div className="flex items-center gap-2 px-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center flex-shrink-0">
+            <Shield className="w-4 h-4 text-white" />
           </div>
-          {!isCollapsed && <span className="font-bold text-foreground">Admin</span>}
+          {!isCollapsed && <span className="font-bold text-sm text-foreground">Admin</span>}
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="py-1">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -112,27 +112,27 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
                     onClick={() => handleMenuClick(item.id)}
                     isActive={currentView === item.id}
                     tooltip={item.title}
-                    className={`h-9 py-1 ${currentView === item.id 
+                    className={`h-8 py-0.5 ${currentView === item.id 
                       ? 'bg-primary text-white hover:bg-primary/90 hover:text-white' 
                       : ''
                     }`}
                   >
-                    <div className={`relative w-5 h-5 rounded flex items-center justify-center flex-shrink-0 ${
+                    <div className={`relative w-4 h-4 rounded flex items-center justify-center flex-shrink-0 ${
                       currentView === item.id ? 'bg-white/20' : 'bg-muted'
                     }`}>
-                      <span className={`text-[10px] font-bold ${currentView === item.id ? 'text-white' : 'text-primary'}`}>
+                      <span className={`text-[9px] font-bold ${currentView === item.id ? 'text-white' : 'text-primary'}`}>
                         {item.num}
                       </span>
                       {item.hasBadge && pendingCount > 0 && (
-                        <span className="absolute -top-1 -right-1 min-w-[14px] h-3.5 px-0.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold">
+                        <span className="absolute -top-1 -right-1 min-w-[12px] h-3 px-0.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[8px] font-bold">
                           {pendingCount > 99 ? '99+' : pendingCount}
                         </span>
                       )}
                     </div>
-                    <item.icon className="w-4 h-4" />
-                    <span className="text-sm font-medium flex-1">{item.title}</span>
+                    <item.icon className="w-3.5 h-3.5" />
+                    <span className="text-xs font-medium flex-1">{item.title}</span>
                     {!isCollapsed && item.hasBadge && pendingCount > 0 && (
-                      <span className="min-w-[18px] h-4 px-1 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold">
+                      <span className="min-w-[16px] h-3.5 px-0.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-bold">
                         {pendingCount > 99 ? '99+' : pendingCount}
                       </span>
                     )}
@@ -144,10 +144,10 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-border/50">
+      <SidebarFooter className="border-t border-border/50 py-1">
         {!isCollapsed && userEmail && (
-          <div className="px-3 py-2">
-            <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
+          <div className="px-2 py-1">
+            <p className="text-[10px] text-muted-foreground truncate">{userEmail}</p>
           </div>
         )}
         <SidebarMenu>
@@ -155,10 +155,10 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
             <SidebarMenuButton
               onClick={onLogout}
               tooltip="Logout"
-              className="text-red-500 hover:bg-red-500/10 hover:text-red-500"
+              className="h-8 text-red-500 hover:bg-red-500/10 hover:text-red-500"
             >
-              <LogOut className="w-5 h-5" />
-              <span className="font-medium">Logout</span>
+              <LogOut className="w-4 h-4" />
+              <span className="text-xs font-medium">Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
