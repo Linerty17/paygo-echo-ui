@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Settings, Bell, Shield, Download, Database, Volume2, VolumeX, Moon, Sun, Smartphone, Monitor, KeyRound, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Settings, Bell, Shield, Download, Database, Volume2, VolumeX, Moon, Sun, Smartphone, Monitor, KeyRound, Save, Loader2, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
@@ -22,20 +22,43 @@ const SettingsAdmin: React.FC<SettingsAdminProps> = ({ onBack }) => {
   const [savingPayId, setSavingPayId] = useState(false);
   const [loadingPayId, setLoadingPayId] = useState(true);
 
+  // Account details state
+  const [accountNumber, setAccountNumber] = useState('');
+  const [bankName, setBankName] = useState('');
+  const [accountName, setAccountName] = useState('');
+  const [savingAccount, setSavingAccount] = useState(false);
+  const [loadingAccount, setLoadingAccount] = useState(true);
+
   useEffect(() => {
-    const fetchGlobalPayId = async () => {
-      const { data } = await supabase
+    const fetchSettings = async () => {
+      // Fetch PAY ID
+      const { data: payIdData } = await supabase
         .from('app_settings')
         .select('value')
         .eq('key', 'global_payid')
         .maybeSingle();
       
-      if (data?.value) {
-        setGlobalPayId(data.value);
+      if (payIdData?.value) {
+        setGlobalPayId(payIdData.value);
       }
       setLoadingPayId(false);
+
+      // Fetch Account Details
+      const { data: accountData } = await supabase
+        .from('app_settings')
+        .select('key, value')
+        .in('key', ['account_number', 'bank_name', 'account_name']);
+      
+      if (accountData) {
+        accountData.forEach((item) => {
+          if (item.key === 'account_number') setAccountNumber(item.value);
+          if (item.key === 'bank_name') setBankName(item.value);
+          if (item.key === 'account_name') setAccountName(item.value);
+        });
+      }
+      setLoadingAccount(false);
     };
-    fetchGlobalPayId();
+    fetchSettings();
   }, []);
 
   const handleSavePayId = async () => {
@@ -70,6 +93,49 @@ const SettingsAdmin: React.FC<SettingsAdminProps> = ({ onBack }) => {
       });
     } finally {
       setSavingPayId(false);
+    }
+  };
+
+  const handleSaveAccountDetails = async () => {
+    if (!accountNumber.trim() || !bankName.trim() || !accountName.trim()) {
+      toast({
+        title: "Error",
+        description: "All account fields are required",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setSavingAccount(true);
+    try {
+      // Update all three settings
+      const updates = [
+        { key: 'account_number', value: accountNumber.trim() },
+        { key: 'bank_name', value: bankName.trim() },
+        { key: 'account_name', value: accountName.trim() },
+      ];
+
+      for (const update of updates) {
+        const { error } = await supabase
+          .from('app_settings')
+          .upsert({ key: update.key, value: update.value }, { onConflict: 'key' });
+        
+        if (error) throw error;
+      }
+      
+      toast({
+        title: "Account Details Updated",
+        description: "Payment account details have been saved",
+      });
+    } catch (error) {
+      console.error('Error updating account details:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update account details",
+        variant: "destructive"
+      });
+    } finally {
+      setSavingAccount(false);
     }
   };
 
@@ -275,6 +341,70 @@ const SettingsAdmin: React.FC<SettingsAdminProps> = ({ onBack }) => {
                 )}
               </Button>
             </div>
+          </div>
+        </div>
+
+        {/* Payment Account Details */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 px-2">
+            <CreditCard className="w-5 h-5 text-primary" />
+            <h3 className="text-sm font-semibold text-foreground">Payment Account</h3>
+          </div>
+          
+          <div className="glass-card rounded-2xl p-4 space-y-4">
+            <p className="text-muted-foreground text-sm">
+              This account is displayed on all offline payment pages.
+            </p>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Account Number</label>
+                <Input
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value)}
+                  placeholder={loadingAccount ? "Loading..." : "Enter account number"}
+                  disabled={loadingAccount}
+                  className="h-10 rounded-xl"
+                />
+              </div>
+              
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Bank Name</label>
+                <Input
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                  placeholder={loadingAccount ? "Loading..." : "Enter bank name"}
+                  disabled={loadingAccount}
+                  className="h-10 rounded-xl"
+                />
+              </div>
+              
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Account Name</label>
+                <Input
+                  value={accountName}
+                  onChange={(e) => setAccountName(e.target.value)}
+                  placeholder={loadingAccount ? "Loading..." : "Enter account name"}
+                  disabled={loadingAccount}
+                  className="h-10 rounded-xl"
+                />
+              </div>
+            </div>
+            
+            <Button
+              onClick={handleSaveAccountDetails}
+              disabled={savingAccount || loadingAccount}
+              className="w-full h-10 rounded-xl bg-primary hover:bg-primary/80"
+            >
+              {savingAccount ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Account Details
+                </>
+              )}
+            </Button>
           </div>
         </div>
 
