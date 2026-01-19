@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ACCOUNT_DETAILS } from '@/config/accountDetails';
+import { useAccountDetails } from '@/hooks/useAccountDetails';
 
 interface UpgradePaymentPageProps {
   onBack: () => void;
@@ -21,9 +21,10 @@ const UpgradePaymentPage: React.FC<UpgradePaymentPageProps> = ({
 }) => {
   const [email, setEmail] = useState(userEmail);
   const [receiptUploaded, setReceiptUploaded] = useState(false);
+  const { accountDetails, loading: loadingAccount } = useAccountDetails();
 
   const handleCopyAccount = () => {
-    navigator.clipboard.writeText(ACCOUNT_DETAILS.accountNumber);
+    navigator.clipboard.writeText(accountDetails.accountNumber);
     alert('Account number copied!');
   };
 
@@ -75,7 +76,7 @@ const UpgradePaymentPage: React.FC<UpgradePaymentPageProps> = ({
             <div>
               <label className="block text-muted-foreground text-sm mb-1">Account Number</label>
               <div className="flex items-center justify-between glass rounded-xl p-4">
-                <span className="text-lg font-bold text-primary">{ACCOUNT_DETAILS.accountNumber}</span>
+                <span className="text-lg font-bold text-primary">{accountDetails.accountNumber}</span>
                 <Button 
                   onClick={handleCopyAccount}
                   className="bg-primary hover:bg-primary/80 text-primary-foreground p-2 rounded-lg"
@@ -88,14 +89,14 @@ const UpgradePaymentPage: React.FC<UpgradePaymentPageProps> = ({
             <div>
               <label className="block text-muted-foreground text-sm mb-1">Bank Name</label>
               <div className="glass rounded-xl p-4">
-                <span className="text-lg font-medium text-foreground">{ACCOUNT_DETAILS.bankName}</span>
+                <span className="text-lg font-medium text-foreground">{accountDetails.bankName}</span>
               </div>
             </div>
 
             <div>
               <label className="block text-muted-foreground text-sm mb-1">Account Name</label>
               <div className="glass rounded-xl p-4">
-                <span className="text-lg font-medium text-foreground">{ACCOUNT_DETAILS.accountName}</span>
+                <span className="text-lg font-medium text-foreground">{accountDetails.accountName}</span>
               </div>
             </div>
           </div>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ACCOUNT_DETAILS } from '@/config/accountDetails';
+import { useAccountDetails } from '@/hooks/useAccountDetails';
 
 interface BankTransferPageProps {
   onBack: () => void;
@@ -22,7 +22,7 @@ const BankTransferPage: React.FC<BankTransferPageProps> = ({
   const [email, setEmail] = useState(userEmail);
   const [receiptUploaded, setReceiptUploaded] = useState(false);
 
-  const accountDetails = ACCOUNT_DETAILS;
+  const { accountDetails, loading: loadingAccount } = useAccountDetails();
 
   const handleCopyAccount = () => {
     navigator.clipboard.writeText(accountDetails.accountNumber);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ArrowLeft, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ACCOUNT_DETAILS } from '@/config/accountDetails';
+import { useAccountDetails } from '@/hooks/useAccountDetails';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
@@ -27,6 +27,7 @@ const PayIdPaymentPage: React.FC<PayIdPaymentPageProps> = ({
   const [checkingStatus, setCheckingStatus] = useState(true);
   const [hasPending, setHasPending] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const { accountDetails } = useAccountDetails();
 
   const amount = '₦7,700';
   const amountValue = 7700;
@@ -81,7 +82,7 @@ const PayIdPaymentPage: React.FC<PayIdPaymentPageProps> = ({
   }, [userId]);
 
   const handleCopyAccount = () => {
-    navigator.clipboard.writeText(ACCOUNT_DETAILS.accountNumber);
+    navigator.clipboard.writeText(accountDetails.accountNumber);
     toast({
       title: 'Copied',
       description: 'Account number copied to clipboard',
@@ -263,7 +264,7 @@ const PayIdPaymentPage: React.FC<PayIdPaymentPageProps> = ({
             <div>
               <label className="block text-muted-foreground text-sm mb-1">Account Number</label>
               <div className="flex items-center justify-between glass rounded-xl p-4">
-                <span className="text-lg font-bold text-primary">{ACCOUNT_DETAILS.accountNumber}</span>
+                <span className="text-lg font-bold text-primary">{accountDetails.accountNumber}</span>
                 <Button
                   onClick={handleCopyAccount}
                   className="bg-primary hover:bg-primary/80 text-primary-foreground p-2 rounded-lg"
@@ -276,14 +277,14 @@ const PayIdPaymentPage: React.FC<PayIdPaymentPageProps> = ({
             <div>
               <label className="block text-muted-foreground text-sm mb-1">Bank Name</label>
               <div className="glass rounded-xl p-4">
-                <span className="text-lg font-medium text-foreground">{ACCOUNT_DETAILS.bankName}</span>
+                <span className="text-lg font-medium text-foreground">{accountDetails.bankName}</span>
               </div>
             </div>
 
             <div>
               <label className="block text-muted-foreground text-sm mb-1">Account Name</label>
               <div className="glass rounded-xl p-4">
-                <span className="text-lg font-medium text-foreground">{ACCOUNT_DETAILS.accountName}</span>
+                <span className="text-lg font-medium text-foreground">{accountDetails.accountName}</span>
               </div>
             </div>
           </div>
