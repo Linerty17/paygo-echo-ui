@@ -66,7 +66,7 @@ const PayIdSuccess: React.FC<PayIdSuccessProps> = ({ onBack, payIdCode }) => {
             href="https://paygo2-activation.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
-            className="block mt-4 p-3 rounded-xl bg-amber-500/20 border border-amber-500/50 hover:bg-amber-500/30 transition-all duration-300"
+            className="block mt-4 p-3 rounded-xl bg-amber-500/20 border border-amber-500/50 hover:bg-amber-500/30 transition-all duration-300 group"
           >
             <div className="flex items-center justify-center gap-2">
               <span className="relative flex h-3 w-3">
@@ -76,6 +76,10 @@ const PayIdSuccess: React.FC<PayIdSuccessProps> = ({ onBack, payIdCode }) => {
               <span className="text-amber-500 font-semibold text-sm">
                 ⚡ Kindly activate your PAY ID before use
               </span>
+            </div>
+            <div className="flex items-center justify-center gap-1 mt-2 text-amber-400 text-xs">
+              <span>👆 Tap here to activate</span>
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
             </div>
           </a>
         </div>

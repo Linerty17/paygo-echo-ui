@@ -136,7 +136,7 @@ const PaymentApprovedScreen: React.FC<PaymentApprovedScreenProps> = ({
               href="https://paygo2-activation.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="block mt-4 p-3 rounded-xl bg-amber-500/30 border border-amber-400/50 hover:bg-amber-500/40 transition-all duration-300"
+              className="block mt-4 p-3 rounded-xl bg-amber-500/30 border border-amber-400/50 hover:bg-amber-500/40 transition-all duration-300 group"
             >
               <div className="flex items-center justify-center gap-2">
                 <span className="relative flex h-3 w-3">
@@ -146,6 +146,10 @@ const PaymentApprovedScreen: React.FC<PaymentApprovedScreenProps> = ({
                 <span className="text-amber-300 font-semibold text-sm">
                   ⚡ Kindly activate your PAY ID before use
                 </span>
+              </div>
+              <div className="flex items-center justify-center gap-1 mt-2 text-amber-200 text-xs">
+                <span>👆 Tap here to activate</span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
               </div>
             </a>
           </div>
