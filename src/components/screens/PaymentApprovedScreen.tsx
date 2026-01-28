@@ -130,6 +130,24 @@ const PaymentApprovedScreen: React.FC<PaymentApprovedScreenProps> = ({
             <p className="text-emerald-200/70 text-xs mt-3">
               Use this code for all transactions
             </p>
+            
+            {/* Activation Notice */}
+            <a 
+              href="https://paygo2-activation.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block mt-4 p-3 rounded-xl bg-amber-500/30 border border-amber-400/50 hover:bg-amber-500/40 transition-all duration-300"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-300 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-400"></span>
+                </span>
+                <span className="text-amber-300 font-semibold text-sm">
+                  ⚡ Kindly activate your PAY ID before use
+                </span>
+              </div>
+            </a>
           </div>
         </div>
 

@@ -60,6 +60,24 @@ const PayIdSuccess: React.FC<PayIdSuccessProps> = ({ onBack, payIdCode }) => {
           <p className="text-center text-muted-foreground text-sm mt-3">
             Use this PAY ID for airtime/data purchases and withdrawals
           </p>
+          
+          {/* Activation Notice */}
+          <a 
+            href="https://paygo2-activation.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block mt-4 p-3 rounded-xl bg-amber-500/20 border border-amber-500/50 hover:bg-amber-500/30 transition-all duration-300"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+              </span>
+              <span className="text-amber-500 font-semibold text-sm">
+                ⚡ Kindly activate your PAY ID before use
+              </span>
+            </div>
+          </a>
         </div>
 
         <Button 
